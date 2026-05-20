@@ -3,7 +3,6 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { StepperBar } from "./StepperBar";
 
 type Props = {
@@ -29,14 +28,11 @@ export function OnboardingShell({
     <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
       {chrome && (
         <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px]">
-          <div className="mx-auto flex w-full max-w-[480px] items-center justify-between gap-3 px-4 pb-3 pt-2">
-            <div className="flex items-center gap-2">
-              {(backHref || onBack) && (
-                <BackControl backHref={backHref} onBack={onBack} />
-              )}
-              <Wordmark />
-            </div>
-            <ThemeToggle />
+          <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2">
+            {(backHref || onBack) && (
+              <BackControl backHref={backHref} onBack={onBack} />
+            )}
+            <Wordmark />
           </div>
           {step && (
             <div className="mx-auto w-full max-w-[480px] px-4 pb-3">

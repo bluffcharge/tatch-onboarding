@@ -12,25 +12,24 @@ export function DevPalette() {
   const { theme, toggle } = useTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   return (
-    <div className="safe-pb pointer-events-none fixed inset-x-0 bottom-3 z-50 flex justify-center">
-      <div className="pointer-events-auto flex items-center gap-1 rounded-pill border border-border bg-card/95 px-1 py-1 shadow-md backdrop-blur-[8px]">
+    <div className="safe-pt pointer-events-none fixed right-2 top-2 z-50">
+      <div className="pointer-events-auto flex items-center gap-0.5 rounded-pill border border-border bg-card/90 p-0.5 shadow-sm backdrop-blur-[8px]">
         <Link
           href="/"
           aria-label="Back to route gallery"
-          className="inline-flex h-9 items-center gap-2 rounded-pill px-3 text-[12.5px] font-medium text-ink-body hover:bg-subtle"
+          title="Back to route gallery"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-pill text-ink-caption hover:bg-subtle hover:text-ink-body"
         >
-          <LayoutGrid size={14} strokeWidth={1.75} />
-          Gallery
+          <LayoutGrid size={13} strokeWidth={1.75} />
         </Link>
-        <div className="h-5 w-px bg-border-subtle" aria-hidden="true" />
         <button
           type="button"
           onClick={toggle}
           aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          className="inline-flex h-9 items-center gap-2 rounded-pill px-3 text-[12.5px] font-medium text-ink-body hover:bg-subtle"
+          title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+          className="inline-flex h-7 w-7 items-center justify-center rounded-pill text-ink-caption hover:bg-subtle hover:text-ink-body"
         >
-          <ThemeIcon size={14} strokeWidth={1.75} />
-          {theme === "dark" ? "Light" : "Dark"}
+          <ThemeIcon size={13} strokeWidth={1.75} />
         </button>
       </div>
     </div>
