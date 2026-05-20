@@ -2,26 +2,231 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   Tatch Design Tokens — pulled from the Tatch design-system
+   colors_and_type.css (lightly adapted: Geist served from /public/fonts,
+   dark-mode token set named, motion + safe-area additions for mobile).
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/Geist-VariableFont_wght.ttf') format('truetype-variations'),
+       url('/fonts/Geist-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---------------- Brand Primary Palette ---------------- */
+  --tatch-peony:  #FF40F5;
+  --tatch-sky:    #00BBFF;
+  --tatch-violet: #7533FF;
+  --tatch-royal:  #003ED8;
+
+  /* Signature brand gradient — multi-directional, never simple linear. */
+  --tatch-brand-gradient: linear-gradient(
+    135deg,
+    #00BBFF 0%,
+    #7533FF 50%,
+    #FF40F5 100%
+  );
+  --tatch-brand-gradient-4stop:
+    radial-gradient(at 20% 20%, #00BBFF 0%, transparent 45%),
+    radial-gradient(at 80% 30%, #7533FF 0%, transparent 55%),
+    radial-gradient(at 50% 85%, #FF40F5 0%, transparent 60%),
+    linear-gradient(135deg, #003ED8 0%, #7533FF 100%);
+
+  /* ---------------- Grayscale ---------------- */
+  --grey-0:   #FFFFFF;
+  --grey-50:  #FCFCFC;
+  --grey-100: #F9F9F9;
+  --grey-200: #EFEFF2;
+  --grey-300: #E9E9E9;
+  --grey-400: #D4D4D4;
+  --grey-500: #9CA0AD;
+  --grey-600: #7B7F8C;
+  --grey-700: #4D525D;
+  --grey-800: #393C42;
+  --grey-900: #27292C;
+  --grey-950: #1C1C1C;
+
+  /* ---------------- Semantic Colors ---------------- */
+  --color-success: #14A6DC;
+  --color-error:   #DA2B2C;
+  --color-warn:    #F6A623;
+
+  /* ---------------- Royal scale (brand secondary) ---------------- */
+  --royal-50:  #F6F5FF;
+  --royal-100: #E6E2FF;
+  --royal-200: #C5B9FF;
+  --royal-300: #9B79FF;
+  --royal-400: #8145FF;   /* most-used product accent */
+  --royal-500: #7533FF;
+  --royal-600: #5E28D6;
+  --royal-700: #4A1EAA;
+  --royal-800: #35167A;
+  --royal-900: #1E0A4A;
+
+  /* ---------------- Semantic surfaces (LIGHT theme — default) ---------------- */
+  --surface-canvas:  var(--grey-50);
+  --surface-card:    #FFFFFF;
+  --surface-subtle:  var(--grey-100);
+  --surface-raised:  #FFFFFF;
+  --surface-overlay: rgba(66,68,76,0.85);
+
+  --border-default:  var(--grey-300);
+  --border-subtle:   var(--grey-200);
+  --border-strong:   var(--grey-400);
+
+  --text-default:    var(--grey-900);
+  --text-title:      var(--grey-950);
+  --text-body:       var(--grey-800);
+  --text-subtitle:   var(--grey-700);
+  --text-caption:    var(--grey-600);
+  --text-disabled:   var(--grey-500);
+  --text-link:       var(--royal-400);
+  --text-on-dark:    #FFFFFF;
+
+  --icon-default:    var(--grey-800);
+  --icon-muted:      var(--grey-600);
+  --icon-brand:      var(--royal-400);
+
+  /* ---------------- Typography ---------------- */
+  --font-sans:    'Geist', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-display: 'Archivo Black', 'Arial Black', 'Helvetica Black', sans-serif;
+
+  --fs-display-xl: 72px;
+  --fs-display-l:  60px;
+  --fs-display:    48px;
+  --fs-h1:         36px;
+  --fs-h2:         24px;
+  --fs-h3:         20px;
+  --fs-h4:         18px;
+  --fs-body-lg:    16px;
+  --fs-body:       14px;
+  --fs-subtitle:   13px;
+  --fs-caption:    11px;
+  --fs-micro:      9px;
+
+  --lh-tight:  1.05;
+  --lh-snug:   1.2;
+  --lh-normal: 1.4;
+  --lh-loose:  1.55;
+
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ---------------- Spacing scale ---------------- */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 48px;
+  --space-11: 64px;
+
+  /* ---------------- Radii ---------------- */
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-pill: 999px;
+
+  /* ---------------- Shadows ---------------- */
+  --shadow-xs:    0 1px 2px 0 rgba(0,0,0,0.06);
+  --shadow-sm:    0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px 0 rgba(0,0,0,0.04);
+  --shadow-md:    1px 1px 5px 0 rgba(187,190,199,0.85);
+  --shadow-lg:    0 6px 16px 0 rgba(0,0,0,0.10);
+
+  /* ---------------- Motion ---------------- */
+  --ease-snap:     cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 150ms;
+  --dur-med:  250ms;
+  --dur-slow: 400ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ==========================================================================
+   Dark theme — opt-in via [data-theme="dark"] on <html>
+   ========================================================================== */
+[data-theme='dark'] {
+  --surface-canvas:  var(--grey-900);
+  --surface-card:    var(--grey-800);
+  --surface-subtle:  #2F3137;
+  --surface-raised:  var(--grey-700);
+  --surface-overlay: rgba(0,0,0,0.65);
+
+  --border-default:  rgba(255,255,255,0.10);
+  --border-subtle:   rgba(255,255,255,0.06);
+  --border-strong:   rgba(255,255,255,0.18);
+
+  --text-default:    #FFFFFF;
+  --text-title:      #FFFFFF;
+  --text-body:       var(--grey-300);
+  --text-subtitle:   var(--grey-400);
+  --text-caption:    var(--grey-500);
+  --text-disabled:   var(--grey-600);
+
+  --icon-default:    var(--grey-300);
+  --icon-muted:      var(--grey-500);
+  --icon-brand:      var(--royal-300);
+
+  --shadow-md:       0 1px 3px 0 rgba(0,0,0,0.45), 0 1px 2px 0 rgba(0,0,0,0.30);
+  --shadow-lg:       0 8px 24px 0 rgba(0,0,0,0.55);
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   Base
+   ========================================================================== */
+html, body {
+  font-family: var(--font-sans);
+  color: var(--text-default);
+  background: var(--surface-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Sentence-case headings/buttons; no default uppercase. */
+button, input, textarea, select { font-family: inherit; }
+
+/* Type roles */
+.t-display    { font-family: var(--font-display); font-size: var(--fs-display); line-height: var(--lh-tight); letter-spacing: -0.02em; }
+.t-h1         { font-size: var(--fs-h1); font-weight: var(--fw-semibold); line-height: var(--lh-snug); color: var(--text-title); letter-spacing: -0.01em; }
+.t-h2         { font-size: var(--fs-h2); font-weight: var(--fw-semibold); line-height: var(--lh-snug); color: var(--text-title); }
+.t-h3         { font-size: var(--fs-h3); font-weight: var(--fw-semibold); line-height: var(--lh-snug); color: var(--text-title); }
+.t-h4         { font-size: var(--fs-h4); font-weight: var(--fw-semibold); line-height: var(--lh-normal); color: var(--text-title); }
+.t-body-lg    { font-size: var(--fs-body-lg); font-weight: var(--fw-regular); line-height: var(--lh-normal); color: var(--text-body); }
+.t-body       { font-size: var(--fs-body); font-weight: var(--fw-regular); line-height: var(--lh-normal); color: var(--text-body); }
+.t-subtitle   { font-size: var(--fs-subtitle); font-weight: var(--fw-semibold); line-height: var(--lh-normal); color: var(--text-subtitle); letter-spacing: 0.01em; }
+.t-caption    { font-size: var(--fs-caption); font-weight: var(--fw-regular); line-height: var(--lh-snug); color: var(--text-caption); }
+.t-mono-label { font-size: var(--fs-caption); font-weight: var(--fw-semibold); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-caption); }
+
+/* Brand gradient wordmark utility (for the personalized P1 inviter line). */
+.t-brand-text {
+  background: var(--tatch-brand-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
+
+/* Focus ring — 2px royal, per brand */
+*:focus-visible {
+  outline: 2px solid var(--royal-400);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Safe-area helpers for the mobile shell */
+.safe-pt { padding-top: max(env(safe-area-inset-top), 12px); }
+.safe-pb { padding-bottom: max(env(safe-area-inset-bottom), 16px); }

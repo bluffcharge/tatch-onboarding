@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
+  <defs>
+    <linearGradient id="tatchMark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00BBFF"></stop>
+      <stop offset="50%" stop-color="#7533FF"></stop>
+      <stop offset="100%" stop-color="#FF40F5"></stop>
+    </linearGradient>
+  </defs>
+  <g transform="translate(13.85, 1.2)">
+    <path fill="url(#tatchMark)" fill-rule="nonzero" d="M 5.45 25.4 L 0 25.4 L 0 14.6 L 5.45 14.6 L 5.45 7.55 L 20.2 0 L 20.2 14.6 L 28.3 14.6 L 28.3 25.4 L 4.4 25.4 M 6.5 28.2 L 28.3 28.2 L 28.3 39 L 22.85 39 L 22.85 46.05 L 8.1 53.6 L 8.1 39 L 0 39 L 0 28.2 L 8.1 28.2"></path>
+  </g>
+</svg>

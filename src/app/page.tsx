@@ -1,101 +1,65 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
+const ROUTES: { href: string; title: string; subtitle: string }[] = [
+  { href: "/j/abc123",                title: "P1 — Welcome (link entry)",   subtitle: "Partner taps the SMS/email link" },
+  { href: "/join",                    title: "P0/B — Code entry",            subtitle: "Partner lands without a link and types the code" },
+  { href: "/onboarding/auth",         title: "P2 — Authentication",          subtitle: "Phone OTP primary; email + Google secondary" },
+  { href: "/onboarding/business",     title: "P3 — Business profile",        subtitle: "Name + address + contact" },
+  { href: "/onboarding/discovery",    title: "P4 — Discovery questions",     subtitle: "Typed question array (technicians, services)" },
+  { href: "/onboarding/team",         title: "P5 — Invite teammates",        subtitle: "SMS-first, optional, equal-weight Skip" },
+  { href: "/onboarding/activating",   title: "P6 — Activating",              subtitle: "1–2s transition" },
+  { href: "/onboarding/done",         title: "P7 — Connected (new)",         subtitle: "New-partner success copy" },
+  { href: "/onboarding/done?existing=1", title: "P7 — Connected (existing)", subtitle: "Existing-partner short-circuit copy" },
+  { href: "/partner-admin/invite",    title: "O1 — Operator invite UI",      subtitle: "Settings panel with codes + recent invites" },
+  { href: "/join?bad=1",              title: "Edge — Invalid code",          subtitle: "Error state" },
+  { href: "/j/used",                  title: "Edge — Already-used invite",   subtitle: "Error state" },
+];
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-[100dvh] bg-canvas text-ink">
+      <div className="safe-pt mx-auto max-w-[920px] px-5 pb-12 pt-6">
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <p className="t-mono-label mb-2">tatch onboarding · prototype</p>
+            <h1 className="t-display text-ink-title" style={{ fontFamily: "var(--font-display)" }}>
+              Route gallery
+            </h1>
+            <p className="t-body mt-3 max-w-[60ch]">
+              Hi-fi click-through of the partner onboarding flow (P1 → P7) plus the
+              operator-side invite UI (O1). Mobile-first. Light + dark themes share
+              the same components and tokens. No backend — all state is mocked or
+              query-string toggled.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {ROUTES.map((r) => (
+            <li key={r.href}>
+              <Link
+                href={r.href}
+                className="group block rounded-lg border border-border bg-card p-4 shadow-xs transition-colors duration-fast ease-snap hover:border-strong hover:bg-subtle"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="t-h4 text-ink-title">{r.title}</span>
+                  <span className="t-caption text-ink-caption">{r.href}</span>
+                </div>
+                <p className="t-body mt-1 text-ink-subtitle">{r.subtitle}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <footer className="mt-10 border-t border-border-subtle pt-5">
+          <p className="t-caption">
+            Spec: <code className="rounded-xs bg-subtle px-1.5 py-0.5">~/Desktop/SUX/Tatch-Onboarding-Plan.md</code>.
+            Design tokens: <code className="rounded-xs bg-subtle px-1.5 py-0.5">~/Claude CoWork/Tatch/design-system/colors_and_type.css</code>.
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
