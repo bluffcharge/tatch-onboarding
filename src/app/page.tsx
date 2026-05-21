@@ -186,40 +186,42 @@ function Stage({
   onReset: () => void;
 }) {
   return (
-    <main className="flex flex-1 flex-col">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-5 pb-3 pt-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
+    <main className="flex flex-1 flex-col overflow-hidden">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col overflow-hidden px-5 pb-2 pt-2">
+        <div className="mb-2 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="t-mono-label">Now showing</p>
-            <h1 className="t-h3 mt-1 truncate">{title}</h1>
+            <h1 className="t-h4 truncate text-ink-title">
+              <span className="t-mono-label mr-2 align-middle">Now</span>
+              {title}
+            </h1>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <code className="hidden rounded-sm bg-subtle px-2 py-1 text-[12px] text-ink-body sm:inline">
+            <code className="hidden rounded-sm bg-subtle px-2 py-1 text-[11.5px] text-ink-body sm:inline">
               {href}
             </code>
             <button
               type="button"
               onClick={onReset}
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+              className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-card px-2 text-[12px] font-medium text-ink-body hover:bg-subtle"
               title="Reset this flow"
             >
-              <RotateCcw size={12} strokeWidth={1.75} />
+              <RotateCcw size={11} strokeWidth={1.75} />
               Reset
             </button>
             <Link
               href={href}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+              className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-card px-2 text-[12px] font-medium text-ink-body hover:bg-subtle"
               title="Open in a new tab"
             >
-              <ExternalLink size={12} strokeWidth={1.75} />
+              <ExternalLink size={11} strokeWidth={1.75} />
               Open
             </Link>
           </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center rounded-xl border border-border-subtle bg-subtle/50 p-4 sm:p-6">
+        <div className="flex flex-1 items-start justify-center overflow-hidden pt-1">
           {viewport === "mobile" ? (
             <MobileFrame src={iframeSrc} />
           ) : (
@@ -231,15 +233,20 @@ function Stage({
   );
 }
 
+/**
+ * Mobile phone frame — modern-iPhone aspect (390 / 844 ≈ 1:2.16).
+ * Width is derived from viewport height so the frame always claims the
+ * available vertical space minus a small chrome budget (~110px for the
+ * gallery header, stage header, and filmstrip footer combined). Capped
+ * at 440px so the frame never grows unreasonably wide on tall displays.
+ */
 function MobileFrame({ src }: { src: string }) {
-  const frameStyle: CSSProperties = {
-    width: 390,
-    height: 780,
-    maxHeight: "min(780px, calc(100dvh - 320px))",
-  };
   return (
     <div
-      style={frameStyle}
+      style={{
+        width: "min(440px, calc((100dvh - 175px) * 390 / 844))",
+        aspectRatio: "390 / 844",
+      }}
       className="overflow-hidden rounded-[34px] border border-border bg-card shadow-lg"
     >
       <iframe
@@ -257,7 +264,7 @@ function DesktopFrame({ src }: { src: string }) {
     <div
       style={{
         width: "min(1180px, 100%)",
-        height: "min(780px, calc(100dvh - 320px))",
+        height: "calc(100dvh - 175px)",
       }}
       className="overflow-hidden rounded-lg border border-border bg-card shadow-md"
     >
@@ -296,13 +303,13 @@ function Filmstrip({
 }) {
   return (
     <footer className="safe-pb sticky bottom-0 z-10 border-t border-border-subtle bg-canvas/95 backdrop-blur-[8px]">
-      <div className="mx-auto flex w-full max-w-[1280px] items-stretch gap-2 px-3 py-3">
+      <div className="mx-auto flex w-full max-w-[1280px] items-stretch gap-1.5 px-3 py-1.5">
         <ArrowButton dir="prev" onClick={onPrev} disabled={activeIndex === 0} />
 
         <div
           ref={stripRef}
-          className="flex flex-1 snap-x snap-mandatory gap-2 overflow-x-auto scroll-smooth pb-1"
-          style={{ scrollbarWidth: "thin" }}
+          className="flex flex-1 snap-x snap-mandatory gap-1.5 overflow-x-auto scroll-smooth"
+          style={{ scrollbarWidth: "none" }}
           role="tablist"
           aria-label="Onboarding routes"
         >
@@ -345,9 +352,9 @@ function ArrowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === "prev" ? "Previous route" : "Next route"}
-      className="inline-flex h-[78px] w-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-10 w-8 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
     >
-      <Icon size={16} strokeWidth={1.75} />
+      <Icon size={14} strokeWidth={1.75} />
     </button>
   );
 }
@@ -379,32 +386,30 @@ function FilmCard({
       type="button"
       aria-selected={isActive}
       onClick={onClick}
+      title={`${route.title} — ${route.subtitle}`}
       className={[
-        "group relative flex shrink-0 snap-start flex-col items-start gap-1 rounded-md border px-3 py-2.5 text-left",
-        "min-w-[180px] max-w-[220px]",
-        "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
+        "group relative flex shrink-0 snap-start items-center gap-2 rounded-md border px-2.5 py-1.5 text-left",
+        "h-10 min-w-[150px] max-w-[210px]",
+        "transition-[background-color,border-color,box-shadow] duration-fast ease-snap",
         isActive
           ? "border-royal-400 bg-card shadow-[0_0_0_2px_var(--royal-100)]"
           : "border-border bg-card hover:border-strong hover:bg-subtle",
       ].join(" ")}
     >
-      <div className="flex w-full items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5">
-          <span
-            aria-hidden="true"
-            className={["h-1.5 w-1.5 rounded-pill", GROUP_PIP[route.group]].join(" ")}
-          />
-          <span className="t-mono-label">{GROUP_LABEL[route.group]}</span>
-        </span>
-        <span className="text-[10px] font-semibold text-ink-disabled">
-          {String(index).padStart(2, "0")}
-        </span>
-      </div>
-      <span className={["truncate text-[13px] font-semibold leading-tight", isActive ? "text-royal-700" : "text-ink-title"].join(" ")}>
-        {route.title}
+      <span
+        aria-hidden="true"
+        className={["h-1.5 w-1.5 shrink-0 rounded-pill", GROUP_PIP[route.group]].join(" ")}
+      />
+      <span className="text-[10px] font-semibold tabular-nums text-ink-disabled">
+        {String(index).padStart(2, "0")}
       </span>
-      <span className="line-clamp-1 text-[11.5px] text-ink-caption">
-        {route.subtitle}
+      <span
+        className={[
+          "truncate text-[12.5px] font-semibold leading-tight",
+          isActive ? "text-royal-700" : "text-ink-title",
+        ].join(" ")}
+      >
+        {route.title}
       </span>
     </button>
   );
