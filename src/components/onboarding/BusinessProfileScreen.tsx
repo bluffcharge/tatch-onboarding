@@ -4,17 +4,26 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { AddressAutocomplete, type StructuredAddress } from "@/components/ui/AddressAutocomplete";
 import { OnboardingShell } from "./OnboardingShell";
 
 export function BusinessProfileScreen() {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
+  const [addrText, setAddrText] = useState("");
+  const [picked, setPicked] = useState<StructuredAddress | null>(null);
+  const [manual, setManual] = useState(false);
+
+  // Manual-entry state (separate so we can toggle without losing what's typed)
+  const [line1, setLine1] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [stateVal, setStateVal] = useState("");
   const [zip, setZip] = useState("");
 
-  const canContinue = name.trim().length > 1 && address.trim().length > 1;
+  const addressOk = manual
+    ? line1.trim().length > 1 && city.trim().length > 1 && stateVal.length === 2 && zip.length === 5
+    : Boolean(picked) || addrText.trim().length > 4;
+  const canContinue = name.trim().length > 1 && addressOk;
 
   return (
     <OnboardingShell
@@ -46,37 +55,72 @@ export function BusinessProfileScreen() {
             autoFocus
           />
 
-          <TextField
-            label="Street address"
-            placeholder="123 Main St."
-            autoComplete="address-line1"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-
-          <div className="grid grid-cols-[1fr_72px_88px] gap-3">
-            <TextField
-              label="City"
-              autoComplete="address-level2"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
-            <TextField
-              label="State"
-              autoComplete="address-level1"
-              maxLength={2}
-              value={state}
-              onChange={(e) => setState(e.target.value.toUpperCase())}
-            />
-            <TextField
-              label="ZIP"
-              autoComplete="postal-code"
-              inputMode="numeric"
-              maxLength={5}
-              value={zip}
-              onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
-            />
-          </div>
+          {!manual ? (
+            <>
+              <AddressAutocomplete
+                value={addrText}
+                onTextChange={setAddrText}
+                onSelect={(addr) => setPicked(addr)}
+                onClear={() => setPicked(null)}
+                helper="Pick from the dropdown for fastest entry."
+              />
+              {picked && (
+                <div className="rounded-md border border-border-subtle bg-subtle px-3 py-2 text-[12.5px] text-ink-subtitle">
+                  Locked to{" "}
+                  <span className="font-semibold text-ink-title">
+                    {picked.line1}, {picked.city}, {picked.state} {picked.zip}
+                  </span>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setManual(true)}
+                className="text-[12.5px] font-medium text-ink-body hover:text-ink-title hover:underline"
+              >
+                Enter address manually →
+              </button>
+            </>
+          ) : (
+            <>
+              <TextField
+                label="Street address"
+                placeholder="123 Main St."
+                autoComplete="address-line1"
+                value={line1}
+                onChange={(e) => setLine1(e.target.value)}
+              />
+              <div className="grid grid-cols-[1fr_72px_88px] gap-3">
+                <TextField
+                  label="City"
+                  autoComplete="address-level2"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+                <TextField
+                  label="State"
+                  autoComplete="address-level1"
+                  maxLength={2}
+                  value={stateVal}
+                  onChange={(e) => setStateVal(e.target.value.toUpperCase())}
+                />
+                <TextField
+                  label="ZIP"
+                  autoComplete="postal-code"
+                  inputMode="numeric"
+                  maxLength={5}
+                  value={zip}
+                  onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setManual(false)}
+                className="text-[12.5px] font-medium text-ink-body hover:text-ink-title hover:underline"
+              >
+                ← Back to address search
+              </button>
+            </>
+          )}
 
           <div className="border-t border-border-subtle pt-4">
             <p className="t-mono-label mb-3">Primary contact</p>

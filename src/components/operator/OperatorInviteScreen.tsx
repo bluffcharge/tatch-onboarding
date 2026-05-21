@@ -67,15 +67,10 @@ function Topbar() {
             <span className="text-[14px] font-semibold tracking-tight text-ink-title">tatch</span>
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">
-            {["Map", "Dash", "Records", "Settings"].map((n, i) => (
+            {["Dash", "Leads", "Records", "Wallet"].map((n) => (
               <span
                 key={n}
-                className={[
-                  "rounded-md px-2.5 py-1 text-[13px]",
-                  i === 3
-                    ? "bg-subtle font-semibold text-ink-title"
-                    : "text-ink-caption",
-                ].join(" ")}
+                className="rounded-md px-2.5 py-1 text-[13px] text-ink-caption"
               >
                 {n}
               </span>
