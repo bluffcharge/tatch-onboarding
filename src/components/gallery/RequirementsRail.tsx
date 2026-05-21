@@ -13,7 +13,7 @@ type Props = {
 export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: Props) {
   if (collapsed) {
     return (
-      <aside className="flex w-9 shrink-0 flex-col items-center border-r border-border-subtle bg-canvas py-3">
+      <aside className="flex w-9 shrink-0 flex-col items-center border-r border-border-subtle bg-[color:var(--surface-stage)] py-3">
         <button
           type="button"
           onClick={onToggle}
@@ -27,7 +27,7 @@ export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: P
     );
   }
   return (
-    <aside className="flex w-[260px] shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-canvas">
+    <aside className="flex w-[260px] shrink-0 flex-col overflow-hidden border-r border-border-subtle bg-[color:var(--surface-stage)]">
       <header className="flex items-center justify-between gap-2 border-b border-border-subtle px-4 py-3">
         <div className="flex items-center gap-2">
           <FileText size={13} strokeWidth={1.75} className="text-ink-caption" />

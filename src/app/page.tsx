@@ -214,7 +214,7 @@ export default function Home() {
   const reqContext = getContextFor(active.href);
 
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
+    <div className="flex min-h-[100dvh] flex-col bg-[color:var(--surface-stage)] text-ink">
       <GalleryHeader
         title={active.title}
         href={active.href}
@@ -503,7 +503,7 @@ function Filmstrip({
   cardRefs: React.MutableRefObject<Record<string, HTMLButtonElement | null>>;
 }) {
   return (
-    <footer className="safe-pb sticky bottom-0 z-10 border-t border-border-subtle bg-canvas/95 backdrop-blur-[8px]">
+    <footer className="safe-pb sticky bottom-0 z-10 border-t border-border-subtle bg-[color:var(--surface-stage)]/95 backdrop-blur-[8px]">
       <div className="mx-auto flex w-full max-w-[1640px] items-stretch gap-2 px-4 py-3">
         <ArrowButton dir="prev" onClick={onPrev} disabled={activeIndex === 0} />
 
@@ -553,7 +553,7 @@ function ArrowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === "prev" ? "Previous route" : "Next route"}
-      className="inline-flex h-16 w-9 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body shadow-xs transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-20 w-9 shrink-0 items-center justify-center self-center rounded-xl border border-border bg-card text-ink-body shadow-xs transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
     >
       <Icon size={16} strokeWidth={1.75} />
     </button>
@@ -588,8 +588,8 @@ function FilmCard({
       aria-selected={isActive}
       onClick={onClick}
       className={[
-        "group relative flex shrink-0 snap-start flex-col items-start gap-0.5 rounded-lg border px-3.5 py-2.5 text-left",
-        "h-16 w-[252px]",
+        "group relative flex shrink-0 snap-start flex-col items-start justify-between gap-1 rounded-xl border px-3.5 py-3 text-left",
+        "h-20 w-[252px]",
         "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
         isActive
           ? "border-royal-400 bg-card shadow-[0_4px_16px_-4px_rgba(129,69,255,0.25),0_0_0_2px_var(--royal-100)]"

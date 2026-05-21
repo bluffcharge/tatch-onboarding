@@ -75,6 +75,9 @@
   --surface-subtle:  var(--grey-100);
   --surface-raised:  #FFFFFF;
   --surface-overlay: rgba(66,68,76,0.85);
+  /* Gallery / preview-chrome surface — a step quieter than the iframe's
+     own canvas so the previewed UI reads as a card on a desk. */
+  --surface-stage:   #F1F2F4;
 
   --border-default:  var(--grey-300);
   --border-subtle:   var(--grey-200);
@@ -194,6 +197,9 @@
   --surface-subtle:  #2F3137;
   --surface-raised:  var(--grey-700);
   --surface-overlay: rgba(0,0,0,0.65);
+  /* Stage chrome — darker than the iframe canvas so the previewed UI
+     lifts off the surface (per design.md spec). */
+  --surface-stage:   #1A1B1E;
 
   --border-default:  rgba(255,255,255,0.10);
   --border-subtle:   rgba(255,255,255,0.06);
