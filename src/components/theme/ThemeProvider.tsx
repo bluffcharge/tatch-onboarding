@@ -36,6 +36,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute("data-theme", initial);
   }, []);
 
+  // Propagate theme changes across same-origin frames (parent gallery →
+  // child iframes). The `storage` event fires on every other window in the
+  // origin when localStorage is mutated.
+  useEffect(() => {
+    function onStorage(e: StorageEvent) {
+      if (e.key !== STORAGE_KEY || !e.newValue) return;
+      const next = e.newValue as Theme;
+      setThemeState(next);
+      document.documentElement.setAttribute("data-theme", next);
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
     document.documentElement.setAttribute("data-theme", t);
