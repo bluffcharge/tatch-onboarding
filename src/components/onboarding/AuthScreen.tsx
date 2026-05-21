@@ -50,7 +50,7 @@ export function AuthScreen() {
             Didn&apos;t get it?{" "}
             <button
               type="button"
-              className="font-medium text-ink-link hover:underline"
+              className="font-medium text-ink-body hover:text-ink-title hover:underline"
               onClick={() => alert("(prototype) — code re-sent")}
             >
               Resend in 60s
@@ -60,6 +60,10 @@ export function AuthScreen() {
       }
     >
       <div className="mt-2">
+        {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
+            after the user leaves P1 and is committing real credentials. */}
+        <OperatorContext />
+
         {phase === "enter" && (
           <>
             <h1 className="t-h2 mb-2">
@@ -104,17 +108,27 @@ export function AuthScreen() {
               </div>
             )}
 
-            {via !== "phone" && (
-              <div className="mt-5">
+            {/* Alt-path tertiary links — neutral text, symmetric across paths. */}
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+              {via !== "phone" && (
                 <button
                   type="button"
-                  className="text-[13px] font-medium text-ink-link hover:underline"
+                  className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
                   onClick={() => router.replace("/onboarding/auth?via=phone")}
                 >
                   Use phone instead →
                 </button>
-              </div>
-            )}
+              )}
+              {via !== "google" && (
+                <button
+                  type="button"
+                  className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
+                  onClick={() => router.replace("/onboarding/auth?via=google")}
+                >
+                  Use Google instead →
+                </button>
+              )}
+            </div>
           </>
         )}
 
@@ -142,7 +156,7 @@ export function AuthScreen() {
             <div className="mt-5">
               <button
                 type="button"
-                className="text-[13px] font-medium text-ink-link hover:underline"
+                className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
                 onClick={() => setPhase("enter")}
               >
                 ← Change number
@@ -152,5 +166,24 @@ export function AuthScreen() {
         )}
       </div>
     </OnboardingShell>
+  );
+}
+
+function OperatorContext() {
+  const { inviter, operator } = defaultInvite;
+  return (
+    <div className="mb-5 flex items-center gap-2.5 rounded-md border border-border-subtle bg-subtle px-2.5 py-2">
+      <span
+        aria-hidden="true"
+        className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-brand-gradient-4 text-[10px] font-semibold text-white"
+      >
+        {inviter.firstName[0]}
+      </span>
+      <p className="t-caption flex-1 leading-snug">
+        Joining{" "}
+        <span className="font-semibold text-ink-title">{operator.name}</span>
+        <span className="text-ink-disabled"> · invited by {inviter.fullName}</span>
+      </p>
+    </div>
   );
 }

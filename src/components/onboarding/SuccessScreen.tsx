@@ -37,7 +37,7 @@ export function SuccessScreen() {
           <button
             type="button"
             onClick={() => setShowDetails((s) => !s)}
-            className="mt-5 inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-ink-link hover:underline"
+            className="mt-5 inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
             aria-expanded={showDetails}
           >
             View connection details

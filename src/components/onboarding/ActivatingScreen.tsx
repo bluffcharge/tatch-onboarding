@@ -15,8 +15,11 @@ export function ActivatingScreen() {
   const [beat, setBeat] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setBeat(1), 900);
-    const t2 = setTimeout(() => router.push("/onboarding/done"), 1900);
+    // Two-beat timing: each beat reads for ~1.2s, total ~2.4s. Slower than
+    // the initial pass so the second beat ("Adding your team contacts…") is
+    // actually perceived rather than flashing past.
+    const t1 = setTimeout(() => setBeat(1), 1200);
+    const t2 = setTimeout(() => router.push("/onboarding/done"), 2400);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);

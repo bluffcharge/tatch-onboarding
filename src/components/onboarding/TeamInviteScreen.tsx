@@ -40,7 +40,7 @@ export function TeamInviteScreen() {
           <button
             type="button"
             onClick={() => router.push("/onboarding/activating")}
-            className="block w-full text-center text-[13px] font-medium text-ink-link hover:underline"
+            className="block w-full text-center text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
           >
             Skip — I&apos;ll add teammates later
           </button>
@@ -106,7 +106,7 @@ export function TeamInviteScreen() {
           <button
             type="button"
             onClick={() => setRows((rs) => [...rs, emptyRow()])}
-            className="inline-flex items-center gap-2 rounded-md py-2 text-[13px] font-medium text-ink-link hover:underline"
+            className="inline-flex items-center gap-2 rounded-md py-2 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
           >
             <Plus size={14} strokeWidth={1.75} />
             Add another

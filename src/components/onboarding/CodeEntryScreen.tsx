@@ -94,7 +94,7 @@ export function CodeEntryScreen() {
             <button
               type="button"
               onClick={() => router.push("/j/abc123")}
-              className="font-medium text-ink-link hover:underline"
+              className="font-medium text-ink-body hover:text-ink-title hover:underline"
             >
               I have a link instead →
             </button>
