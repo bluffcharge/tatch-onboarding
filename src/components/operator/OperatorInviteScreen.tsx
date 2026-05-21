@@ -51,7 +51,6 @@ export function OperatorInviteScreen() {
           <SendInviteCard />
           <CodesCard />
         </div>
-        <RecentInvitesCard className="mt-5" />
       </div>
     </div>
   );
