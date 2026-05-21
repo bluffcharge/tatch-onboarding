@@ -1,0 +1,187 @@
+/**
+ * Per-route mapping into the PRD that lives in
+ * ~/Desktop/SUX/Tatch-Onboarding-Plan.md (and the founder-pasted spec).
+ * Powers the left rail on the gallery — keeps reviewers anchored to the
+ * "what is this trying to satisfy?" while clicking through screens.
+ */
+
+export type RequirementContext = {
+  /** Short one-liner for the rail header. */
+  oneLine: string;
+  /** Which flows (and which steps) this screen sits in. */
+  flowRefs: { flow: string; step?: string }[];
+  /** Which user stories this screen serves. */
+  storyRefs: string[];
+  /** 2–5 bullet points lifted from the PRD's "Key Requirements" for this screen. */
+  reqs: string[];
+};
+
+const SAME_AUTH: Pick<RequirementContext, "flowRefs" | "storyRefs"> = {
+  flowRefs: [
+    { flow: "Flow 2 — new partner via link", step: "Step 2: create account" },
+    { flow: "Flow 3 — existing partner", step: "Step 2: log in (or auto-detect)" },
+    { flow: "Flow 4 — sign up with code", step: "Step 4: standard account creation" },
+  ],
+  storyRefs: ["Story 2", "Story 4", "Story 5"],
+};
+
+export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
+  "/j/abc123": {
+    oneLine: "Personalized welcome for a partner clicking an SMS/email invite link.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 1: lands on the onboarding screen" },
+      { flow: "Flow 3 — existing partner",     step: "Step 1: clicks invite link" },
+    ],
+    storyRefs: ["Story 2", "Story 4"],
+    reqs: [
+      "Invite link lands on a registration/onboarding page.",
+      "Auto-detect existing accounts and skip the company-setup flow.",
+      "Personalize the welcome with the inviting operator + BDM (trust signal).",
+    ],
+  },
+  "/join": {
+    oneLine: "Code-based entry — no email link required.",
+    flowRefs: [
+      { flow: "Flow 4 — sign up with code", step: "Step 2: enters a Company or BDM Code" },
+    ],
+    storyRefs: ["Story 6"],
+    reqs: [
+      "Provide an alternative entry point: 'Sign up with Code'.",
+      "Input supports pasting codes; case-insensitive if feasible.",
+      "Codes validated server-side; invalid/expired codes show a clear error.",
+    ],
+  },
+  "/join?bad=1": {
+    oneLine: "Edge state — partner entered an invalid or expired code.",
+    flowRefs: [
+      { flow: "Flow 4 — sign up with code", step: "Step 3: server-side validation failed" },
+    ],
+    storyRefs: ["Story 6"],
+    reqs: [
+      "Invalid/expired codes show a clear error.",
+      "Don't reveal whether the code format is wrong vs. expired vs. unknown.",
+      "Suggest next steps (ask operator for a new TatchLink).",
+    ],
+  },
+  "/j/used": {
+    oneLine: "Edge state — invite link was already claimed.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 1: link is single-use after first claim" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "Once-claimed invite links can't be reused.",
+      "Offer sign-in as the next step (likely already has an account).",
+      "Provide an easy contact path back to the operator.",
+    ],
+  },
+  "/onboarding/auth?via=phone": {
+    oneLine: "Phone-OTP authentication — primary path, SMS-first posture.",
+    ...SAME_AUTH,
+    reqs: [
+      "Support email + password and Gmail OAuth.",
+      "Phone OTP is the default for SMS-first comms (operator preference).",
+      "Operator-context breadcrumb keeps the inviting company in view.",
+    ],
+  },
+  "/onboarding/auth?via=email": {
+    oneLine: "Email + password authentication — secondary path.",
+    ...SAME_AUTH,
+    reqs: [
+      "Support email + password registration.",
+      "Support Gmail OAuth as an alternative signup method.",
+      "Pre-fill email when invited by partner admin during onboarding.",
+    ],
+  },
+  "/onboarding/business": {
+    oneLine: "Business profile — name, address, primary contact.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 3: enters business info" },
+      { flow: "Flow 4 — sign up with code",    step: "Step 5: completes onboarding if needed" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "Collects: business name, business address, primary contact info.",
+      "Address autocomplete preferred; manual fallback when API unreliable.",
+      "Pre-fill phone from the auth step ('change if you'd like').",
+    ],
+  },
+  "/onboarding/discovery": {
+    oneLine: "Discovery questions — first is technicians count; more coming.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 5: answers one or more questions" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "Seeded question: 'How many technicians do you have?'",
+      "Designed as a typed array — additional questions are config, not screens.",
+      "Active discovery: question set is expected to grow.",
+    ],
+  },
+  "/onboarding/team": {
+    oneLine: "Team invites — optional, SMS-first, role assignment.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 4: invites additional team members" },
+    ],
+    storyRefs: ["Story 2", "Story 5"],
+    reqs: [
+      "Invite teammates by email and/or SMS during onboarding.",
+      "Role assignment optional (Admin / Member for V1).",
+      "Skip is equal-weight to Send — never block activation on team invites.",
+    ],
+  },
+  "/onboarding/activating": {
+    oneLine: "Transition — linkage and contact propagation happen here.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 6→7 (transition)" },
+    ],
+    storyRefs: ["Story 3"],
+    reqs: [
+      "Auto-link partner company to inviting operator.",
+      "Add all operator contacts to all activated partner users.",
+      "Two-beat micro-copy makes the system feel substantial.",
+    ],
+  },
+  "/onboarding/done": {
+    oneLine: "Success — new partner is connected, contacts added.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 6: completes onboarding" },
+    ],
+    storyRefs: ["Story 2", "Story 3"],
+    reqs: [
+      "Partner company auto-linked to inviting operator.",
+      "All operator contacts added to all activated partner user accounts.",
+      "Confirm the linkage in copy ('Sara and 4 teammates have been added').",
+    ],
+  },
+  "/onboarding/done?existing=1": {
+    oneLine: "Short-circuit success — existing partner, new operator linkage.",
+    flowRefs: [
+      { flow: "Flow 3 — existing partner", step: "Step 5: sees confirmation" },
+    ],
+    storyRefs: ["Story 3", "Story 4"],
+    reqs: [
+      "Skip the company-setup flow for existing partners.",
+      "Create the operator-partner linkage automatically.",
+      "Add all operator contacts (not just the BDM) to existing partner users.",
+      "Show a confirmation summarizing the new connection ('Nothing else changed').",
+    ],
+  },
+  "/partner-admin/invite": {
+    oneLine: "Operator UI — invite partners via TatchLink + manage codes.",
+    flowRefs: [
+      { flow: "Flow 1 — operator sends invite", step: "All 4 steps" },
+    ],
+    storyRefs: ["Story 1", "Story 6"],
+    reqs: [
+      "Lives under Settings > Operations > Invite Partner via TatchLink.",
+      "Supports multiple emails/phones in a single batch invite.",
+      "Generates a unique invite link per recipient (SMS or email).",
+      "Company Code + BDM Code panels with copy, share, rotate; rotation doesn't break existing linkages.",
+    ],
+  },
+};
+
+export function getContextFor(href: string): RequirementContext | null {
+  return REQUIREMENT_CONTEXT[href] ?? null;
+}

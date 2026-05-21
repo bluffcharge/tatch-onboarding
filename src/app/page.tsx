@@ -23,6 +23,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { RequirementsRail } from "@/components/gallery/RequirementsRail";
+import { CommentsRail } from "@/components/gallery/CommentsRail";
+import { getContextFor } from "@/lib/requirementContext";
 
 type Group = "entry" | "onboarding" | "operator" | "edge";
 type RouteIntent = "mobile" | "desktop";
@@ -62,6 +65,8 @@ const GROUP_LABEL: Record<Group, string> = {
 
 const ROUTE_STORAGE_KEY = "tatch-gallery-route";
 const VIEWPORT_STORAGE_KEY = "tatch-gallery-viewport";
+const LEFT_RAIL_KEY = "tatch-gallery-left-rail";
+const RIGHT_RAIL_KEY = "tatch-gallery-right-rail";
 
 /* ------------------------------------------------------------------ */
 /* Viewport catalog                                                    */
@@ -101,11 +106,13 @@ export default function Home() {
   const [activeHref, setActiveHref] = useState<string>(ROUTES[0].href);
   const [viewport, setViewportState] = useState<Viewport>("phone");
   const [resetTick, setResetTick] = useState(0);
+  const [leftCollapsed, setLeftCollapsedState]   = useState(false);
+  const [rightCollapsed, setRightCollapsedState] = useState(false);
   const stripRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const hydratedViewport = useRef(false);
 
-  // Restore last-viewed route + viewport on mount; persist on change.
+  // Restore last-viewed route + viewport + rail state on mount; persist on change.
   useEffect(() => {
     const storedRoute = localStorage.getItem(ROUTE_STORAGE_KEY);
     if (storedRoute && ROUTES.some((r) => r.href === storedRoute)) {
@@ -120,7 +127,24 @@ export default function Home() {
       const r = ROUTES.find((x) => x.href === (storedRoute ?? ROUTES[0].href));
       if (r) setViewportState(intentToViewport(r.intent));
     }
+    setLeftCollapsedState(localStorage.getItem(LEFT_RAIL_KEY) === "1");
+    setRightCollapsedState(localStorage.getItem(RIGHT_RAIL_KEY) === "1");
     hydratedViewport.current = true;
+  }, []);
+
+  const toggleLeft = useCallback(() => {
+    setLeftCollapsedState((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(LEFT_RAIL_KEY, next ? "1" : "0"); } catch {}
+      return next;
+    });
+  }, []);
+  const toggleRight = useCallback(() => {
+    setRightCollapsedState((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(RIGHT_RAIL_KEY, next ? "1" : "0"); } catch {}
+      return next;
+    });
   }, []);
   useEffect(() => {
     localStorage.setItem(ROUTE_STORAGE_KEY, activeHref);
@@ -187,6 +211,7 @@ export default function Home() {
   }, [active.href, resetTick]);
 
   const spec = VIEWPORTS[viewport];
+  const reqContext = getContextFor(active.href);
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
@@ -198,7 +223,21 @@ export default function Home() {
         onReset={() => setResetTick((n) => n + 1)}
       />
 
-      <Stage iframeSrc={iframeSrc} spec={spec} />
+      <div className="flex flex-1 overflow-hidden">
+        <RequirementsRail
+          context={reqContext}
+          routeTitle={active.title}
+          collapsed={leftCollapsed}
+          onToggle={toggleLeft}
+        />
+        <Stage iframeSrc={iframeSrc} spec={spec} />
+        <CommentsRail
+          routeHref={active.href}
+          routeTitle={active.title}
+          collapsed={rightCollapsed}
+          onToggle={toggleRight}
+        />
+      </div>
 
       <Filmstrip
         routes={ROUTES}
@@ -451,12 +490,12 @@ function Filmstrip({
 }) {
   return (
     <footer className="safe-pb sticky bottom-0 z-10 border-t border-border-subtle bg-canvas/95 backdrop-blur-[8px]">
-      <div className="mx-auto flex w-full max-w-[1480px] items-stretch gap-1.5 px-3 py-2">
+      <div className="mx-auto flex w-full max-w-[1640px] items-stretch gap-2 px-4 py-3">
         <ArrowButton dir="prev" onClick={onPrev} disabled={activeIndex === 0} />
 
         <div
           ref={stripRef}
-          className="flex flex-1 snap-x snap-mandatory gap-1.5 overflow-x-auto scroll-smooth"
+          className="flex flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 py-1"
           style={{ scrollbarWidth: "none" }}
           role="tablist"
           aria-label="Onboarding routes"
@@ -500,9 +539,9 @@ function ArrowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === "prev" ? "Previous route" : "Next route"}
-      className="inline-flex h-12 w-8 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-16 w-9 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body shadow-xs transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
     >
-      <Icon size={14} strokeWidth={1.75} />
+      <Icon size={16} strokeWidth={1.75} />
     </button>
   );
 }
@@ -534,30 +573,37 @@ function FilmCard({
       type="button"
       aria-selected={isActive}
       onClick={onClick}
-      title={`${route.title} — ${route.subtitle}`}
       className={[
-        "group relative flex shrink-0 snap-start items-center gap-2.5 rounded-md border px-3 py-2 text-left",
-        "h-12 min-w-[160px] max-w-[220px]",
-        "transition-[background-color,border-color,box-shadow] duration-fast ease-snap",
+        "group relative flex shrink-0 snap-start flex-col items-start gap-0.5 rounded-lg border px-3.5 py-2.5 text-left",
+        "h-16 w-[252px]",
+        "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
         isActive
-          ? "border-royal-400 bg-card shadow-[0_0_0_2px_var(--royal-100)]"
-          : "border-border bg-card hover:border-strong hover:bg-subtle",
+          ? "border-royal-400 bg-card shadow-[0_4px_16px_-4px_rgba(129,69,255,0.25),0_0_0_2px_var(--royal-100)]"
+          : "border-border bg-card shadow-sm hover:-translate-y-0.5 hover:border-strong hover:shadow-md",
       ].join(" ")}
     >
-      <span
-        aria-hidden="true"
-        className={["h-2 w-2 shrink-0 rounded-pill", GROUP_PIP[route.group]].join(" ")}
-      />
-      <span className="text-[10px] font-semibold tabular-nums text-ink-disabled">
-        {String(index).padStart(2, "0")}
-      </span>
+      <div className="flex w-full items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={["h-2 w-2 shrink-0 rounded-pill", GROUP_PIP[route.group]].join(" ")}
+        />
+        <span className="t-mono-label flex-1 truncate">
+          {GROUP_LABEL[route.group]}
+        </span>
+        <span className="text-[10px] font-semibold tabular-nums text-ink-disabled">
+          {String(index).padStart(2, "0")}
+        </span>
+      </div>
       <span
         className={[
-          "truncate text-[12.5px] font-semibold leading-tight",
+          "truncate text-[13px] font-semibold leading-tight",
           isActive ? "text-royal-700" : "text-ink-title",
         ].join(" ")}
       >
         {route.title}
+      </span>
+      <span className="truncate text-[11.5px] leading-tight text-ink-caption">
+        {route.subtitle}
       </span>
     </button>
   );
