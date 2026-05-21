@@ -162,6 +162,19 @@
   --dur-med:  250ms;
   --dur-slow: 400ms;
 
+  /* ---------------- Feature-card pastels ----------------
+     Used on the P1 desktop "what you're signing up for" card cluster
+     and any other educational card surfaces. Light tints in light mode,
+     soft 10% washes over the dark canvas in dark mode. */
+  --feature-pink-bg:   #FCE7F0;
+  --feature-pink-fg:   #B91458;
+  --feature-purple-bg: #EFE9FE;
+  --feature-purple-fg: #6428D1;
+  --feature-green-bg:  #E3F4DC;
+  --feature-green-fg:  #15803D;
+  --feature-blue-bg:   #DCEAF7;
+  --feature-blue-fg:   #1D4ED8;
+
   /* ---------------- Ink (primary CTA) button ----------------
      Brand violet is reserved for transitions, gradients, and brand
      moments. Primary CTAs read as ink (near-black in light, white in
@@ -205,6 +218,16 @@
   --btn-ink-bg-hover:  var(--grey-200);
   --btn-ink-bg-active: var(--grey-300);
   --btn-ink-fg:        var(--grey-950);
+
+  /* Feature pastels in dark mode — soft tint over canvas, brighter fg. */
+  --feature-pink-bg:   rgba(244, 168, 194, 0.10);
+  --feature-pink-fg:   #F4A8C2;
+  --feature-purple-bg: rgba(201, 179, 240, 0.10);
+  --feature-purple-fg: #C9B3F0;
+  --feature-green-bg:  rgba(181, 221, 168, 0.10);
+  --feature-green-fg:  #B5DDA8;
+  --feature-blue-bg:   rgba(156, 199, 242, 0.10);
+  --feature-blue-fg:   #9CC7F2;
 }
 
 /* ==========================================================================

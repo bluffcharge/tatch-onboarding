@@ -22,29 +22,40 @@ export function TeamInviteScreen() {
 
   const filled = rows.filter((r) => r.recipient.trim().length > 3).length;
 
+  function updateRow(id: string, patch: Partial<Row>) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  }
+  function removeRow(id: string) {
+    setRows((rs) => rs.filter((r) => r.id !== id));
+  }
+  function addRow() {
+    setRows((rs) => [...rs, emptyRow()]);
+  }
+
   return (
     <OnboardingShell
       step={{ current: 3, total: 3 }}
       backHref="/onboarding/discovery"
       journey={{ currentKey: "team" }}
       footer={
-        <div className="space-y-3">
+        <div className="space-y-3 lg:flex lg:items-center lg:justify-between lg:space-y-0">
+          <button
+            type="button"
+            onClick={() => router.push("/onboarding/activating")}
+            className="block w-full text-center text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline lg:order-1 lg:w-auto"
+          >
+            Skip — I&apos;ll add teammates later
+          </button>
           <Button
             fullWidth
             size="lg"
             onClick={() => router.push("/onboarding/activating")}
+            className="lg:order-2 lg:w-auto"
           >
             {filled > 0
               ? `Send ${filled} invite${filled === 1 ? "" : "s"} & finish`
               : "Finish setup"}
           </Button>
-          <button
-            type="button"
-            onClick={() => router.push("/onboarding/activating")}
-            className="block w-full text-center text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-          >
-            Skip — I&apos;ll add teammates later
-          </button>
         </div>
       }
     >
@@ -57,11 +68,12 @@ export function TeamInviteScreen() {
           They&apos;ll get an SMS to set up their own login.
         </p>
 
-        <div className="space-y-3">
+        {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout. */}
+        <div className="space-y-3 lg:hidden">
           {rows.map((row, i) => (
             <div
               key={row.id}
-              className="rounded-lg border border-border bg-card p-3 shadow-xs"
+              className="rounded-2xl border border-border bg-card p-3 shadow-xs"
             >
               <div className="flex items-start gap-3">
                 <div className="flex-1">
@@ -70,53 +82,101 @@ export function TeamInviteScreen() {
                     placeholder="(555) 014-9912 or name@business.com"
                     inputMode="tel"
                     value={row.recipient}
-                    onChange={(e) =>
-                      setRows((rs) =>
-                        rs.map((r) =>
-                          r.id === row.id ? { ...r, recipient: e.target.value } : r
-                        )
-                      )
-                    }
+                    onChange={(e) => updateRow(row.id, { recipient: e.target.value })}
                   />
                 </div>
                 {rows.length > 1 && (
-                  <button
-                    type="button"
-                    aria-label="Remove invitee"
-                    onClick={() =>
-                      setRows((rs) => rs.filter((r) => r.id !== row.id))
-                    }
-                    className="mt-7 inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-caption hover:bg-subtle"
-                  >
-                    <X size={16} strokeWidth={1.75} />
-                  </button>
+                  <RemoveButton onClick={() => removeRow(row.id)} className={i === 0 ? "mt-7" : ""} />
                 )}
               </div>
               <div className="mt-3 flex items-center gap-2">
                 <p className="t-mono-label">Role</p>
                 <RoleToggle
                   value={row.role}
-                  onChange={(role) =>
-                    setRows((rs) =>
-                      rs.map((r) => (r.id === row.id ? { ...r, role } : r))
-                    )
-                  }
+                  onChange={(role) => updateRow(row.id, { role })}
                 />
               </div>
             </div>
           ))}
+          <AddAnother onClick={addRow} />
+        </div>
 
-          <button
-            type="button"
-            onClick={() => setRows((rs) => [...rs, emptyRow()])}
-            className="inline-flex items-center gap-2 rounded-md py-2 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-          >
-            <Plus size={14} strokeWidth={1.75} />
-            Add another
-          </button>
+        {/* Desktop table */}
+        <div className="hidden lg:block">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="grid grid-cols-[1fr_220px_40px] items-center gap-3 border-b border-border-subtle bg-subtle/40 px-4 py-2.5">
+              <p className="t-mono-label">Phone or email</p>
+              <p className="t-mono-label">Role</p>
+              <span aria-hidden="true" />
+            </div>
+            <ul role="list">
+              {rows.map((row) => (
+                <li
+                  key={row.id}
+                  className="grid grid-cols-[1fr_220px_40px] items-center gap-3 border-b border-border-subtle px-4 py-3 last:border-b-0"
+                >
+                  <input
+                    type="text"
+                    inputMode="tel"
+                    placeholder="(555) 014-9912 or name@business.com"
+                    value={row.recipient}
+                    onChange={(e) => updateRow(row.id, { recipient: e.target.value })}
+                    className="h-10 w-full rounded-[12px] border border-border bg-canvas px-4 text-[14px] text-ink-title outline-none placeholder:text-ink-disabled focus:border-[color:var(--focus-border)] focus:shadow-[var(--focus-ring)]"
+                  />
+                  <RoleToggle
+                    value={row.role}
+                    onChange={(role) => updateRow(row.id, { role })}
+                  />
+                  {rows.length > 1 ? (
+                    <RemoveButton onClick={() => removeRow(row.id)} />
+                  ) : (
+                    <span aria-hidden="true" />
+                  )}
+                </li>
+              ))}
+              <li className="px-4 py-2.5">
+                <AddAnother onClick={addRow} />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </OnboardingShell>
+  );
+}
+
+function RemoveButton({
+  onClick,
+  className = "",
+}: {
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label="Remove invitee"
+      onClick={onClick}
+      className={[
+        "inline-flex h-9 w-9 items-center justify-center rounded-[12px] text-ink-caption hover:bg-subtle hover:text-ink-body",
+        className,
+      ].join(" ")}
+    >
+      <X size={16} strokeWidth={1.75} />
+    </button>
+  );
+}
+
+function AddAnother({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-2 rounded-md py-2 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
+    >
+      <Plus size={14} strokeWidth={1.75} />
+      Add another
+    </button>
   );
 }
 

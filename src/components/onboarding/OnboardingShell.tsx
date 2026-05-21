@@ -18,6 +18,10 @@ type Props = {
   /** when provided, renders a vertical step rail on md+ viewports. The
    *  slim top stepper still shows on mobile only (md:hidden). */
   journey?: { currentKey: JourneyKey };
+  /** Hero / split-screen mode — widens the content column on lg+ so the
+   *  screen can host a 2-column layout (e.g. P1's feature-card cluster).
+   *  Mobile is unaffected. */
+  wide?: boolean;
   children: ReactNode;
 };
 
@@ -28,8 +32,18 @@ export function OnboardingShell({
   footer,
   chrome = true,
   journey,
+  wide = false,
   children,
 }: Props) {
+  // Width classes for header / main / footer wrappers. Standard form pages
+  // stay narrow (480→640→760→860). Hero / split-screen pages use a wider
+  // band starting at lg.
+  const widthCls = wide
+    ? "max-w-[480px] md:max-w-[720px] lg:max-w-[1120px] xl:max-w-[1240px]"
+    : "max-w-[480px] md:max-w-[640px] lg:max-w-[760px] xl:max-w-[860px]";
+  const xPadCls = wide
+    ? "px-4 md:px-10 lg:px-14"
+    : "px-4 md:px-10 lg:px-12";
   return (
     <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Wide-viewport left rail: timeline of the full journey. */}
@@ -46,7 +60,7 @@ export function OnboardingShell({
       <div className="flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
-            <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2 md:max-w-[640px] md:px-10 md:pt-10 lg:max-w-[760px] lg:px-12 lg:pt-14 xl:max-w-[860px]">
+            <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
               {(backHref || onBack) && (
                 <BackControl backHref={backHref} onBack={onBack} />
               )}
@@ -63,13 +77,13 @@ export function OnboardingShell({
           </header>
         )}
 
-        <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-6 pt-2 md:max-w-[640px] md:px-10 md:pt-4 lg:max-w-[760px] lg:px-12 lg:pt-6 xl:max-w-[860px]">
+        <main className={`mx-auto flex w-full flex-1 flex-col pb-6 pt-2 md:pt-4 lg:pt-6 ${widthCls} ${xPadCls}`}>
           {children}
         </main>
 
         {footer && (
           <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
-            <div className="mx-auto w-full max-w-[480px] border-t border-border-subtle px-4 pt-4 pb-2 md:max-w-[640px] md:border-t-0 md:px-10 md:pb-10 md:pt-6 lg:max-w-[760px] lg:px-12 lg:pb-14 xl:max-w-[860px]">
+            <div className={`mx-auto w-full border-t border-border-subtle pt-4 pb-2 md:border-t-0 md:pb-10 md:pt-6 lg:pb-14 ${widthCls} ${xPadCls}`}>
               {footer}
             </div>
           </footer>

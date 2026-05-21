@@ -2,12 +2,47 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  Check,
+  Hammer,
+  Home,
+  MoreHorizontal,
+  Sun,
+  TreePine,
+  User,
+  Users,
+  Users2,
+  UsersRound,
+  Wind,
+  Wrench,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ChipGroup } from "@/components/ui/ChipGroup";
 import { OnboardingShell } from "./OnboardingShell";
 import { DISCOVERY_QUESTIONS } from "@/lib/discoveryQuestions";
 
 type Answers = Record<string, string | string[] | null>;
+
+/** Icon mapping for the desktop tile selectors. Keys match option `value`
+ *  from discoveryQuestions.ts. Missing keys fall back to a generic icon. */
+const OPTION_ICON: Record<string, LucideIcon> = {
+  // technicians count
+  "1-5":   User,
+  "6-15":  Users,
+  "16-50": Users2,
+  "50+":   UsersRound,
+  // services
+  roofing:    Home,
+  hvac:       Wind,
+  plumbing:   Wrench,
+  solar:      Sun,
+  electrical: Zap,
+  landscaping: TreePine,
+  general:    Hammer,
+  other:      MoreHorizontal,
+};
 
 export function DiscoveryScreen() {
   const router = useRouter();
@@ -54,39 +89,159 @@ export function DiscoveryScreen() {
           This helps your operator route the right referrals to you.
         </p>
 
-        <div className="space-y-7">
+        <div className="space-y-8 lg:space-y-10">
           {DISCOVERY_QUESTIONS.map((q) => (
             <div key={q.id}>
-              <h2 className="t-h4 mb-1">{q.prompt}</h2>
+              <h2 className="t-h4 mb-1 lg:text-[18px]">{q.prompt}</h2>
               {q.helperText && (
-                <p className="t-caption mb-3">{q.helperText}</p>
+                <p className="t-caption mb-3 lg:mb-4">{q.helperText}</p>
               )}
+
+              {/* Mobile/tablet: chip group. Desktop (lg+): big illustrated tiles. */}
               {q.type === "single_select_chips" && (
-                <ChipGroup
-                  mode="single"
-                  options={q.options}
-                  value={(answers[q.id] as string | null) ?? null}
-                  onChange={(v) =>
-                    setAnswers((s) => ({ ...s, [q.id]: v }))
-                  }
-                  ariaLabel={q.prompt}
-                />
+                <>
+                  <div className="lg:hidden">
+                    <ChipGroup
+                      mode="single"
+                      options={q.options}
+                      value={(answers[q.id] as string | null) ?? null}
+                      onChange={(v) =>
+                        setAnswers((s) => ({ ...s, [q.id]: v }))
+                      }
+                      ariaLabel={q.prompt}
+                    />
+                  </div>
+                  <div className="hidden lg:block">
+                    <TileGroup
+                      mode="single"
+                      options={q.options}
+                      value={(answers[q.id] as string | null) ?? null}
+                      onChange={(v) =>
+                        setAnswers((s) => ({ ...s, [q.id]: v }))
+                      }
+                      ariaLabel={q.prompt}
+                    />
+                  </div>
+                </>
               )}
+
               {q.type === "multi_select_chips" && (
-                <ChipGroup
-                  mode="multi"
-                  options={q.options}
-                  value={(answers[q.id] as string[]) ?? []}
-                  onChange={(v) =>
-                    setAnswers((s) => ({ ...s, [q.id]: v }))
-                  }
-                  ariaLabel={q.prompt}
-                />
+                <>
+                  <div className="lg:hidden">
+                    <ChipGroup
+                      mode="multi"
+                      options={q.options}
+                      value={(answers[q.id] as string[]) ?? []}
+                      onChange={(v) =>
+                        setAnswers((s) => ({ ...s, [q.id]: v }))
+                      }
+                      ariaLabel={q.prompt}
+                    />
+                  </div>
+                  <div className="hidden lg:block">
+                    <TileGroup
+                      mode="multi"
+                      options={q.options}
+                      value={(answers[q.id] as string[]) ?? []}
+                      onChange={(v) =>
+                        setAnswers((s) => ({ ...s, [q.id]: v }))
+                      }
+                      ariaLabel={q.prompt}
+                    />
+                  </div>
+                </>
               )}
             </div>
           ))}
         </div>
       </div>
     </OnboardingShell>
+  );
+}
+
+/* ----------------------------------------------------------------- */
+/* TileGroup — desktop-only big-tile selectors (single or multi)      */
+/* ----------------------------------------------------------------- */
+
+type Option = { value: string; label: string };
+
+type TileSingle = {
+  mode: "single";
+  options: Option[];
+  value: string | null;
+  onChange: (v: string) => void;
+  ariaLabel?: string;
+};
+
+type TileMulti = {
+  mode: "multi";
+  options: Option[];
+  value: string[];
+  onChange: (v: string[]) => void;
+  ariaLabel?: string;
+};
+
+function TileGroup(props: TileSingle | TileMulti) {
+  const isMulti = props.mode === "multi";
+  const cols = props.options.length <= 4 ? "grid-cols-4" : "grid-cols-4";
+  return (
+    <div
+      role={isMulti ? "group" : "radiogroup"}
+      aria-label={props.ariaLabel}
+      className={`grid gap-3 ${cols}`}
+    >
+      {props.options.map((o) => {
+        const selected = isMulti
+          ? (props as TileMulti).value.includes(o.value)
+          : (props as TileSingle).value === o.value;
+        const Icon = OPTION_ICON[o.value] ?? MoreHorizontal;
+        return (
+          <button
+            type="button"
+            key={o.value}
+            role={isMulti ? "checkbox" : "radio"}
+            aria-checked={selected}
+            onClick={() => {
+              if (isMulti) {
+                const m = props as TileMulti;
+                const next = selected
+                  ? m.value.filter((v) => v !== o.value)
+                  : [...m.value, o.value];
+                m.onChange(next);
+              } else {
+                (props as TileSingle).onChange(o.value);
+              }
+            }}
+            className={[
+              "group relative flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
+              selected
+                ? "border-[color:var(--text-title)] bg-card shadow-md"
+                : "border-border bg-card hover:-translate-y-0.5 hover:border-strong hover:shadow-sm",
+            ].join(" ")}
+          >
+            {selected && (
+              <span
+                aria-hidden="true"
+                className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-pill bg-[color:var(--text-title)] text-[color:var(--surface-canvas)]"
+              >
+                <Check size={11} strokeWidth={2.5} />
+              </span>
+            )}
+            <span
+              aria-hidden="true"
+              className={[
+                "grid h-11 w-11 place-items-center rounded-xl transition-colors duration-fast ease-snap",
+                selected ? "bg-subtle text-ink-title" : "bg-subtle text-ink-body",
+              ].join(" ")}
+            >
+              <Icon size={20} strokeWidth={1.75} />
+            </span>
+            <span className="text-[13px] font-semibold leading-tight text-ink-title">
+              {o.label}
+            </span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
