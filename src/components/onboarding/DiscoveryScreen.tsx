@@ -183,12 +183,16 @@ type TileMulti = {
 
 function TileGroup(props: TileSingle | TileMulti) {
   const isMulti = props.mode === "multi";
-  const cols = props.options.length <= 4 ? "grid-cols-4" : "grid-cols-4";
+  // 4-col at lg, 8-col at 2xl so the 8 service tiles spread across a single
+  // row at Wide instead of stacking with 2x4. The 4-option tech-count
+  // question stays 4-col either way.
+  const cols =
+    props.options.length <= 4 ? "grid-cols-4" : "grid-cols-4 2xl:grid-cols-8";
   return (
     <div
       role={isMulti ? "group" : "radiogroup"}
       aria-label={props.ariaLabel}
-      className={`grid gap-3 ${cols}`}
+      className={`grid gap-3 2xl:gap-4 ${cols}`}
     >
       {props.options.map((o) => {
         const selected = isMulti

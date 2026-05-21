@@ -39,8 +39,9 @@ export function WelcomeScreen({ invite }: Props) {
           </div>
         </div>
 
-        {/* Layout: single column on mobile, 2-col on lg+. */}
-        <div className="grid flex-1 gap-10 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-start lg:gap-16">
+        {/* Layout: single column on mobile, 2-col on lg+. At 2xl the
+            features cluster widens so it earns its share of the canvas. */}
+        <div className="grid flex-1 gap-10 lg:grid-cols-[1fr_minmax(360px,440px)] lg:items-start lg:gap-16 2xl:grid-cols-[1fr_minmax(520px,640px)] 2xl:gap-24">
           {/* Hero (left on desktop) */}
           <div className="flex flex-1 flex-col">
             <p className="t-mono-label mb-3 text-ink-caption">You&apos;re invited</p>
@@ -130,8 +131,8 @@ export function WelcomeScreen({ invite }: Props) {
             aria-label="What you're signing up for"
             className="hidden lg:block"
           >
-            <p className="t-mono-label mb-4">What you&apos;re signing up for</p>
-            <div className="grid grid-cols-2 gap-3.5">
+            <p className="t-mono-label mb-4 2xl:text-[13px]">What you&apos;re signing up for</p>
+            <div className="grid grid-cols-2 gap-3.5 2xl:gap-5">
               {FEATURES.map((f) => (
                 <FeatureCard key={f.title} {...f} />
               ))}
@@ -193,13 +194,13 @@ const TONE_CLS: Record<Feature["tone"], { card: string; icon: string }> = {
 function FeatureCard({ title, body, Icon, tone }: Feature) {
   const t = TONE_CLS[tone];
   return (
-    <div className={`flex flex-col gap-3 rounded-2xl p-4 ${t.card}`}>
-      <div className={`grid h-9 w-9 place-items-center rounded-xl shadow-xs ${t.icon}`}>
-        <Icon size={17} strokeWidth={1.75} />
+    <div className={`flex flex-col gap-3 rounded-2xl p-4 2xl:gap-4 2xl:p-6 ${t.card}`}>
+      <div className={`grid h-9 w-9 place-items-center rounded-xl shadow-xs 2xl:h-11 2xl:w-11 ${t.icon}`}>
+        <Icon size={17} strokeWidth={1.75} className="2xl:h-5 2xl:w-5" />
       </div>
       <div>
-        <p className="text-[13.5px] font-semibold leading-tight text-ink-title">{title}</p>
-        <p className="mt-1 text-[12px] leading-snug text-ink-subtitle">{body}</p>
+        <p className="text-[13.5px] font-semibold leading-tight text-ink-title 2xl:text-[16px]">{title}</p>
+        <p className="mt-1 text-[12px] leading-snug text-ink-subtitle 2xl:mt-1.5 2xl:text-[13.5px]">{body}</p>
       </div>
     </div>
   );

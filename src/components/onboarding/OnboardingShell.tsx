@@ -36,20 +36,21 @@ export function OnboardingShell({
   children,
 }: Props) {
   // Width classes for header / main / footer wrappers. Standard form pages
-  // stay narrow (480→640→760→860). Hero / split-screen pages use a wider
-  // band starting at lg.
+  // grow 480→640→760→860→1280. Hero / split-screen pages get a wider band
+  // starting at lg and stretch to 1800 at 2xl so modules actually fill the
+  // canvas at Wide viewport (2560 native) instead of centering with margins.
   const widthCls = wide
-    ? "max-w-[480px] md:max-w-[720px] lg:max-w-[1120px] xl:max-w-[1240px]"
-    : "max-w-[480px] md:max-w-[640px] lg:max-w-[760px] xl:max-w-[860px]";
+    ? "max-w-[480px] md:max-w-[720px] lg:max-w-[1120px] xl:max-w-[1320px] 2xl:max-w-[1800px]"
+    : "max-w-[480px] md:max-w-[640px] lg:max-w-[760px] xl:max-w-[920px] 2xl:max-w-[1280px]";
   const xPadCls = wide
-    ? "px-4 md:px-10 lg:px-14"
-    : "px-4 md:px-10 lg:px-12";
+    ? "px-4 md:px-10 lg:px-14 2xl:px-20"
+    : "px-4 md:px-10 lg:px-12 2xl:px-16";
   return (
     <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Wide-viewport left rail: timeline of the full journey. */}
       {journey && (
         <aside
-          className="hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col"
+          className="hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col xl:w-[340px] 2xl:w-[400px]"
           aria-label="Onboarding progress"
         >
           <JourneyTimeline currentKey={journey.currentKey} />
@@ -84,7 +85,12 @@ export function OnboardingShell({
         {footer && (
           <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto w-full border-t border-border-subtle pt-4 pb-2 md:border-t-0 md:pb-10 md:pt-6 lg:pb-14 ${widthCls} ${xPadCls}`}>
-              {footer}
+              {/* Cap CTA widths on wide canvases — a full-bleed button at
+                  1800px reads as a banner, not an action. Keeps the footer
+                  legible at all sizes while still left-aligning to the form. */}
+              <div className="md:max-w-[480px] lg:max-w-[520px]">
+                {footer}
+              </div>
             </div>
           </footer>
         )}

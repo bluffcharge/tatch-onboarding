@@ -64,8 +64,9 @@ export function BusinessProfileScreen() {
           We use this to match you to nearby operators and to label referrals correctly.
         </p>
 
-        {/* 2-col on lg+: form left, live operator-preview right. */}
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
+        {/* 2-col on lg+: form left, live operator-preview right. The
+            preview column widens at 2xl so the card has room to read. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12 2xl:grid-cols-[minmax(0,1fr)_460px] 2xl:gap-20">
           {/* Form */}
           <div className="space-y-4">
             <TextField
