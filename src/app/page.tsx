@@ -63,7 +63,10 @@ const GROUP_LABEL: Record<Group, string> = {
   edge:       "Edge cases",
 };
 
-const ROUTE_STORAGE_KEY = "tatch-gallery-route";
+// Note: route is NOT persisted. Every refresh lands on ROUTES[0] (P1) with
+// a fresh iframe so the click-through always starts at the beginning and
+// flow state is wiped. Viewport + rail-collapsed are UI prefs, not flow
+// state, so those still persist.
 const VIEWPORT_STORAGE_KEY = "tatch-gallery-viewport";
 const LEFT_RAIL_KEY = "tatch-gallery-left-rail";
 const RIGHT_RAIL_KEY = "tatch-gallery-right-rail";
@@ -112,20 +115,15 @@ export default function Home() {
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const hydratedViewport = useRef(false);
 
-  // Restore last-viewed route + viewport + rail state on mount; persist on change.
+  // Restore viewport + rail state on mount. Route is intentionally NOT
+  // restored — every refresh starts at ROUTES[0] (P1) with a fresh iframe
+  // so flow state is reset for the next reviewer pass.
   useEffect(() => {
-    const storedRoute = localStorage.getItem(ROUTE_STORAGE_KEY);
-    if (storedRoute && ROUTES.some((r) => r.href === storedRoute)) {
-      setActiveHref(storedRoute);
-    }
     const storedViewport = localStorage.getItem(VIEWPORT_STORAGE_KEY) as Viewport | null;
     if (storedViewport && VIEWPORTS[storedViewport]) {
       setViewportState(storedViewport);
     } else {
-      // No stored choice — seed from the active route's intent so a fresh
-      // gallery shows mobile-first routes in Phone, operator routes in Desktop.
-      const r = ROUTES.find((x) => x.href === (storedRoute ?? ROUTES[0].href));
-      if (r) setViewportState(intentToViewport(r.intent));
+      setViewportState(intentToViewport(ROUTES[0].intent));
     }
     setLeftCollapsedState(localStorage.getItem(LEFT_RAIL_KEY) === "1");
     setRightCollapsedState(localStorage.getItem(RIGHT_RAIL_KEY) === "1");
@@ -146,9 +144,6 @@ export default function Home() {
       return next;
     });
   }, []);
-  useEffect(() => {
-    localStorage.setItem(ROUTE_STORAGE_KEY, activeHref);
-  }, [activeHref]);
 
   const setViewport = useCallback((v: Viewport) => {
     setViewportState(v);
