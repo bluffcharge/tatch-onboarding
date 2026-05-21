@@ -4,6 +4,8 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { StepperBar } from "./StepperBar";
+import { JourneyTimeline } from "./JourneyTimeline";
+import type { JourneyKey } from "@/lib/journey";
 
 type Props = {
   step?: { current: number; total: number };
@@ -13,6 +15,9 @@ type Props = {
   footer?: ReactNode;
   /** whether to show the lock-up at top (logo + theme toggle). default true */
   chrome?: boolean;
+  /** when provided, renders a vertical step rail on md+ viewports. The
+   *  slim top stepper still shows on mobile only (md:hidden). */
+  journey?: { currentKey: JourneyKey };
   children: ReactNode;
 };
 
@@ -22,37 +27,54 @@ export function OnboardingShell({
   onBack,
   footer,
   chrome = true,
+  journey,
   children,
 }: Props) {
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
-      {chrome && (
-        <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px]">
-          <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2">
-            {(backHref || onBack) && (
-              <BackControl backHref={backHref} onBack={onBack} />
-            )}
-            <Wordmark />
-          </div>
-          {step && (
-            <div className="mx-auto w-full max-w-[480px] px-4 pb-3">
-              <StepperBar current={step.current} total={step.total} />
+    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
+      {/* Wide-viewport left rail: timeline of the full journey. */}
+      {journey && (
+        <aside
+          className="hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col"
+          aria-label="Onboarding progress"
+        >
+          <JourneyTimeline currentKey={journey.currentKey} />
+        </aside>
+      )}
+
+      {/* Mobile-first content column. On md+ this becomes the right pane. */}
+      <div className="flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
+        {chrome && (
+          <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
+            <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2 md:max-w-[560px] md:px-8 md:pt-8">
+              {(backHref || onBack) && (
+                <BackControl backHref={backHref} onBack={onBack} />
+              )}
+              {/* Wordmark hides on md+ since the rail already shows it. */}
+              <span className="md:hidden">
+                <Wordmark />
+              </span>
             </div>
-          )}
-        </header>
-      )}
+            {step && (
+              <div className="mx-auto w-full max-w-[480px] px-4 pb-3 md:hidden">
+                <StepperBar current={step.current} total={step.total} />
+              </div>
+            )}
+          </header>
+        )}
 
-      <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-6 pt-2">
-        {children}
-      </main>
+        <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-6 pt-2 md:max-w-[560px] md:px-8 md:pt-4">
+          {children}
+        </main>
 
-      {footer && (
-        <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px]">
-          <div className="mx-auto w-full max-w-[480px] border-t border-border-subtle px-4 pt-4 pb-2">
-            {footer}
-          </div>
-        </footer>
-      )}
+        {footer && (
+          <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
+            <div className="mx-auto w-full max-w-[480px] border-t border-border-subtle px-4 pt-4 pb-2 md:max-w-[560px] md:border-t-0 md:px-8 md:pb-8 md:pt-6">
+              {footer}
+            </div>
+          </footer>
+        )}
+      </div>
     </div>
   );
 }

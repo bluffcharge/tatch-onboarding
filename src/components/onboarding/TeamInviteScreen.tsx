@@ -26,6 +26,7 @@ export function TeamInviteScreen() {
     <OnboardingShell
       step={{ current: 3, total: 3 }}
       backHref="/onboarding/discovery"
+      journey={{ currentKey: "team" }}
       footer={
         <div className="space-y-3">
           <Button

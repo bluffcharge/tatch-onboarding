@@ -29,6 +29,7 @@ export function BusinessProfileScreen() {
     <OnboardingShell
       step={{ current: 1, total: 3 }}
       backHref="/onboarding/auth"
+      journey={{ currentKey: "business" }}
       footer={
         <Button
           fullWidth

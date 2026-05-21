@@ -2,7 +2,7 @@
 
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "accent" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -28,6 +28,11 @@ const sizes: Record<Size, string> = {
 
 const variants: Record<Variant, string> = {
   primary:
+    "bg-[color:var(--btn-ink-bg)] text-[color:var(--btn-ink-fg)] shadow-sm " +
+    "hover:bg-[color:var(--btn-ink-bg-hover)] active:bg-[color:var(--btn-ink-bg-active)]",
+  // Brand-violet variant — reserve for moments where the brand color is
+  // the right tool (rare). Default to `primary` (ink) for CTAs.
+  accent:
     "bg-royal-400 text-white shadow-sm " +
     "hover:bg-royal-500 active:bg-royal-600",
   secondary:

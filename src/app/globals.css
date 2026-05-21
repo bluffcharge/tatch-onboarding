@@ -155,6 +155,15 @@
   --dur-fast: 150ms;
   --dur-med:  250ms;
   --dur-slow: 400ms;
+
+  /* ---------------- Ink (primary CTA) button ----------------
+     Brand violet is reserved for transitions, gradients, and brand
+     moments. Primary CTAs read as ink (near-black in light, white in
+     dark) so the violet pops where it earns the eye. */
+  --btn-ink-bg:        var(--grey-950);
+  --btn-ink-bg-hover:  #2A2A2D;
+  --btn-ink-bg-active: #000000;
+  --btn-ink-fg:        #FFFFFF;
 }
 
 /* ==========================================================================
@@ -184,6 +193,12 @@
 
   --shadow-md:       0 1px 3px 0 rgba(0,0,0,0.45), 0 1px 2px 0 rgba(0,0,0,0.30);
   --shadow-lg:       0 8px 24px 0 rgba(0,0,0,0.55);
+
+  /* Ink button inverts in dark mode — white pill on dark surface. */
+  --btn-ink-bg:        #FFFFFF;
+  --btn-ink-bg-hover:  var(--grey-200);
+  --btn-ink-bg-active: var(--grey-300);
+  --btn-ink-fg:        var(--grey-950);
 }
 
 /* ==========================================================================

@@ -34,6 +34,7 @@ export function DiscoveryScreen() {
     <OnboardingShell
       step={{ current: 2, total: 3 }}
       backHref="/onboarding/business"
+      journey={{ currentKey: "discovery" }}
       footer={
         <Button
           fullWidth

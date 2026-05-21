@@ -181,7 +181,7 @@ export function CommentsRail({ routeHref, routeTitle, collapsed, onToggle }: Pro
             type="button"
             onClick={submit}
             disabled={!canSubmit}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-royal-400 px-3 text-[12px] font-semibold text-white shadow-sm transition-colors duration-fast ease-snap hover:bg-royal-500 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md bg-[color:var(--btn-ink-bg)] px-3 text-[12px] font-semibold text-[color:var(--btn-ink-fg)] shadow-sm transition-colors duration-fast ease-snap hover:bg-[color:var(--btn-ink-bg-hover)] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Send size={11} strokeWidth={2} />
             Post

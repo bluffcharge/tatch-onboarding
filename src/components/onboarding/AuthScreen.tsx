@@ -28,6 +28,7 @@ export function AuthScreen() {
   return (
     <OnboardingShell
       backHref="/j/abc123"
+      journey={{ currentKey: "auth" }}
       footer={
         phase === "enter" ? (
           <Button
