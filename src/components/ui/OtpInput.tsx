@@ -7,6 +7,7 @@ type Props = {
   onComplete?: (code: string) => void;
   autoFocus?: boolean;
   error?: string;
+  helper?: React.ReactNode;
 };
 
 /**
@@ -18,6 +19,7 @@ export function OtpInput({
   onComplete,
   autoFocus = true,
   error,
+  helper,
 }: Props) {
   const [values, setValues] = useState<string[]>(() => Array(length).fill(""));
   const refs = useRef<Array<HTMLInputElement | null>>([]);
@@ -91,6 +93,7 @@ export function OtpInput({
         ))}
       </div>
       {error && <p className="text-[12px] text-error">{error}</p>}
+      {!error && helper && <p className="text-[12px] text-ink-caption">{helper}</p>}
     </div>
   );
 }

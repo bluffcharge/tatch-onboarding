@@ -129,6 +129,15 @@ export function AuthScreen() {
                 // In the prototype, any 6 digits passes
                 setTimeout(() => router.push(next), 250);
               }}
+              helper={
+                <>
+                  Prototype: any 6 digits work — try{" "}
+                  <code className="rounded-xs bg-subtle px-1 py-0.5 font-mono text-[11.5px] text-ink-body">
+                    123456
+                  </code>
+                  .
+                </>
+              }
             />
             <div className="mt-5">
               <button
