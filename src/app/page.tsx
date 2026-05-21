@@ -86,14 +86,22 @@ export default function Home() {
   const active = ROUTES.find((r) => r.href === activeHref) ?? ROUTES[0];
   const activeIndex = ROUTES.indexOf(active);
 
+  // Single entry point for every route selection (tile click, arrow button,
+  // keyboard arrow). Bumps the reset counter on every call so the iframe key
+  // is fresh — even re-clicking the active tile re-mounts and resets state.
+  const selectRoute = useCallback((href: string) => {
+    setActiveHref(href);
+    setResetTick((n) => n + 1);
+  }, []);
+
   const goPrev = useCallback(() => {
     const i = Math.max(0, activeIndex - 1);
-    setActiveHref(ROUTES[i].href);
-  }, [activeIndex]);
+    selectRoute(ROUTES[i].href);
+  }, [activeIndex, selectRoute]);
   const goNext = useCallback(() => {
     const i = Math.min(ROUTES.length - 1, activeIndex + 1);
-    setActiveHref(ROUTES[i].href);
-  }, [activeIndex]);
+    selectRoute(ROUTES[i].href);
+  }, [activeIndex, selectRoute]);
 
   // Keyboard arrows step through routes.
   useEffect(() => {
@@ -113,21 +121,22 @@ export default function Home() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink">
-      <GalleryHeader />
+      <GalleryHeader
+        title={active.title}
+        href={active.href}
+        onReset={() => setResetTick((n) => n + 1)}
+      />
 
       <Stage
         viewport={active.viewport}
-        title={active.title}
-        href={active.href}
         iframeSrc={iframeSrc}
-        onReset={() => setResetTick((n) => n + 1)}
       />
 
       <Filmstrip
         routes={ROUTES}
         active={active}
         activeIndex={activeIndex}
-        onSelect={setActiveHref}
+        onSelect={selectRoute}
         onPrev={goPrev}
         onNext={goNext}
         stripRef={stripRef}
@@ -141,28 +150,78 @@ export default function Home() {
 /* Header                                                              */
 /* ------------------------------------------------------------------ */
 
-function GalleryHeader() {
+function GalleryHeader({
+  title,
+  href,
+  onReset,
+}: {
+  title: string;
+  href: string;
+  onReset: () => void;
+}) {
   const { theme, toggle } = useTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   return (
     <header className="border-b border-border-subtle">
-      <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-4 px-5 py-3">
-        <div className="flex items-center gap-3">
-          <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-            tatch · onboarding prototype
+      <div className="mx-auto flex w-full max-w-[1280px] items-center gap-3 px-5 py-2.5">
+        {/* Left: brand */}
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="text-[13px] font-semibold tracking-tight text-ink-title">
+            tatch
           </span>
-          <span className="hidden text-[12px] text-ink-caption sm:inline">
-            arrow keys ← → to step
+          <span className="text-[12px] text-ink-disabled">·</span>
+          <span className="hidden text-[12px] text-ink-caption md:inline">
+            onboarding prototype
           </span>
         </div>
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-ink-body hover:bg-subtle"
-        >
-          <ThemeIcon size={14} strokeWidth={1.75} />
-        </button>
+
+        {/* Divider */}
+        <span className="h-5 w-px shrink-0 bg-border" aria-hidden="true" />
+
+        {/* Center: active route + URL */}
+        <div className="flex min-w-0 flex-1 items-baseline gap-2">
+          <span className="t-mono-label hidden sm:inline">Now</span>
+          <span className="truncate text-[14px] font-semibold text-ink-title">
+            {title}
+          </span>
+          <code className="hidden truncate rounded-sm bg-subtle px-1.5 py-0.5 text-[11.5px] text-ink-body lg:inline">
+            {href}
+          </code>
+        </div>
+
+        {/* Right: actions */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="hidden text-[11px] text-ink-disabled lg:inline">
+            ← → to step
+          </span>
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            title="Reset this flow"
+          >
+            <RotateCcw size={12} strokeWidth={1.75} />
+            Reset
+          </button>
+          <Link
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            title="Open in a new tab"
+          >
+            <ExternalLink size={12} strokeWidth={1.75} />
+            Open
+          </Link>
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-ink-body hover:bg-subtle"
+          >
+            <ThemeIcon size={14} strokeWidth={1.75} />
+          </button>
+        </div>
       </div>
     </header>
   );
@@ -174,60 +233,19 @@ function GalleryHeader() {
 
 function Stage({
   viewport,
-  title,
-  href,
   iframeSrc,
-  onReset,
 }: {
   viewport: Viewport;
-  title: string;
-  href: string;
   iframeSrc: string;
-  onReset: () => void;
 }) {
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
-      <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col overflow-hidden px-5 pb-2 pt-2">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="t-h4 truncate text-ink-title">
-              <span className="t-mono-label mr-2 align-middle">Now</span>
-              {title}
-            </h1>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <code className="hidden rounded-sm bg-subtle px-2 py-1 text-[11.5px] text-ink-body sm:inline">
-              {href}
-            </code>
-            <button
-              type="button"
-              onClick={onReset}
-              className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-card px-2 text-[12px] font-medium text-ink-body hover:bg-subtle"
-              title="Reset this flow"
-            >
-              <RotateCcw size={11} strokeWidth={1.75} />
-              Reset
-            </button>
-            <Link
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border bg-card px-2 text-[12px] font-medium text-ink-body hover:bg-subtle"
-              title="Open in a new tab"
-            >
-              <ExternalLink size={11} strokeWidth={1.75} />
-              Open
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex flex-1 items-start justify-center overflow-hidden pt-1">
-          {viewport === "mobile" ? (
-            <MobileFrame src={iframeSrc} />
-          ) : (
-            <DesktopFrame src={iframeSrc} />
-          )}
-        </div>
+      <div className="mx-auto flex w-full max-w-[1280px] flex-1 items-start justify-center overflow-hidden px-5 pb-2 pt-3">
+        {viewport === "mobile" ? (
+          <MobileFrame src={iframeSrc} />
+        ) : (
+          <DesktopFrame src={iframeSrc} />
+        )}
       </div>
     </main>
   );
@@ -236,15 +254,15 @@ function Stage({
 /**
  * Mobile phone frame — modern-iPhone aspect (390 / 844 ≈ 1:2.16).
  * Width is derived from viewport height so the frame always claims the
- * available vertical space minus a small chrome budget (~110px for the
- * gallery header, stage header, and filmstrip footer combined). Capped
- * at 440px so the frame never grows unreasonably wide on tall displays.
+ * available vertical space minus the gallery header (~46px), stage
+ * padding (~20px), and filmstrip footer (~74px) — ~140px chrome total.
+ * Capped at 440px so the frame never grows unreasonably wide.
  */
 function MobileFrame({ src }: { src: string }) {
   return (
     <div
       style={{
-        width: "min(440px, calc((100dvh - 175px) * 390 / 844))",
+        width: "min(440px, calc((100dvh - 152px) * 390 / 844))",
         aspectRatio: "390 / 844",
       }}
       className="overflow-hidden rounded-[34px] border border-border bg-card shadow-lg"
@@ -264,7 +282,7 @@ function DesktopFrame({ src }: { src: string }) {
     <div
       style={{
         width: "min(1180px, 100%)",
-        height: "calc(100dvh - 175px)",
+        height: "calc(100dvh - 152px)",
       }}
       className="overflow-hidden rounded-lg border border-border bg-card shadow-md"
     >
@@ -303,7 +321,7 @@ function Filmstrip({
 }) {
   return (
     <footer className="safe-pb sticky bottom-0 z-10 border-t border-border-subtle bg-canvas/95 backdrop-blur-[8px]">
-      <div className="mx-auto flex w-full max-w-[1280px] items-stretch gap-1.5 px-3 py-1.5">
+      <div className="mx-auto flex w-full max-w-[1280px] items-stretch gap-1.5 px-3 py-2">
         <ArrowButton dir="prev" onClick={onPrev} disabled={activeIndex === 0} />
 
         <div
@@ -352,7 +370,7 @@ function ArrowButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === "prev" ? "Previous route" : "Next route"}
-      className="inline-flex h-10 w-8 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-12 w-8 shrink-0 items-center justify-center self-center rounded-md border border-border bg-card text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle disabled:cursor-not-allowed disabled:opacity-40"
     >
       <Icon size={14} strokeWidth={1.75} />
     </button>
@@ -388,8 +406,8 @@ function FilmCard({
       onClick={onClick}
       title={`${route.title} — ${route.subtitle}`}
       className={[
-        "group relative flex shrink-0 snap-start items-center gap-2 rounded-md border px-2.5 py-1.5 text-left",
-        "h-10 min-w-[150px] max-w-[210px]",
+        "group relative flex shrink-0 snap-start items-center gap-2.5 rounded-md border px-3 py-2 text-left",
+        "h-12 min-w-[170px] max-w-[230px]",
         "transition-[background-color,border-color,box-shadow] duration-fast ease-snap",
         isActive
           ? "border-royal-400 bg-card shadow-[0_0_0_2px_var(--royal-100)]"
@@ -398,14 +416,14 @@ function FilmCard({
     >
       <span
         aria-hidden="true"
-        className={["h-1.5 w-1.5 shrink-0 rounded-pill", GROUP_PIP[route.group]].join(" ")}
+        className={["h-2 w-2 shrink-0 rounded-pill", GROUP_PIP[route.group]].join(" ")}
       />
       <span className="text-[10px] font-semibold tabular-nums text-ink-disabled">
         {String(index).padStart(2, "0")}
       </span>
       <span
         className={[
-          "truncate text-[12.5px] font-semibold leading-tight",
+          "truncate text-[13px] font-semibold leading-tight",
           isActive ? "text-royal-700" : "text-ink-title",
         ].join(" ")}
       >
