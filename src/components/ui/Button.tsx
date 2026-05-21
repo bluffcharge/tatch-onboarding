@@ -15,33 +15,35 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-medium " +
+  "inline-flex items-center justify-center gap-2 font-medium " +
   "transition-[background-color,border-color,color,box-shadow,transform] " +
   "duration-fast ease-snap disabled:opacity-40 disabled:cursor-not-allowed " +
   "select-none whitespace-nowrap";
 
 const sizes: Record<Size, string> = {
-  sm: "h-9  px-3 text-[13px]",
-  md: "h-11 px-4 text-[14px]",
-  lg: "h-12 px-5 text-[15px]",
+  sm: "h-9  px-4  text-[13px]",
+  md: "h-11 px-5  text-[14px]",
+  lg: "h-12 px-6  text-[15px]",
 };
 
+// Primary CTAs use pill geometry to match the design.md Save button. Other
+// variants stay rectangular so they read as supporting actions.
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[color:var(--btn-ink-bg)] text-[color:var(--btn-ink-fg)] shadow-sm " +
+    "rounded-pill bg-[color:var(--btn-ink-bg)] text-[color:var(--btn-ink-fg)] shadow-sm " +
     "hover:bg-[color:var(--btn-ink-bg-hover)] active:bg-[color:var(--btn-ink-bg-active)]",
   // Brand-violet variant — reserve for moments where the brand color is
   // the right tool (rare). Default to `primary` (ink) for CTAs.
   accent:
-    "bg-royal-400 text-white shadow-sm " +
+    "rounded-pill bg-royal-400 text-white shadow-sm " +
     "hover:bg-royal-500 active:bg-royal-600",
   secondary:
-    "bg-card text-ink border border-border " +
+    "rounded-[12px] bg-card text-ink border border-border " +
     "hover:bg-subtle active:bg-subtle",
   ghost:
-    "bg-transparent text-ink-body hover:bg-subtle",
+    "rounded-[12px] bg-transparent text-ink-body hover:bg-subtle",
   danger:
-    "bg-error text-white hover:opacity-90",
+    "rounded-pill bg-error text-white hover:opacity-90",
 };
 
 export const Button = forwardRef<HTMLButtonElement, Props>(function Button(

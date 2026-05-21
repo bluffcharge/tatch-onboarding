@@ -46,9 +46,11 @@ export function DiscoveryScreen() {
         </Button>
       }
     >
-      <div className="mt-2">
-        <h1 className="t-h2 mb-2">A couple of quick questions.</h1>
-        <p className="t-body mb-6 text-ink-subtitle">
+      <div className="mt-2 md:mt-0">
+        <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
+          A couple of quick questions.
+        </h1>
+        <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-8 lg:text-[16px]">
           This helps your operator route the right referrals to you.
         </p>
 

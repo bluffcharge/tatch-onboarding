@@ -143,6 +143,12 @@
   --radius-2xl:  16px;
   --radius-pill: 999px;
 
+  /* Control-specific radius, lifted from the dark-mode dialog spec
+     (design.md). Inputs, selects, chips, attribute pills use --radius-input.
+     Primary CTAs go full-pill. */
+  --radius-input:   12px;
+  --radius-control: 12px;
+
   /* ---------------- Shadows ---------------- */
   --shadow-xs:    0 1px 2px 0 rgba(0,0,0,0.06);
   --shadow-sm:    0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px 0 rgba(0,0,0,0.04);
@@ -235,12 +241,19 @@ button, input, textarea, select { font-family: inherit; }
   color: transparent;
 }
 
-/* Focus ring — 2px royal, per brand. Applies to buttons, links, and anything
-   that doesn't have its own container-level focus styling. */
+/* Focus ring — softer violet per design.md spec, applies to buttons,
+   links, and anything that doesn't have its own container-level focus
+   styling. */
 *:focus-visible {
-  outline: 2px solid var(--royal-400);
+  outline: 2px solid #8B7CF6;
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* Focus glow used by container-styled fields (TextField, PhoneInput, etc.) */
+:root {
+  --focus-ring: 0 0 0 3px rgba(139, 124, 246, 0.18);
+  --focus-border: #8B7CF6;
 }
 
 /* Inputs render their focus state via the wrapping TextField (border-royal

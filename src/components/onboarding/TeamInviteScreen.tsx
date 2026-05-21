@@ -48,9 +48,11 @@ export function TeamInviteScreen() {
         </div>
       }
     >
-      <div className="mt-2">
-        <h1 className="t-h2 mb-2">Invite your team.</h1>
-        <p className="t-body mb-6 text-ink-subtitle">
+      <div className="mt-2 md:mt-0">
+        <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
+          Invite your team.
+        </h1>
+        <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-8 lg:text-[16px]">
           Add anyone who&apos;ll be sending referrals or managing this account.
           They&apos;ll get an SMS to set up their own login.
         </p>

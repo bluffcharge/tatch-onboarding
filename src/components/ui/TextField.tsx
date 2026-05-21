@@ -40,9 +40,11 @@ export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
       )}
       <div
         className={[
-          "flex h-11 w-full items-center gap-2 rounded-md border bg-card px-3 transition-colors duration-fast ease-snap",
-          hasError ? "border-error" : "border-border hover:border-strong focus-within:border-royal-400",
-          "focus-within:shadow-[0_0_0_2px_var(--royal-100)]",
+          "flex h-11 w-full items-center gap-2 rounded-[12px] border bg-card px-4 transition-colors duration-fast ease-snap",
+          hasError
+            ? "border-error"
+            : "border-border hover:border-strong focus-within:border-[color:var(--focus-border)]",
+          "focus-within:shadow-[var(--focus-ring)]",
         ].join(" ")}
       >
         {leadingAdornment && (

@@ -84,9 +84,9 @@ export function OtpInput({
             onKeyDown={(e) => handleKey(i, e)}
             onPaste={handlePaste}
             className={[
-              "h-12 w-full max-w-[48px] rounded-md border bg-card text-center text-[18px] font-semibold text-ink-title",
+              "h-12 w-full max-w-[48px] rounded-[12px] border bg-card text-center text-[18px] font-semibold text-ink-title",
               "transition-colors duration-fast ease-snap",
-              "focus:outline-none focus:border-royal-400 focus:shadow-[0_0_0_2px_var(--royal-100)]",
+              "focus:outline-none focus:border-[color:var(--focus-border)] focus:shadow-[var(--focus-ring)]",
               error ? "border-error" : "border-border",
             ].join(" ")}
           />

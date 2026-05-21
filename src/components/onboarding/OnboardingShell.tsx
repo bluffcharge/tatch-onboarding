@@ -46,7 +46,7 @@ export function OnboardingShell({
       <div className="flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
-            <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2 md:max-w-[560px] md:px-8 md:pt-8">
+            <div className="mx-auto flex w-full max-w-[480px] items-center gap-2 px-4 pb-3 pt-2 md:max-w-[640px] md:px-10 md:pt-10 lg:max-w-[760px] lg:px-12 lg:pt-14 xl:max-w-[860px]">
               {(backHref || onBack) && (
                 <BackControl backHref={backHref} onBack={onBack} />
               )}
@@ -63,13 +63,13 @@ export function OnboardingShell({
           </header>
         )}
 
-        <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-6 pt-2 md:max-w-[560px] md:px-8 md:pt-4">
+        <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-4 pb-6 pt-2 md:max-w-[640px] md:px-10 md:pt-4 lg:max-w-[760px] lg:px-12 lg:pt-6 xl:max-w-[860px]">
           {children}
         </main>
 
         {footer && (
           <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
-            <div className="mx-auto w-full max-w-[480px] border-t border-border-subtle px-4 pt-4 pb-2 md:max-w-[560px] md:border-t-0 md:px-8 md:pb-8 md:pt-6">
+            <div className="mx-auto w-full max-w-[480px] border-t border-border-subtle px-4 pt-4 pb-2 md:max-w-[640px] md:border-t-0 md:px-10 md:pb-10 md:pt-6 lg:max-w-[760px] lg:px-12 lg:pb-14 xl:max-w-[860px]">
               {footer}
             </div>
           </footer>

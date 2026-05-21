@@ -274,39 +274,39 @@ function GalleryHeader({
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   return (
     <header className="border-b border-border-subtle">
-      <div className="mx-auto flex w-full max-w-[1280px] items-center gap-3 px-5 py-2.5">
-        {/* Left: brand */}
-        <div className="flex shrink-0 items-center gap-2">
+      {/* 3-column grid: left = brand + active route; center = viewport switcher;
+          right = actions. The center cell self-centers via the grid track so
+          the switcher is visually centered in the viewport even when the side
+          clusters differ in width. */}
+      <div className="mx-auto grid w-full max-w-[1480px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-2.5">
+        {/* Left */}
+        <div className="flex min-w-0 items-center gap-3">
           <span className="text-[13px] font-semibold tracking-tight text-ink-title">
             tatch
           </span>
-          <span className="text-[12px] text-ink-disabled">·</span>
-          <span className="hidden text-[12px] text-ink-caption md:inline">
-            onboarding prototype
-          </span>
+          <span className="hidden h-5 w-px bg-border md:block" aria-hidden="true" />
+          <div className="hidden min-w-0 items-baseline gap-2 md:flex">
+            <span className="t-mono-label">Now</span>
+            <span className="truncate text-[14px] font-semibold text-ink-title">
+              {title}
+            </span>
+            <code className="hidden truncate rounded-sm bg-subtle px-1.5 py-0.5 text-[11.5px] text-ink-body xl:inline">
+              {href}
+            </code>
+          </div>
         </div>
 
-        <span className="hidden h-5 w-px shrink-0 bg-border md:block" aria-hidden="true" />
-
-        {/* Center: active route + URL */}
-        <div className="flex min-w-0 flex-1 items-baseline gap-2">
-          <span className="t-mono-label hidden sm:inline">Now</span>
-          <span className="truncate text-[14px] font-semibold text-ink-title">
-            {title}
-          </span>
-          <code className="hidden truncate rounded-sm bg-subtle px-1.5 py-0.5 text-[11.5px] text-ink-body xl:inline">
-            {href}
-          </code>
-        </div>
-
-        {/* Right: viewport switcher + actions */}
-        <div className="flex shrink-0 items-center gap-1.5">
+        {/* Center — viewport switcher */}
+        <div className="justify-self-center">
           <ViewportSwitcher value={viewport} onChange={onViewportChange} />
-          <span className="hidden h-5 w-px shrink-0 bg-border lg:block" aria-hidden="true" />
+        </div>
+
+        {/* Right — actions */}
+        <div className="flex items-center justify-end gap-1.5">
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
             title="Reset this flow"
           >
             <RotateCcw size={12} strokeWidth={1.75} />
@@ -316,7 +316,7 @@ function GalleryHeader({
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
             title="Open in a new tab"
           >
             <ExternalLink size={12} strokeWidth={1.75} />
@@ -326,7 +326,7 @@ function GalleryHeader({
             type="button"
             onClick={toggle}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-ink-body hover:bg-subtle"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-[12px] border border-border text-ink-body hover:bg-subtle"
           >
             <ThemeIcon size={14} strokeWidth={1.75} />
           </button>
@@ -351,7 +351,7 @@ function ViewportSwitcher({
     <div
       role="radiogroup"
       aria-label="Preview viewport"
-      className="inline-flex items-center gap-0 rounded-md border border-border bg-card p-0.5"
+      className="inline-flex items-center gap-0.5 rounded-pill border border-border bg-card p-1 shadow-sm"
     >
       {VIEWPORT_ORDER.map((v) => {
         const { Icon, label, width, height, shortLabel } = VIEWPORTS[v];
@@ -365,13 +365,16 @@ function ViewportSwitcher({
             onClick={() => onChange(v)}
             title={`${label} · ${shortLabel} · ${width} × ${height}`}
             className={[
-              "inline-flex h-7 w-9 items-center justify-center rounded-sm transition-colors duration-fast ease-snap",
+              "inline-flex h-7 items-center gap-1.5 rounded-pill px-2.5 transition-colors duration-fast ease-snap",
               active
-                ? "bg-royal-50 text-royal-700 dark:bg-royal-900 dark:text-white"
+                ? "bg-[color:var(--btn-ink-bg)] text-[color:var(--btn-ink-fg)]"
                 : "text-ink-caption hover:bg-subtle hover:text-ink-body",
             ].join(" ")}
           >
-            <Icon size={14} strokeWidth={1.75} />
+            <Icon size={13} strokeWidth={1.75} />
+            <span className="hidden text-[11px] font-medium tracking-wide xl:inline">
+              {label}
+            </span>
           </button>
         );
       })}
@@ -405,6 +408,10 @@ function Stage({
  * area. The iframe document genuinely renders at the target viewport, so
  * responsive breakpoints inside the page fire correctly — clicks and
  * scroll scale with the visual transform.
+ *
+ * Viewport switches are animated: the frame's width/height/border-radius
+ * and the iframe's scale all transition with a single ease curve so the
+ * preview morphs from one shape into the next rather than snapping.
  */
 function ViewportFrame({
   src,
@@ -435,6 +442,9 @@ function ViewportFrame({
   const scaledH = spec.height * scale;
   const scaledRadius = spec.radius * scale;
 
+  const EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+  const DUR  = "320ms";
+
   return (
     <div ref={wrapperRef} className="flex w-full flex-1 items-center justify-center overflow-hidden">
       {scale > 0 && (
@@ -443,6 +453,8 @@ function ViewportFrame({
             width: scaledW,
             height: scaledH,
             borderRadius: scaledRadius,
+            transition: `width ${DUR} ${EASE}, height ${DUR} ${EASE}, border-radius ${DUR} ${EASE}`,
+            willChange: "width, height",
           }}
           className="overflow-hidden border border-border bg-card shadow-lg"
         >
@@ -455,7 +467,9 @@ function ViewportFrame({
               height: spec.height,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
+              transition: `transform ${DUR} ${EASE}`,
               display: "block",
+              willChange: "transform",
             }}
             className="border-0"
           />

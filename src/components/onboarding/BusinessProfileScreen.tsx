@@ -41,9 +41,11 @@ export function BusinessProfileScreen() {
         </Button>
       }
     >
-      <div className="mt-2">
-        <h1 className="t-h2 mb-2">Tell us about your business.</h1>
-        <p className="t-body mb-6 text-ink-subtitle">
+      <div className="mt-2 md:mt-0">
+        <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
+          Tell us about your business.
+        </h1>
+        <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-8 lg:text-[16px]">
           We use this to match you to nearby operators and to label referrals correctly.
         </p>
 
@@ -123,22 +125,24 @@ export function BusinessProfileScreen() {
             </>
           )}
 
-          <div className="border-t border-border-subtle pt-4">
+          <div className="border-t border-border-subtle pt-4 md:pt-6">
             <p className="t-mono-label mb-3">Primary contact</p>
-            <div className="space-y-4">
+            {/* Phone + email side-by-side on md+ where the form column is
+                wide enough to make a 2-col read better than stacked. */}
+            <div className="grid gap-4 md:grid-cols-2 md:gap-5">
               <TextField
                 label="Business phone"
                 type="tel"
                 autoComplete="tel"
                 defaultValue="(555) 014-2207"
-                helper="Pre-filled from your sign-up. Change if you'd like."
+                helper="Pre-filled from your sign-up."
               />
               <TextField
                 label="Contact email"
                 type="email"
                 autoComplete="email"
                 placeholder="dispatch@northwindroofing.com"
-                helper="Optional — we'll only use this for important account notices."
+                helper="Optional — for important account notices."
               />
             </div>
           </div>
