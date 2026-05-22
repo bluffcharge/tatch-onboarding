@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { StepperBar } from "./StepperBar";
 import { JourneyTimeline } from "./JourneyTimeline";
+import { BrandRibbons } from "./BrandRibbons";
 import type { JourneyKey } from "@/lib/journey";
 
 type Props = {
@@ -22,6 +23,10 @@ type Props = {
    *  screen can host a 2-column layout (e.g. P1's feature-card cluster).
    *  Mobile is unaffected. */
   wide?: boolean;
+  /** Brand-gradient ribbon ornament sweeping the lower-left of the canvas
+   *  on lg+ viewports. Defaults on — opt out on screens that have their
+   *  own dominant motion (e.g. P6 Activating's spinner). */
+  ornament?: boolean;
   children: ReactNode;
 };
 
@@ -33,6 +38,7 @@ export function OnboardingShell({
   chrome = true,
   journey,
   wide = false,
+  ornament = true,
   children,
 }: Props) {
   // Width classes for header / main / footer wrappers. Standard form pages
@@ -46,19 +52,24 @@ export function OnboardingShell({
     ? "px-4 md:px-10 lg:px-14 2xl:px-20"
     : "px-4 md:px-10 lg:px-12 2xl:px-16";
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
+    <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
+      {/* Ornament layer — absolute, behind everything. lg:block gated inside
+          the component, so phone/tablet stay clean by default. */}
+      {ornament && <BrandRibbons />}
+
       {/* Wide-viewport left rail: timeline of the full journey. */}
       {journey && (
         <aside
-          className="hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col xl:w-[340px] 2xl:w-[400px]"
+          className="relative z-10 hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col xl:w-[340px] 2xl:w-[400px]"
           aria-label="Onboarding progress"
         >
           <JourneyTimeline currentKey={journey.currentKey} />
         </aside>
       )}
 
-      {/* Mobile-first content column. On md+ this becomes the right pane. */}
-      <div className="flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
+      {/* Mobile-first content column. On md+ this becomes the right pane.
+          Stays above the ornament via z-10 so the ribbons read as background. */}
+      <div className="relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
