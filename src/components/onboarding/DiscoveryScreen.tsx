@@ -9,10 +9,6 @@ import {
   MoreHorizontal,
   Sun,
   TreePine,
-  User,
-  Users,
-  Users2,
-  UsersRound,
   Wind,
   Wrench,
   Zap,
@@ -20,19 +16,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ChipGroup } from "@/components/ui/ChipGroup";
+import { TextField } from "@/components/ui/TextField";
 import { OnboardingShell } from "./OnboardingShell";
 import { DISCOVERY_QUESTIONS } from "@/lib/discoveryQuestions";
 
 type Answers = Record<string, string | string[] | null>;
+type SpecifyMap = Record<string, string>;
 
 /** Icon mapping for the desktop tile selectors. Keys match option `value`
  *  from discoveryQuestions.ts. Missing keys fall back to a generic icon. */
 const OPTION_ICON: Record<string, LucideIcon> = {
-  // technicians count
-  "1-5":   User,
-  "6-15":  Users,
-  "16-50": Users2,
-  "50+":   UsersRound,
   // services
   roofing:    Home,
   hvac:       Wind,
@@ -53,14 +46,27 @@ export function DiscoveryScreen() {
     });
     return seed;
   });
+  // Per-question "specify" text when a specifyFor option is selected.
+  const [specify, setSpecify] = useState<SpecifyMap>({});
 
   const allRequiredAnswered = DISCOVERY_QUESTIONS.every((q) => {
     if (!q.required) return true;
     const a = answers[q.id];
-    if (q.type === "single_select_chips") return typeof a === "string" && a.length > 0;
+    if (q.type === "short_text") {
+      return typeof a === "string" && a.trim().length > 0;
+    }
+    if (q.type === "single_select_chips") {
+      return typeof a === "string" && a.length > 0;
+    }
     if (q.type === "multi_select_chips") {
       const arr = Array.isArray(a) ? a : [];
-      return arr.length >= (q.minSelected ?? 1);
+      if (arr.length < (q.minSelected ?? 1)) return false;
+      // If the specify option is checked, the specify text must also be filled.
+      if (q.specifyFor && arr.includes(q.specifyFor)) {
+        const sp = specify[q.id]?.trim() ?? "";
+        if (sp.length === 0) return false;
+      }
+      return true;
     }
     return true;
   });
@@ -95,6 +101,23 @@ export function DiscoveryScreen() {
               <h2 className="t-h4 mb-1 lg:text-[18px]">{q.prompt}</h2>
               {q.helperText && (
                 <p className="t-caption mb-3 lg:mb-4">{q.helperText}</p>
+              )}
+
+              {q.type === "short_text" && (
+                <div className="max-w-[240px]">
+                  <TextField
+                    inputMode={q.inputMode ?? "text"}
+                    placeholder={q.placeholder}
+                    value={(answers[q.id] as string | null) ?? ""}
+                    onChange={(e) => {
+                      // For numeric, soft-strip non-digits.
+                      const raw = e.target.value;
+                      const cleaned =
+                        q.inputMode === "numeric" ? raw.replace(/[^\d]/g, "") : raw;
+                      setAnswers((s) => ({ ...s, [q.id]: cleaned }));
+                    }}
+                  />
+                </div>
               )}
 
               {/* Mobile/tablet: chip group. Desktop (lg+): big illustrated tiles. */}
@@ -149,6 +172,24 @@ export function DiscoveryScreen() {
                       ariaLabel={q.prompt}
                     />
                   </div>
+
+                  {/* Inline "specify" field when the specifyFor option is
+                      selected (e.g. "Other"). Slides in below the chips. */}
+                  {q.specifyFor &&
+                    Array.isArray(answers[q.id]) &&
+                    (answers[q.id] as string[]).includes(q.specifyFor) && (
+                      <div className="mt-3 max-w-[420px]">
+                        <TextField
+                          label={q.specifyPrompt}
+                          placeholder={q.specifyPlaceholder}
+                          value={specify[q.id] ?? ""}
+                          onChange={(e) =>
+                            setSpecify((s) => ({ ...s, [q.id]: e.target.value }))
+                          }
+                          autoFocus
+                        />
+                      </div>
+                    )}
                 </>
               )}
             </div>

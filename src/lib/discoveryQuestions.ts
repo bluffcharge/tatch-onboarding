@@ -7,6 +7,15 @@
 export type Question =
   | {
       id: string;
+      type: "short_text";
+      prompt: string;
+      helperText?: string;
+      required?: boolean;
+      placeholder?: string;
+      inputMode?: "text" | "numeric" | "tel" | "email";
+    }
+  | {
+      id: string;
       type: "single_select_chips";
       prompt: string;
       helperText?: string;
@@ -21,21 +30,21 @@ export type Question =
       required?: boolean;
       minSelected?: number;
       options: { value: string; label: string }[];
+      /** If a specific option (e.g. "other") needs an inline specify field. */
+      specifyFor?: string;
+      specifyPrompt?: string;
+      specifyPlaceholder?: string;
     };
 
 export const DISCOVERY_QUESTIONS: Question[] = [
   {
     id: "technician_count",
-    type: "single_select_chips",
+    type: "short_text",
     prompt: "How many technicians do you have?",
     helperText: "Including yourself, owners, and 1099 partners.",
     required: true,
-    options: [
-      { value: "1-5",   label: "1–5"    },
-      { value: "6-15",  label: "6–15"   },
-      { value: "16-50", label: "16–50"  },
-      { value: "50+",   label: "50+"    },
-    ],
+    placeholder: "e.g. 12",
+    inputMode: "numeric",
   },
   {
     id: "services",
@@ -54,7 +63,10 @@ export const DISCOVERY_QUESTIONS: Question[] = [
       { value: "general",       label: "General contracting" },
       { value: "other",         label: "Other"               },
     ],
+    specifyFor: "other",
+    specifyPrompt: "What other services?",
+    specifyPlaceholder: "e.g. Pool service, fencing, gutters",
   },
 ];
 
-export const DISCOVERY_VERSION = "2026-05-20.v1";
+export const DISCOVERY_VERSION = "2026-05-21.v2";

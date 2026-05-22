@@ -107,15 +107,15 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     ],
   },
   "/onboarding/discovery": {
-    oneLine: "Discovery questions — first is technicians count; more coming.",
+    oneLine: "Discovery questions — technicians count + services provided.",
     flowRefs: [
       { flow: "Flow 2 — new partner via link", step: "Step 5: answers one or more questions" },
     ],
     storyRefs: ["Story 2"],
     reqs: [
-      "Seeded question: 'How many technicians do you have?'",
+      "Q1: 'How many technicians do you have?' (short text, numeric).",
+      "Q2: 'What services do you provide?' (multi-select). If 'Other' is selected, prompt to specify.",
       "Designed as a typed array — additional questions are config, not screens.",
-      "Active discovery: question set is expected to grow.",
     ],
   },
   "/onboarding/team": {
@@ -170,11 +170,11 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
   "/partner-admin/invite": {
     oneLine: "Operator UI — invite partners via TatchLink + manage codes.",
     flowRefs: [
-      { flow: "Flow 1 — operator sends invite", step: "All 4 steps" },
+      { flow: "Flow 1 — operator sends invite", step: "All 5 steps" },
     ],
     storyRefs: ["Story 1", "Story 6"],
     reqs: [
-      "Lives under Settings > Operations > Invite Partner via TatchLink.",
+      "Lives under the avatar menu → Invite Partner.",
       "Supports multiple emails/phones in a single batch invite.",
       "Generates a unique invite link per recipient (SMS or email).",
       "Company Code + BDM Code panels with copy, share, rotate; rotation doesn't break existing linkages.",

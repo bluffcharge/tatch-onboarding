@@ -77,8 +77,13 @@ function Topbar() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-pill bg-brand-gradient-4 text-[12px] font-semibold text-white">
-            S
+          {/* Avatar highlighted with a subtle violet ring to anchor the
+              "you opened this from the avatar menu" mental model. */}
+          <div className="relative">
+            <span aria-hidden="true" className="absolute -inset-1 rounded-pill ring-2 ring-royal-400/40" />
+            <div className="relative grid h-8 w-8 place-items-center rounded-pill bg-brand-gradient-4 text-[12px] font-semibold text-white">
+              S
+            </div>
           </div>
         </div>
       </div>
@@ -90,7 +95,7 @@ function PageHeader() {
   return (
     <div className="flex items-start justify-between gap-6">
       <div>
-        <p className="t-mono-label mb-2">Settings · Operations</p>
+        <p className="t-mono-label mb-2">From your account menu</p>
         <h1 className="t-h1">Invite a partner</h1>
         <p className="t-body mt-2 max-w-[60ch] text-ink-subtitle">
           Send a TatchLink to a new partner company. They&apos;ll get a text (or
