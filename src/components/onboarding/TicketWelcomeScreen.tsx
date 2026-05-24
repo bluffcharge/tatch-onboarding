@@ -1,17 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Mail,
-  Phone,
-  type LucideIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Mail, Phone } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
 import type { InviteContext } from "@/lib/mockInvite";
 
 type Props = { invite: InviteContext };
+
+/* ----------------- Glass primary CTA -----------------
+   Replaces the solid-purple `<Button>` on the ticket route. Translucent
+   surface + backdrop-blur + the canonical gradient outline. The label
+   inherits text-ink-title so it reads white in dark, near-black in light.
+   Defined here before consumers so the bundler doesn't trip on the
+   forward reference inside the client-component boundary.            */
+function GlassPrimaryCTA({
+  icon,
+  children,
+  onClick,
+}: {
+  icon: ReactNode;
+  children: ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="gradient-outline glass-surface group relative inline-flex h-12 w-full items-center justify-center gap-2 rounded-pill px-5 text-[14px] font-semibold text-ink-title transition-transform duration-fast ease-snap active:scale-[0.99]"
+    >
+      <span className="relative z-[2] inline-flex items-center gap-2">
+        {icon}
+        {children}
+      </span>
+    </button>
+  );
+}
 
 /**
  * P1 — Ticket variant. Inspired by the Vanguard hang-tag mockup but using
@@ -29,7 +54,9 @@ export function TicketWelcomeScreen({ invite }: Props) {
 
   return (
     <OnboardingShell chrome={false}>
-      <div className="flex flex-1 flex-col">
+      {/* `ticket-page` dims the brand-ribbons on this route ~70% so they
+          recede behind the ticket's own visual rhythm. */}
+      <div className="ticket-page flex flex-1 flex-col">
         {/* Brand row */}
         <div className="safe-pt flex items-center justify-between pb-6 pt-1">
           <span className="text-[15px] font-semibold tracking-tight text-ink-title">
@@ -38,25 +65,23 @@ export function TicketWelcomeScreen({ invite }: Props) {
           <span className="t-mono-label">P1 · ticket variant</span>
         </div>
 
-        {/* Stage: ticket centered, accent slip behind, hangs from a thin
-            cord at the top. */}
-        <div className="relative mx-auto flex w-full max-w-[520px] flex-1 flex-col items-center pt-6 lg:pt-10">
+        {/* Stage: ticket centered, hangs from a thin cord at the top. The
+            accent slip behind is gone — the new gradient outline on the
+            ticket itself is the brand pop now. */}
+        <div className="relative mx-auto flex w-full max-w-[600px] flex-1 flex-col items-center pt-6 lg:pt-10">
           <TicketCord />
           <div className="relative mt-2" style={{ perspective: "1200px" }}>
-            <AccentSlip />
             <Ticket inviter={inviter} operator={operator} />
           </div>
 
           {/* CTAs below the ticket */}
-          <div className="mt-10 w-full max-w-[440px] space-y-3 lg:mt-14">
-            <Button
-              fullWidth
-              size="lg"
-              leadingIcon={<Phone size={16} strokeWidth={1.75} />}
+          <div className="mt-10 w-full max-w-[460px] space-y-3 lg:mt-14">
+            <GlassPrimaryCTA
+              icon={<Phone size={16} strokeWidth={1.75} />}
               onClick={() => goto("/onboarding/auth?via=phone")}
             >
               Continue with phone
-            </Button>
+            </GlassPrimaryCTA>
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="secondary"
@@ -144,44 +169,47 @@ function Ticket({
   return (
     <div
       ref={ref}
-      className="relative h-[420px] w-[260px] origin-center cursor-pointer rounded-[6px] sm:h-[460px] sm:w-[280px] lg:h-[520px] lg:w-[320px]"
+      className="gradient-outline relative h-[460px] w-[340px] origin-center cursor-pointer rounded-[10px] sm:h-[480px] sm:w-[400px] lg:h-[520px] lg:w-[480px]"
       style={{
         transform: `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateY(${tilt.lift}px)`,
         transformStyle: "preserve-3d",
         transition: "transform 240ms cubic-bezier(0.2, 0, 0, 1)",
       }}
     >
-      {/* Ticket body: near-black surface, 1px subtle border, soft drop. */}
-      <div className="relative h-full w-full overflow-hidden rounded-[6px] bg-[color:var(--grey-950)] text-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)] ring-1 ring-white/8">
+      {/* Ticket body: near-black surface inside the conic gradient outline.
+          The 1px gap between bg and pseudo-element ring is intentional —
+          mask-composite paints only the ring. */}
+      <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-[color:var(--grey-950)] text-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)]">
         {/* Hole punch */}
         <div className="absolute left-1/2 top-5 h-3.5 w-3.5 -translate-x-1/2 rounded-pill bg-[color:var(--surface-canvas)] ring-1 ring-white/15" />
 
         {/* Perforation line just below the hole */}
-        <div className="absolute left-5 right-5 top-12 border-t border-dashed border-white/8" />
+        <div className="absolute left-6 right-6 top-12 border-t border-dashed border-white/8" />
 
-        {/* Header copy */}
-        <div className="absolute left-5 right-5 top-[72px]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/45">
+        {/* Header copy — wider ticket lets the headline scale up. */}
+        <div className="absolute left-6 right-6 top-[72px]">
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/45">
             Tatch · invite pass
           </p>
-          <p className="mt-3 text-[18px] font-semibold leading-[1.15] lg:text-[20px]">
+          <p className="mt-3 text-[20px] font-semibold leading-[1.1] lg:text-[24px]">
             You&apos;re on the list.
           </p>
-          <p className="mt-1.5 text-[12.5px] leading-snug text-white/55">
+          <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white/55 lg:text-[13.5px]">
             Set up in about 90 seconds and start receiving referrals from {operator.name}.
           </p>
         </div>
 
-        {/* Inviter block (mid-ticket) */}
-        <div className="absolute left-5 right-5 top-[200px] flex items-center gap-3 lg:top-[230px]">
+        {/* Inviter block (mid-ticket) — has more horizontal room now, so
+            the line wraps less and the company name reads as a single line. */}
+        <div className="absolute left-6 right-6 top-[200px] flex items-center gap-3 lg:top-[230px]">
           <span
             aria-hidden="true"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-pill bg-white text-[12px] font-semibold text-[color:var(--grey-950)]"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-pill bg-white text-[13px] font-semibold text-[color:var(--grey-950)]"
           >
             {inviter.firstName[0]}
           </span>
           <div className="min-w-0">
-            <p className="text-[12.5px] font-semibold text-white">
+            <p className="text-[13px] font-semibold text-white lg:text-[14px]">
               {inviter.fullName}
             </p>
             <p className="mt-0.5 text-[10.5px] uppercase tracking-[0.14em] text-white/45">
@@ -190,8 +218,8 @@ function Ticket({
           </div>
         </div>
 
-        {/* Stub-style key/value row */}
-        <div className="absolute inset-x-5 bottom-[136px] grid grid-cols-2 gap-3 border-t border-dashed border-white/8 pt-3">
+        {/* Stub-style key/value row — three cells now that we have width. */}
+        <div className="absolute inset-x-6 bottom-[140px] grid grid-cols-3 gap-3 border-t border-dashed border-white/8 pt-3">
           <div>
             <p className="text-[9px] uppercase tracking-[0.18em] text-white/40">
               Pass
@@ -206,10 +234,18 @@ function Ticket({
               {new Date().toISOString().slice(0, 10)}
             </p>
           </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.18em] text-white/40">
+              Seats
+            </p>
+            <p className="mt-1 font-mono text-[11px] text-white/85">
+              {operator.teammateCount + 1} active
+            </p>
+          </div>
         </div>
 
         {/* Tatch wordmark */}
-        <div className="absolute inset-x-5 bottom-[88px] flex items-center gap-2">
+        <div className="absolute inset-x-6 bottom-[92px] flex items-center gap-2">
           <Logomark />
           <span className="text-[13px] font-semibold tracking-tight">tatch</span>
           <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white/40">
@@ -218,31 +254,16 @@ function Ticket({
         </div>
 
         {/* Barcode */}
-        <div className="absolute inset-x-5 bottom-[44px] h-9">
+        <div className="absolute inset-x-6 bottom-[44px] h-9">
           <Barcode />
         </div>
 
         {/* Serial */}
-        <p className="absolute inset-x-5 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white/40">
+        <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white/40">
           0001 · {operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · {inviter.firstName.toUpperCase()}
         </p>
       </div>
     </div>
-  );
-}
-
-/* ----------------- Accent slip (peeks behind) ----------------- */
-
-function AccentSlip() {
-  return (
-    <div
-      aria-hidden="true"
-      className="absolute left-1/2 top-3 h-[420px] w-[260px] -translate-x-1/2 -rotate-[8deg] rounded-[6px] bg-royal-400/85 sm:h-[460px] sm:w-[280px] lg:h-[520px] lg:w-[320px]"
-      style={{
-        transform: "translateX(-46%) rotate(-9deg) translateZ(-1px)",
-        boxShadow: "0 20px 40px -16px rgba(59,130,246,0.45)",
-      }}
-    />
   );
 }
 

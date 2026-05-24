@@ -25,18 +25,25 @@
   --tatch-violet: #7533FF;
   --tatch-royal:  #003ED8;
 
-  /* Signature brand gradient — multi-directional, never simple linear. */
-  --tatch-brand-gradient: linear-gradient(
-    135deg,
-    #00BBFF 0%,
-    #7533FF 50%,
-    #FF40F5 100%
+  /* Signature gradient — magenta → peach → cyan → violet, conic so the
+     hue wraps around any surface it traces. RULE: gradients live in
+     outlines, not fills. Reach for .gradient-outline whenever a surface
+     needs the brand pop; only use the gradient as a fill on tiny brand
+     marks (e.g. a checkmark badge) where the outline pattern doesn't
+     read at size. */
+  --tatch-brand-gradient: conic-gradient(
+    from 210deg at 50% 50%,
+    #FF7BA8 0deg,
+    #FFB48A 90deg,
+    #88E1E6 180deg,
+    #C9A6FF 270deg,
+    #FF7BA8 360deg
   );
   --tatch-brand-gradient-4stop:
-    radial-gradient(at 20% 20%, #00BBFF 0%, transparent 45%),
-    radial-gradient(at 80% 30%, #7533FF 0%, transparent 55%),
-    radial-gradient(at 50% 85%, #FF40F5 0%, transparent 60%),
-    linear-gradient(135deg, #003ED8 0%, #7533FF 100%);
+    radial-gradient(at 20% 20%, #FF7BA8 0%, transparent 45%),
+    radial-gradient(at 80% 30%, #FFB48A 0%, transparent 55%),
+    radial-gradient(at 50% 85%, #88E1E6 0%, transparent 60%),
+    linear-gradient(135deg, #C9A6FF 0%, #FF7BA8 100%);
 
   /* ---------------- Grayscale ---------------- */
   --grey-0:   #FFFFFF;
@@ -440,6 +447,12 @@ select:-webkit-autofill {
   display: none;
 }
 
+/* Ticket route — dim the ribbon ornament ~70% so the ticket's own visual
+   rhythm (gradient outline + cord + barcode) reads as the lead. */
+.ticket-page .brand-ribbons {
+  opacity: 0.3;
+}
+
 /* --------------------------------------------------------------------------
    Morphix card — used for the P1 "What you're signing up for" feature
    cluster. Pastel film moved off the card (per-tone color lives on the
@@ -468,6 +481,48 @@ select:-webkit-autofill {
     -8px -8px 24px 0 rgba(255, 255, 255, 0.025),
     0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
     0 8px 24px 0 rgba(168, 85, 247, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   .gradient-outline — the canonical way to apply the brand gradient.
+   Paints a 1.5px conic ring around any element via background +
+   mask-composite. Set the element's border-radius beforehand; the ring
+   inherits it. Pair with bg-* / glass utilities for the interior.
+
+   Recipe lifted from the Inspiro settings-modal pattern (gradient lives
+   in the outline, never as a fill on the surface).                     */
+.gradient-outline {
+  position: relative;
+  isolation: isolate;
+}
+.gradient-outline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: var(--tatch-brand-gradient);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Glass surface — translucent fill + backdrop-blur. Pair with
+   .gradient-outline for the Inspiro look. */
+.glass-surface {
+  background-color: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+:root:not([data-theme='dark']) .glass-surface {
+  background-color: rgba(255, 255, 255, 0.55);
 }
 
 @media (prefers-reduced-motion: reduce) {
