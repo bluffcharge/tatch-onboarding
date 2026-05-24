@@ -30,7 +30,10 @@ export function ActivatingScreen() {
 
   return (
     <OnboardingShell chrome={false} ornament={false}>
-      <div className="flex flex-1 flex-col items-center justify-center text-center">
+      {/* Celebratory screen — md:min-h-[80vh] gives the inner flex room
+          to center vertically. The shell's main shrinks to content on md+,
+          so without a min-height the spinner would stack at the top. */}
+      <div className="flex flex-1 flex-col items-center justify-center text-center md:min-h-[80vh]">
         <div className="relative h-16 w-16">
           <span className="absolute inset-0 animate-ping rounded-pill bg-brand-gradient opacity-30" />
           <span
