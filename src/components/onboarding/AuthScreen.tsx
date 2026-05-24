@@ -176,7 +176,7 @@ function OperatorContext() {
     <div className="mb-5 flex items-center gap-2.5 rounded-md border border-border-subtle bg-subtle px-2.5 py-2">
       <span
         aria-hidden="true"
-        className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-brand-gradient-4 text-[10px] font-semibold text-white"
+        className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-ink-title text-[10px] font-semibold text-canvas"
       >
         {inviter.firstName[0]}
       </span>
