@@ -22,8 +22,12 @@ export function SuccessScreen() {
 
   return (
     <OnboardingShell chrome={false}>
-      <div className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col justify-center">
+      {/* Celebratory screen — center the content block vertically and
+          horizontally on md+. md:min-h-[80vh] gives the inner flex room
+          to center within (the shell's main is shrink-to-content on md+,
+          so without a min-height the content would stack at the top). */}
+      <div className="flex flex-1 flex-col md:min-h-[80vh]">
+        <div className="flex flex-1 flex-col items-center justify-center text-center">
           <div className="relative mb-7 h-16 w-16">
             <span className="absolute inset-0 rounded-pill bg-brand-gradient-4 opacity-90" />
             <span className="absolute inset-0 grid place-items-center text-white">
@@ -37,7 +41,7 @@ export function SuccessScreen() {
           <button
             type="button"
             onClick={() => setShowDetails((s) => !s)}
-            className="mt-5 inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
+            className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
             aria-expanded={showDetails}
           >
             View connection details
@@ -56,7 +60,7 @@ export function SuccessScreen() {
           )}
         </div>
 
-        <div className="mt-6 space-y-3 md:max-w-[480px] lg:max-w-[520px]">
+        <div className="mt-6 w-full space-y-3 md:mx-auto md:max-w-[480px] lg:max-w-[520px]">
           <Button
             fullWidth
             size="lg"
