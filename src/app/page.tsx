@@ -17,7 +17,6 @@ import {
   Moon,
   RotateCcw,
   Smartphone,
-  Sparkles,
   Sun,
   Tablet,
   Tv,
@@ -267,14 +266,9 @@ function GalleryHeader({
   onReset: () => void;
 }) {
   const { theme, toggle } = useTheme();
-  const ThemeIcon =
-    theme === "light" ? Moon : theme === "dark" ? Sparkles : Sun;
+  const ThemeIcon = theme === "dark" ? Sun : Moon;
   const themeNextLabel =
-    theme === "light"
-      ? "Switch to dark theme"
-      : theme === "dark"
-      ? "Switch to studio theme"
-      : "Switch to light theme";
+    theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
   return (
     <header className="border-b border-border-subtle">
       {/* 3-column grid: left = active route (aligned with the PRD rail icon at
