@@ -17,6 +17,8 @@
   font-display: swap;
 }
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+/* Studio theme fonts — Inter (display + body) + JetBrains Mono (Atmospheric body). */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* ---------------- Brand Primary Palette ---------------- */
@@ -237,6 +239,151 @@
 }
 
 /* ==========================================================================
+   Studio theme — opt-in via [data-theme="studio"] on <html>
+   --------------------------------------------------------------------------
+   Single mode that adapts to the system color scheme:
+     • prefers-color-scheme: light → Atmospheric Data Console
+       (warm grey canvas, coral accent, sage text, Inter + JetBrains Mono)
+     • prefers-color-scheme: dark  → Vanguard Premium Apparel
+       (deep black canvas, coral-neon accent, uppercase Inter, glass surfaces)
+   The default (when neither media branch matches) is Atmospheric.
+   ========================================================================== */
+[data-theme='studio'] {
+  /* Atmospheric — default / light system pref */
+  --studio-accent:        #E15045;
+  --studio-accent-strong: #FF3333;
+  --studio-tertiary:      #76D2B6;
+
+  --surface-canvas:  #A09D94;
+  --surface-card:    #DCD9CE;
+  --surface-subtle:  #B5B2A8;
+  --surface-raised:  #DCD9CE;
+  --surface-overlay: rgba(40, 38, 32, 0.65);
+  --surface-stage:   #8E8B82;
+
+  --border-default:  #FFFFFF;
+  --border-subtle:   rgba(255, 255, 255, 0.55);
+  --border-strong:   #686660;
+
+  --text-default:    #686660;
+  --text-title:      #686660;
+  --text-body:       #686660;
+  --text-subtitle:   #686660;
+  --text-caption:    #686660;
+  --text-disabled:   rgba(104, 102, 96, 0.55);
+  --text-link:       #E15045;
+  --text-on-dark:    #DCD9CE;
+
+  --icon-default:    #686660;
+  --icon-muted:      rgba(104, 102, 96, 0.65);
+  --icon-brand:      #E15045;
+
+  /* Coral accent overrides the violet brand scale used in product CTAs/dots. */
+  --royal-100: rgba(225, 80, 69, 0.12);
+  --royal-200: rgba(225, 80, 69, 0.20);
+  --royal-300: #F08278;
+  --royal-400: #E15045;
+  --royal-500: #C8362B;
+  --royal-600: #A82922;
+
+  --font-sans:    'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-sm: rgba(0,0,0,0.18) 1px 1px 2px 0,
+               rgba(255,255,255,0.55) -1px -1px 1px 0;
+  --shadow-md: rgba(160, 155, 140, 0.6) 4px 4px 8px 0 inset,
+               rgba(255, 255, 255, 0.9) -4px -4px 8px 0 inset,
+               rgba(180, 175, 160, 0.3) 1px 1px 2px 0 inset;
+  --shadow-lg: rgba(160, 155, 140, 0.6) 8px 8px 16px 0 inset,
+               rgba(255, 255, 255, 0.9) -4px -4px 12px 0 inset,
+               rgba(180, 175, 160, 0.3) 2px 2px 4px 0 inset;
+
+  --btn-ink-bg:        #E15045;
+  --btn-ink-bg-hover:  #C8362B;
+  --btn-ink-bg-active: #A82922;
+  --btn-ink-fg:        #DCD9CE;
+
+  /* Feature pastels — translate to Atmospheric's quiet palette. */
+  --feature-pink-bg:   rgba(225, 80, 69, 0.14);
+  --feature-pink-fg:   #C8362B;
+  --feature-purple-bg: rgba(118, 210, 182, 0.16);
+  --feature-purple-fg: #2E6F5A;
+  --feature-green-bg:  rgba(118, 210, 182, 0.18);
+  --feature-green-fg:  #2E6F5A;
+  --feature-blue-bg:   rgba(104, 102, 96, 0.12);
+  --feature-blue-fg:   #4A4844;
+
+  --focus-ring:   0 0 0 3px rgba(225, 80, 69, 0.30);
+  --focus-border: #E15045;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme='studio'] {
+    /* Vanguard — dark system pref */
+    --studio-accent:        #FF4F18;
+    --studio-accent-strong: #FF7144;
+    --studio-tertiary:      #A08C6C;
+
+    --surface-canvas:  #050505;
+    --surface-card:    #0E0E0E;
+    --surface-subtle:  #161616;
+    --surface-raised:  #0E0E0E;
+    --surface-overlay: rgba(0, 0, 0, 0.78);
+    --surface-stage:   #000000;
+
+    --border-default:  #262626;
+    --border-subtle:   rgba(255, 255, 255, 0.06);
+    --border-strong:   #FF4F18;
+
+    --text-default:    #FFFFFF;
+    --text-title:      #FF4F18;
+    --text-body:       #FFFFFF;
+    --text-subtitle:   #A3A3A3;
+    --text-caption:    #A3A3A3;
+    --text-disabled:   #6B5C43;
+    --text-link:       #FF4F18;
+    --text-on-dark:    #FFFFFF;
+
+    --icon-default:    #A3A3A3;
+    --icon-muted:      #6B5C43;
+    --icon-brand:      #FF4F18;
+
+    --royal-100: rgba(255, 79, 24, 0.14);
+    --royal-200: rgba(255, 79, 24, 0.24);
+    --royal-300: #FF7144;
+    --royal-400: #FF4F18;
+    --royal-500: #E04412;
+    --royal-600: #B6360E;
+
+    --shadow-sm: rgba(0,0,0,0.4) 0px 3px 5px 0 inset,
+                 rgba(255,255,255,0.3) 0px 1px 1px 0;
+    --shadow-md: rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset,
+                 rgba(255, 255, 255, 0.10) 0px 2px 10px 0 inset,
+                 rgba(0, 0, 0, 0.8) 0px 20px 40px 0;
+    --shadow-lg: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px,
+                 rgba(0, 0, 0, 0.8) 0px 20px 40px 0;
+
+    --btn-ink-bg:        #FF4F18;
+    --btn-ink-bg-hover:  #E04412;
+    --btn-ink-bg-active: #B6360E;
+    --btn-ink-fg:        #050505;
+
+    --feature-pink-bg:   rgba(255, 79, 24, 0.14);
+    --feature-pink-fg:   #FF7144;
+    --feature-purple-bg: rgba(160, 140, 108, 0.18);
+    --feature-purple-fg: #A08C6C;
+    --feature-green-bg:  rgba(160, 140, 108, 0.14);
+    --feature-green-fg:  #A08C6C;
+    --feature-blue-bg:   rgba(38, 38, 38, 0.60);
+    --feature-blue-fg:   #A3A3A3;
+
+    --focus-ring:   0 0 0 3px rgba(255, 79, 24, 0.30);
+    --focus-border: #FF4F18;
+  }
+}
+
+/* ==========================================================================
    Base
    ========================================================================== */
 html, body {
@@ -270,11 +417,63 @@ button, input, textarea, select { font-family: inherit; }
   color: transparent;
 }
 
+/* --------------------------------------------------------------------------
+   Studio theme — type treatments
+   -------------------------------------------------------------------------- */
+/* Atmospheric (light system pref): JetBrains Mono for body + labels, with
+   the design-spec letter-spacing. Display stays in Inter. */
+[data-theme='studio'] .t-mono-label,
+[data-theme='studio'] .t-caption,
+[data-theme='studio'] code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+[data-theme='studio'] .t-body,
+[data-theme='studio'] .t-body-lg {
+  letter-spacing: 0.02em;
+}
+
+/* Vanguard (dark system pref): uppercase Inter across display + headings +
+   labels, with the expressive letter-spacing from the spec. */
+@media (prefers-color-scheme: dark) {
+  [data-theme='studio'] .t-display,
+  [data-theme='studio'] .t-h1,
+  [data-theme='studio'] .t-h2,
+  [data-theme='studio'] .t-h3,
+  [data-theme='studio'] .t-h4 {
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    font-weight: var(--fw-medium);
+  }
+  [data-theme='studio'] .t-mono-label {
+    letter-spacing: 0.1em;
+  }
+  [data-theme='studio'] .t-body,
+  [data-theme='studio'] .t-body-lg {
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+/* Override the Tatch violet gradient wordmark with the studio accent so
+   inviter / hero copy reads in-palette. */
+[data-theme='studio'] .t-brand-text {
+  background: linear-gradient(
+    135deg,
+    var(--studio-accent) 0%,
+    var(--studio-accent-strong) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
 /* Focus ring — softer violet per design.md spec, applies to buttons,
    links, and anything that doesn't have its own container-level focus
-   styling. */
+   styling. Reads from --focus-border so each theme can recolor (studio
+   uses the coral accent). */
 *:focus-visible {
-  outline: 2px solid #8B7CF6;
+  outline: 2px solid var(--focus-border);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
@@ -317,6 +516,13 @@ select:focus-visible {
   /* Dial vibrancy back over the dark canvas so the ribbons read as a
      brand wash rather than competing with foreground UI. */
   opacity: 0.55;
+}
+
+/* Studio mode: hide the violet brand ribbons — they're off-palette against
+   Atmospheric's warm grey + Vanguard's deep black. The studio surfaces
+   carry their own depth via inset shadows and borders. */
+[data-theme="studio"] .brand-ribbons {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
