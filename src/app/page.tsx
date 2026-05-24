@@ -269,26 +269,18 @@ function GalleryHeader({
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   return (
     <header className="border-b border-border-subtle">
-      {/* 3-column grid: left = brand + active route; center = viewport switcher;
-          right = actions. The center cell self-centers via the grid track so
-          the switcher is visually centered in the viewport even when the side
-          clusters differ in width. */}
-      <div className="mx-auto grid w-full max-w-[1480px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-2.5">
-        {/* Left */}
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="text-[13px] font-semibold tracking-tight text-ink-title">
-            tatch
+      {/* 3-column grid: left = active route (aligned with the PRD rail icon at
+          16px); center = viewport switcher; right = actions. */}
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-2.5">
+        {/* Left — route label aligns with the PRD rail's FileText icon */}
+        <div className="flex min-w-0 items-baseline gap-2">
+          <span className="t-mono-label">Now</span>
+          <span className="truncate text-[14px] font-semibold text-ink-title">
+            {title}
           </span>
-          <span className="hidden h-5 w-px bg-border md:block" aria-hidden="true" />
-          <div className="hidden min-w-0 items-baseline gap-2 md:flex">
-            <span className="t-mono-label">Now</span>
-            <span className="truncate text-[14px] font-semibold text-ink-title">
-              {title}
-            </span>
-            <code className="hidden truncate rounded-sm bg-subtle px-1.5 py-0.5 text-[11.5px] text-ink-body xl:inline">
-              {href}
-            </code>
-          </div>
+          <code className="hidden truncate rounded-sm bg-subtle px-1.5 py-0.5 text-[11.5px] text-ink-body xl:inline">
+            {href}
+          </code>
         </div>
 
         {/* Center — viewport switcher */}
