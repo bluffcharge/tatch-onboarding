@@ -44,6 +44,7 @@ type Route = {
 
 const ROUTES: Route[] = [
   { href: "/j/abc123",                   title: "P1 — Welcome",           subtitle: "SMS / email link entry",                  group: "entry",      intent: "mobile"  },
+  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile"  },
   { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
   { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile"  },
   { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile"  },
