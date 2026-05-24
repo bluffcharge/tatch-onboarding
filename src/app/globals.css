@@ -189,51 +189,77 @@
 }
 
 /* ==========================================================================
-   Dark theme — opt-in via [data-theme="dark"] on <html>
+   Dark theme — NeuroSync Cognitive Analytics
+   --------------------------------------------------------------------------
+   Opt-in via [data-theme="dark"] on <html>. Ink-violet canvas (#0A0A14)
+   with a slightly lifted surface (#141424); purple-500 (#A855F7) accent
+   replaces the Tatch royal violet across the product chrome; hairline
+   white borders at low opacity carry the glass framing language; text
+   is white primary on zinc-400 secondary, Inter throughout.
    ========================================================================== */
 [data-theme='dark'] {
-  --surface-canvas:  var(--grey-900);
-  --surface-card:    var(--grey-800);
-  --surface-subtle:  #2F3137;
-  --surface-raised:  var(--grey-700);
-  --surface-overlay: rgba(0,0,0,0.65);
-  /* Stage chrome — darker than the iframe canvas so the previewed UI
-     lifts off the surface (per design.md spec). */
-  --surface-stage:   #1A1B1E;
+  --surface-canvas:  #0A0A14;
+  --surface-card:    #141424;
+  --surface-subtle:  #1A1A2A;
+  --surface-raised:  #1A1A2A;
+  --surface-overlay: rgba(5, 5, 12, 0.75);
+  /* Stage chrome — deeper than the iframe canvas so the previewed UI
+     lifts off the gallery surface. */
+  --surface-stage:   #05050C;
 
-  --border-default:  rgba(255,255,255,0.10);
-  --border-subtle:   rgba(255,255,255,0.06);
-  --border-strong:   rgba(255,255,255,0.18);
+  --border-default:  rgba(255, 255, 255, 0.10);
+  --border-subtle:   rgba(255, 255, 255, 0.06);
+  --border-strong:   rgba(255, 255, 255, 0.18);
 
   --text-default:    #FFFFFF;
   --text-title:      #FFFFFF;
-  --text-body:       var(--grey-300);
-  --text-subtitle:   var(--grey-400);
-  --text-caption:    var(--grey-500);
-  --text-disabled:   var(--grey-600);
+  --text-body:       #FFFFFF;
+  --text-subtitle:   #9CA3AF; /* zinc-400 */
+  --text-caption:    #9CA3AF;
+  --text-disabled:   #6B7280; /* zinc-500 */
+  --text-link:       #A855F7;
 
-  --icon-default:    var(--grey-300);
-  --icon-muted:      var(--grey-500);
-  --icon-brand:      var(--royal-300);
+  --icon-default:    #9CA3AF;
+  --icon-muted:      #6B7280;
+  --icon-brand:      #A855F7;
 
-  --shadow-md:       0 1px 3px 0 rgba(0,0,0,0.45), 0 1px 2px 0 rgba(0,0,0,0.30);
-  --shadow-lg:       0 8px 24px 0 rgba(0,0,0,0.55);
+  /* Remap the royal scale → NeuroSync purple so every product surface
+     that already reaches for --royal-* picks up the new accent. */
+  --royal-100: rgba(168, 85, 247, 0.14);
+  --royal-200: rgba(168, 85, 247, 0.22);
+  --royal-300: #C084FC;
+  --royal-400: #A855F7;
+  --royal-500: #9333EA;
+  --royal-600: #7E22CE;
 
-  /* Ink button inverts in dark mode — white pill on dark surface. */
-  --btn-ink-bg:        #FFFFFF;
-  --btn-ink-bg-hover:  var(--grey-200);
-  --btn-ink-bg-active: var(--grey-300);
-  --btn-ink-fg:        var(--grey-950);
+  /* Subtle purple-tinted glow on elevated surfaces (per NeuroSync's
+     glass + bloom language) — no hard drop shadows. */
+  --shadow-md: 0 8px 24px 0 rgba(168, 85, 247, 0.14),
+               0 1px 2px 0 rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 16px 48px 0 rgba(168, 85, 247, 0.18),
+               0 8px 24px 0 rgba(0, 0, 0, 0.55);
 
-  /* Feature pastels in dark mode — soft tint over canvas, brighter fg. */
-  --feature-pink-bg:   rgba(244, 168, 194, 0.10);
-  --feature-pink-fg:   #F4A8C2;
-  --feature-purple-bg: rgba(201, 179, 240, 0.10);
-  --feature-purple-fg: #C9B3F0;
-  --feature-green-bg:  rgba(181, 221, 168, 0.10);
-  --feature-green-fg:  #B5DDA8;
-  --feature-blue-bg:   rgba(156, 199, 242, 0.10);
-  --feature-blue-fg:   #9CC7F2;
+  /* Primary CTA: solid NeuroSync purple. The `bg-[color:var(...)]`
+     Tailwind arbitrary syntax requires a color, so we keep this solid
+     rather than reaching for the spec's purple→indigo gradient. */
+  --btn-ink-bg:        #A855F7;
+  --btn-ink-bg-hover:  #9333EA;
+  --btn-ink-bg-active: #7E22CE;
+  --btn-ink-fg:        #FFFFFF;
+
+  /* Feature pastels recast against the NeuroSync palette — purple +
+     indigo washes only, so they read as variants of the same family. */
+  --feature-pink-bg:   rgba(168, 85, 247, 0.12);
+  --feature-pink-fg:   #C084FC;
+  --feature-purple-bg: rgba(99, 102, 241, 0.12);
+  --feature-purple-fg: #A5B4FC;
+  --feature-green-bg:  rgba(168, 85, 247, 0.10);
+  --feature-green-fg:  #C084FC;
+  --feature-blue-bg:   rgba(99, 102, 241, 0.10);
+  --feature-blue-fg:   #A5B4FC;
+
+  --focus-ring:   0 0 0 3px rgba(168, 85, 247, 0.28);
+  --focus-border: #A855F7;
 }
 
 /* ==========================================================================
@@ -437,11 +463,22 @@ select:focus-visible {
   to { stroke-dashoffset: 0; }
 }
 
-[data-theme="dark"] .brand-ribbons,
-.dark .brand-ribbons {
-  /* Dial vibrancy back over the dark canvas so the ribbons read as a
-     brand wash rather than competing with foreground UI. */
-  opacity: 0.55;
+/* Dark (NeuroSync): the bouquet stays — but tonally. Each ribbon takes
+   the canvas color so it disappears as fill, then a layered drop-shadow
+   filter draws a 1px top highlight, a 1px bottom shadow, and a soft
+   purple-tinted bloom. Reads as a quiet embossed sweep, not a colored
+   bouquet. A horizontal mask fades the whole bloom toward the content
+   column on the right so it never crowds the hero copy. */
+[data-theme="dark"] .brand-ribbons {
+  mask-image: linear-gradient(to right, black 0%, black 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 55%, transparent 95%);
+}
+[data-theme="dark"] .brand-ribbon {
+  stroke: var(--surface-canvas);
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.06))
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.55))
+    drop-shadow(0 6px 18px rgba(168, 85, 247, 0.12));
 }
 
 /* Studio mode: hide the violet brand ribbons — DIS leans on glass +
@@ -468,12 +505,13 @@ select:focus-visible {
 }
 
 [data-theme='dark'] .morphix-card {
-  background: var(--grey-800);
+  background: var(--surface-card); /* NeuroSync #141424 */
+  border: 1px solid var(--border-subtle);
   box-shadow:
-    8px 8px 20px 0 rgba(0, 0, 0, 0.45),
-    -8px -8px 20px 0 rgba(255, 255, 255, 0.04),
-    1px 1px 2px 0 rgba(0, 0, 0, 0.30),
-    -1px -1px 2px 0 rgba(255, 255, 255, 0.04);
+    8px 8px 24px 0 rgba(0, 0, 0, 0.55),
+    -8px -8px 24px 0 rgba(255, 255, 255, 0.025),
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px 0 rgba(168, 85, 247, 0.08);
 }
 
 [data-theme='studio'] .morphix-card {
