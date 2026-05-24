@@ -9,9 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-type Theme = "light" | "dark" | "studio";
-
-const THEME_ORDER: Theme[] = ["light", "dark", "studio"];
+type Theme = "light" | "dark";
 
 type ThemeCtx = {
   theme: Theme;
@@ -24,7 +22,7 @@ const Ctx = createContext<ThemeCtx | null>(null);
 const STORAGE_KEY = "tatch-onboarding-theme";
 
 function isTheme(value: unknown): value is Theme {
-  return value === "light" || value === "dark" || value === "studio";
+  return value === "light" || value === "dark";
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -63,11 +61,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  const toggle = useCallback(() => {
-    const next =
-      THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
-    setTheme(next);
-  }, [theme, setTheme]);
+  const toggle = useCallback(
+    () => setTheme(theme === "dark" ? "light" : "dark"),
+    [theme, setTheme]
+  );
 
   return (
     <Ctx.Provider value={{ theme, setTheme, toggle }}>{children}</Ctx.Provider>

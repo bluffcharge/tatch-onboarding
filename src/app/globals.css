@@ -57,48 +57,53 @@
   --color-error:   #DA2B2C;
   --color-warn:    #F6A623;
 
-  /* ---------------- Royal scale (brand secondary) ---------------- */
-  --royal-50:  #F6F5FF;
-  --royal-100: #E6E2FF;
-  --royal-200: #C5B9FF;
-  --royal-300: #9B79FF;
-  --royal-400: #8145FF;   /* most-used product accent */
-  --royal-500: #7533FF;
-  --royal-600: #5E28D6;
-  --royal-700: #4A1EAA;
-  --royal-800: #35167A;
-  --royal-900: #1E0A4A;
+  /* ---------------- Royal scale → Dimensional Interface Schema blue
+     Every product surface that already reaches for --royal-* picks up
+     the new DIS blue-500 accent automatically. ---------------- */
+  --royal-50:  #EFF6FF;
+  --royal-100: #DBEAFE;
+  --royal-200: #BFDBFE;
+  --royal-300: #93C5FD;
+  --royal-400: #3B82F6;   /* most-used product accent — DIS blue-500 */
+  --royal-500: #2563EB;
+  --royal-600: #1D4ED8;
+  --royal-700: #1E40AF;
+  --royal-800: #1E3A8A;
+  --royal-900: #172554;
 
-  /* ---------------- Semantic surfaces (LIGHT theme — default) ---------------- */
-  --surface-canvas:  var(--grey-50);
-  --surface-card:    #FFFFFF;
-  --surface-subtle:  var(--grey-100);
+  /* ---------------- Semantic surfaces (LIGHT — Dimensional Interface Schema)
+     White canvas, frosted glass cards, zinc neutrals for ink + borders,
+     soft long-throw shadows. ---------------- */
+  --surface-canvas:  #FFFFFF;
+  --surface-card:    rgba(255, 255, 255, 0.72);
+  --surface-subtle:  #FAFAFA;
   --surface-raised:  #FFFFFF;
-  --surface-overlay: rgba(66,68,76,0.85);
+  --surface-overlay: rgba(24, 24, 27, 0.55);
   /* Gallery / preview-chrome surface — a step quieter than the iframe's
      own canvas so the previewed UI reads as a card on a desk. */
-  --surface-stage:   #F1F2F4;
+  --surface-stage:   #F4F4F5; /* zinc-100 */
 
-  --border-default:  var(--grey-300);
-  --border-subtle:   var(--grey-200);
-  --border-strong:   var(--grey-400);
+  --border-default:  #E4E4E7; /* zinc-200 */
+  --border-subtle:   rgba(228, 228, 231, 0.6);
+  --border-strong:   #3F3F46; /* zinc-700 */
 
-  --text-default:    var(--grey-900);
-  --text-title:      var(--grey-950);
-  --text-body:       var(--grey-800);
-  --text-subtitle:   var(--grey-700);
-  --text-caption:    var(--grey-600);
-  --text-disabled:   var(--grey-500);
-  --text-link:       var(--royal-400);
+  --text-default:    #71717A; /* zinc-500 — neutral foundation */
+  --text-title:      #18181B; /* zinc-900 — high-contrast headings */
+  --text-body:       #52525B; /* zinc-600 */
+  --text-subtitle:   #3F3F46; /* zinc-700 */
+  --text-caption:    #71717A;
+  --text-disabled:   #A1A1AA; /* zinc-400 */
+  --text-link:       #3B82F6;
   --text-on-dark:    #FFFFFF;
 
-  --icon-default:    var(--grey-800);
-  --icon-muted:      var(--grey-600);
-  --icon-brand:      var(--royal-400);
+  --icon-default:    #52525B;
+  --icon-muted:      #A1A1AA;
+  --icon-brand:      #3B82F6;
 
-  /* ---------------- Typography ---------------- */
-  --font-sans:    'Geist', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  --font-display: 'Archivo Black', 'Arial Black', 'Helvetica Black', sans-serif;
+  /* ---------------- Typography — DIS uses the system font for all roles ---------------- */
+  --font-sans:    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Mono', monospace;
 
   --fs-display-xl: 72px;
   --fs-display-l:  60px;
@@ -152,11 +157,12 @@
   --radius-input:   12px;
   --radius-control: 12px;
 
-  /* ---------------- Shadows ---------------- */
-  --shadow-xs:    0 1px 2px 0 rgba(0,0,0,0.06);
-  --shadow-sm:    0 1px 3px 0 rgba(0,0,0,0.08), 0 1px 2px 0 rgba(0,0,0,0.04);
-  --shadow-md:    1px 1px 5px 0 rgba(187,190,199,0.85);
-  --shadow-lg:    0 6px 16px 0 rgba(0,0,0,0.10);
+  /* ---------------- Shadows — DIS leans on diffuse, long-throw lift ---------------- */
+  --shadow-xs:    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm:    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:    0 30px 60px -15px rgba(0, 0, 0, 0.10);
+  --shadow-lg:    0 100px 100px -50px rgba(0, 0, 0, 0.06),
+                  0 25px 50px -12px rgba(228, 228, 231, 0.4);
 
   /* ---------------- Motion ---------------- */
   --ease-snap:     cubic-bezier(0.76, 0, 0.24, 1);
@@ -165,27 +171,29 @@
   --dur-med:  250ms;
   --dur-slow: 400ms;
 
-  /* ---------------- Feature-card pastels ----------------
-     Used on the P1 desktop "what you're signing up for" card cluster
-     and any other educational card surfaces. Light tints in light mode,
-     soft 10% washes over the dark canvas in dark mode. */
-  --feature-pink-bg:   #FCE7F0;
-  --feature-pink-fg:   #B91458;
-  --feature-purple-bg: #EFE9FE;
-  --feature-purple-fg: #6428D1;
-  --feature-green-bg:  #E3F4DC;
-  --feature-green-fg:  #15803D;
-  --feature-blue-bg:   #DCEAF7;
+  /* ---------------- Feature-card pastels — DIS-tuned tints ----------------
+     Tints scoped to the DIS accent family (blue primary, purple tertiary)
+     so the small icon chips still signal category without breaking the
+     overall white-canvas-blue-accent rhythm. */
+  --feature-pink-bg:   rgba(59, 130, 246, 0.10);
+  --feature-pink-fg:   #1D4ED8;
+  --feature-purple-bg: rgba(192, 132, 252, 0.12);
+  --feature-purple-fg: #7E22CE;
+  --feature-green-bg:  rgba(96, 165, 250, 0.10);
+  --feature-green-fg:  #1E40AF;
+  --feature-blue-bg:   rgba(59, 130, 246, 0.10);
   --feature-blue-fg:   #1D4ED8;
 
   /* ---------------- Ink (primary CTA) button ----------------
-     Brand violet is reserved for transitions, gradients, and brand
-     moments. Primary CTAs read as ink (near-black in light, white in
-     dark) so the violet pops where it earns the eye. */
-  --btn-ink-bg:        var(--grey-950);
-  --btn-ink-bg-hover:  #2A2A2D;
-  --btn-ink-bg-active: #000000;
+     DIS primary spec: zinc-900 pill on white with white text. */
+  --btn-ink-bg:        #18181B;
+  --btn-ink-bg-hover:  #27272A;
+  --btn-ink-bg-active: #09090B;
   --btn-ink-fg:        #FFFFFF;
+
+  /* DIS focus ring — blue-500 at low opacity. */
+  --focus-ring:   0 0 0 3px rgba(59, 130, 246, 0.28);
+  --focus-border: #3B82F6;
 }
 
 /* ==========================================================================
@@ -263,85 +271,6 @@
 }
 
 /* ==========================================================================
-   Studio theme — opt-in via [data-theme="studio"] on <html>
-   --------------------------------------------------------------------------
-   Dimensional Interface Schema:
-     • White canvas, glass cards, zinc-900 ink CTAs, blue-500 accent.
-     • System font for everything (display + body + labels).
-     • Tight zinc neutrals for ink + borders; generous 24–40px radii.
-   Single mode (light) — does not adapt to prefers-color-scheme.
-   ========================================================================== */
-[data-theme='studio'] {
-  --studio-accent:        #3B82F6; /* blue-500  */
-  --studio-accent-strong: #2563EB; /* blue-600  */
-  --studio-tertiary:      #C084FC; /* purple-400 */
-
-  --surface-canvas:  #FFFFFF;
-  --surface-card:    rgba(255, 255, 255, 0.72);
-  --surface-subtle:  #FAFAFA;
-  --surface-raised:  #FFFFFF;
-  --surface-overlay: rgba(24, 24, 27, 0.55);
-  --surface-stage:   #F4F4F5; /* zinc-100 */
-
-  --border-default:  #E4E4E7; /* zinc-200 */
-  --border-subtle:   rgba(228, 228, 231, 0.6);
-  --border-strong:   #3F3F46; /* zinc-700 */
-
-  --text-default:    #71717A; /* zinc-500 — neutral foundation per spec */
-  --text-title:      #18181B; /* zinc-900 — text-secondary in spec is the
-                                 high-contrast role used for headings.    */
-  --text-body:       #52525B; /* zinc-600 */
-  --text-subtitle:   #3F3F46; /* zinc-700 */
-  --text-caption:    #71717A;
-  --text-disabled:   #A1A1AA; /* zinc-400 */
-  --text-link:       #3B82F6;
-  --text-on-dark:    #FFFFFF;
-
-  --icon-default:    #52525B;
-  --icon-muted:      #A1A1AA;
-  --icon-brand:      #3B82F6;
-
-  /* Royal scale → blue, so product chrome that reaches for --royal-400
-     (focus rings, dots, brand accents) reads as DIS blue. */
-  --royal-100: #DBEAFE;
-  --royal-200: #BFDBFE;
-  --royal-300: #93C5FD;
-  --royal-400: #3B82F6;
-  --royal-500: #2563EB;
-  --royal-600: #1D4ED8;
-
-  --font-sans:    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Mono', monospace;
-
-  /* DIS shadows are very soft + diffuse — barely-there at the base, a
-     long-throw lift on hero/elevated surfaces. */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 30px 60px -15px rgba(0, 0, 0, 0.10);
-  --shadow-lg: 0 100px 100px -50px rgba(0, 0, 0, 0.06),
-               0 25px 50px -12px rgba(228, 228, 231, 0.4);
-
-  /* Primary CTA per spec: zinc-900 pill on white. */
-  --btn-ink-bg:        #18181B;
-  --btn-ink-bg-hover:  #27272A;
-  --btn-ink-bg-active: #09090B;
-  --btn-ink-fg:        #FFFFFF;
-
-  /* Feature pastels — DIS-tuned tints (blue primary, purple tertiary). */
-  --feature-pink-bg:   rgba(59, 130, 246, 0.10);
-  --feature-pink-fg:   #1D4ED8;
-  --feature-purple-bg: rgba(192, 132, 252, 0.12);
-  --feature-purple-fg: #7E22CE;
-  --feature-green-bg:  rgba(96, 165, 250, 0.10);
-  --feature-green-fg:  #1E40AF;
-  --feature-blue-bg:   rgba(59, 130, 246, 0.10);
-  --feature-blue-fg:   #1D4ED8;
-
-  --focus-ring:   0 0 0 3px rgba(59, 130, 246, 0.28);
-  --focus-border: #3B82F6;
-}
-
-/* ==========================================================================
    Base
    ========================================================================== */
 html, body {
@@ -376,36 +305,40 @@ button, input, textarea, select { font-family: inherit; }
 }
 
 /* --------------------------------------------------------------------------
-   Studio theme — Dimensional Interface Schema type treatments
+   Light (Dimensional Interface Schema) type treatments
    --------------------------------------------------------------------------
-   Display lands at -0.025em letter-spacing per spec; body sits at the
-   relaxed 26/16 reading rhythm; mono-labels drop the uppercase casing
-   and tighten letter-spacing — DIS leans on sentence case + the system
-   font's natural rhythm rather than mono.                             */
-[data-theme='studio'] .t-display,
-[data-theme='studio'] .t-h1 {
+   Display sits at -0.025em letter-spacing per spec; body breathes at the
+   relaxed 26/16 reading rhythm; mono-labels drop their uppercase casing
+   so DIS leans on sentence case + the system font's natural rhythm. The
+   dark theme keeps the Tatch defaults (uppercase mono labels, etc.) by
+   re-scoping these resets so they only apply outside [data-theme='dark']. */
+.t-display,
+.t-h1 {
   letter-spacing: -0.025em;
   font-weight: var(--fw-medium);
 }
-[data-theme='studio'] .t-body,
-[data-theme='studio'] .t-body-lg {
+.t-body,
+.t-body-lg {
   line-height: 1.625;
 }
-[data-theme='studio'] .t-mono-label {
+.t-mono-label {
   text-transform: none;
   letter-spacing: 0;
   font-weight: var(--fw-medium);
   color: var(--text-default);
 }
 
-/* Studio: replace the Tatch violet gradient wordmark with the DIS blue
-   ramp so personalized "Sara from Summit Builders" copy reads in-palette. */
-[data-theme='studio'] .t-brand-text {
-  background: linear-gradient(
-    135deg,
-    var(--studio-accent) 0%,
-    var(--studio-accent-strong) 100%
-  );
+/* Dark (NeuroSync) keeps the uppercase mono-label rhythm. */
+[data-theme='dark'] .t-mono-label {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-caption);
+}
+
+/* Replace the Tatch violet gradient wordmark with the DIS blue ramp so
+   personalized "Sara from Summit Builders" copy reads in-palette. */
+.t-brand-text {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -413,28 +346,24 @@ button, input, textarea, select { font-family: inherit; }
 
 /* DIS card glass — applies to anything using bg-card (the gallery rails,
    filmstrip tiles, comments panel) so they read as the spec's frosted
-   surface rather than flat blocks. */
-[data-theme='studio'] .bg-card,
-[data-theme='studio'] [class*='bg-card'] {
+   surface. Skipped in dark mode where NeuroSync uses solid #141424. */
+:root:not([data-theme='dark']) .bg-card,
+:root:not([data-theme='dark']) [class*='bg-card'] {
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
 }
 
-/* Focus ring — softer violet per design.md spec, applies to buttons,
-   links, and anything that doesn't have its own container-level focus
-   styling. Reads from --focus-border so each theme can recolor (studio
-   uses the coral accent). */
+/* Focus ring — applies to buttons, links, and anything without its own
+   container-level focus styling. Reads from --focus-border so each
+   theme can recolor (DIS blue in light, NeuroSync purple in dark). */
 *:focus-visible {
   outline: 2px solid var(--focus-border);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
-/* Focus glow used by container-styled fields (TextField, PhoneInput, etc.) */
-:root {
-  --focus-ring: 0 0 0 3px rgba(139, 124, 246, 0.18);
-  --focus-border: #8B7CF6;
-}
+/* Default focus glow used by container-styled fields (TextField,
+   PhoneInput, etc.). The per-theme blocks above override these. */
 
 /* Inputs render their focus state via the wrapping TextField (border-royal
    + box-shadow ring), so suppress the global outline to avoid a doubled
@@ -481,47 +410,41 @@ select:focus-visible {
     drop-shadow(0 6px 18px rgba(168, 85, 247, 0.12));
 }
 
-/* Studio mode: hide the violet brand ribbons — DIS leans on glass +
-   soft shadows for depth, not a brand wash. */
-[data-theme="studio"] .brand-ribbons {
+/* Light (DIS): hide the violet brand ribbons — DIS leans on glass +
+   soft shadows for depth, not a brand wash. Ribbons live in dark mode
+   only, where they read as a quiet embossed sweep. */
+:root:not([data-theme='dark']) .brand-ribbons {
   display: none;
 }
 
 /* --------------------------------------------------------------------------
-   Morphix card — neumorphic surface used for the P1 "What you're signing up
-   for" feature cluster. Pulled from the Atmospheric card recipe: a raised
-   pillow with a soft drop shadow on the bottom-right and a counter-light
-   highlight on the top-left. The pastel "film" lives on the icon now;
-   the card itself is a neutral surface that breathes with the theme.
+   Morphix card — used for the P1 "What you're signing up for" feature
+   cluster. Pastel film moved off the card (per-tone color lives on the
+   small icon tile); the card itself is a neutral surface that breathes
+   with the theme.
+     • Light (DIS): frosted glass + long-throw lift.
+     • Dark (NeuroSync): #141424 surface + hairline border + soft purple
+       bloom.
    -------------------------------------------------------------------------- */
 .morphix-card {
-  background: var(--surface-card);
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 20px;
-  box-shadow:
-    8px 8px 20px 0 rgba(140, 140, 160, 0.12),
-    -8px -8px 20px 0 rgba(255, 255, 255, 0.92),
-    1px 1px 2px 0 rgba(180, 175, 160, 0.18),
-    -1px -1px 2px 0 rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.10);
 }
 
 [data-theme='dark'] .morphix-card {
   background: var(--surface-card); /* NeuroSync #141424 */
   border: 1px solid var(--border-subtle);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow:
     8px 8px 24px 0 rgba(0, 0, 0, 0.55),
     -8px -8px 24px 0 rgba(255, 255, 255, 0.025),
     0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
     0 8px 24px 0 rgba(168, 85, 247, 0.08);
-}
-
-[data-theme='studio'] .morphix-card {
-  /* DIS glass — frosted surface with a long-throw lift, no neumorphic
-     bevel (would fight the spec's minimal shadow language). */
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.10);
 }
 
 @media (prefers-reduced-motion: reduce) {
