@@ -13,6 +13,8 @@ import {
   ChevronRight,
   ExternalLink,
   Laptop,
+  Maximize2,
+  Minimize2,
   Monitor,
   Moon,
   RotateCcw,
@@ -111,6 +113,10 @@ export default function Home() {
   const [resetTick, setResetTick] = useState(0);
   const [leftCollapsed, setLeftCollapsedState]   = useState(false);
   const [rightCollapsed, setRightCollapsedState] = useState(false);
+  // Expanded mode collapses both rails + hides the filmstrip so the iframe
+  // canvas fills the gallery viewport. Useful for hero-y screens (P1 ticket
+  // variant especially) where the stage feels cramped behind chrome.
+  const [expanded, setExpanded] = useState(false);
   const stripRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const hydratedViewport = useRef(false);
@@ -180,10 +186,17 @@ export default function Home() {
     selectRoute(ROUTES[i].href);
   }, [activeIndex, selectRoute]);
 
-  // Keyboard: ← → step routes; ⇧← ⇧→ step viewports.
+  const toggleExpanded = useCallback(() => setExpanded((e) => !e), []);
+
+  // Keyboard: ← → step routes; ⇧← ⇧→ step viewports; Esc exits expanded.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === "Escape" && expanded) {
+        e.preventDefault();
+        setExpanded(false);
+        return;
+      }
       if (e.shiftKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
         e.preventDefault();
         const i = VIEWPORT_ORDER.indexOf(viewport);
@@ -198,7 +211,7 @@ export default function Home() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [goPrev, goNext, viewport, setViewport]);
+  }, [goPrev, goNext, viewport, setViewport, expanded]);
 
   const iframeSrc = useMemo(() => {
     const sep = active.href.includes("?") ? "&" : "?";
@@ -216,34 +229,42 @@ export default function Home() {
         viewport={viewport}
         onViewportChange={setViewport}
         onReset={() => setResetTick((n) => n + 1)}
+        expanded={expanded}
+        onToggleExpanded={toggleExpanded}
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <RequirementsRail
-          context={reqContext}
-          routeTitle={active.title}
-          collapsed={leftCollapsed}
-          onToggle={toggleLeft}
-        />
+        {!expanded && (
+          <RequirementsRail
+            context={reqContext}
+            routeTitle={active.title}
+            collapsed={leftCollapsed}
+            onToggle={toggleLeft}
+          />
+        )}
         <Stage iframeSrc={iframeSrc} spec={spec} />
-        <CommentsRail
-          routeHref={active.href}
-          routeTitle={active.title}
-          collapsed={rightCollapsed}
-          onToggle={toggleRight}
-        />
+        {!expanded && (
+          <CommentsRail
+            routeHref={active.href}
+            routeTitle={active.title}
+            collapsed={rightCollapsed}
+            onToggle={toggleRight}
+          />
+        )}
       </div>
 
-      <Filmstrip
-        routes={ROUTES}
-        active={active}
-        activeIndex={activeIndex}
-        onSelect={selectRoute}
-        onPrev={goPrev}
-        onNext={goNext}
-        stripRef={stripRef}
-        cardRefs={cardRefs}
-      />
+      {!expanded && (
+        <Filmstrip
+          routes={ROUTES}
+          active={active}
+          activeIndex={activeIndex}
+          onSelect={selectRoute}
+          onPrev={goPrev}
+          onNext={goNext}
+          stripRef={stripRef}
+          cardRefs={cardRefs}
+        />
+      )}
     </div>
   );
 }
@@ -258,17 +279,23 @@ function GalleryHeader({
   viewport,
   onViewportChange,
   onReset,
+  expanded,
+  onToggleExpanded,
 }: {
   title: string;
   href: string;
   viewport: Viewport;
   onViewportChange: (v: Viewport) => void;
   onReset: () => void;
+  expanded: boolean;
+  onToggleExpanded: () => void;
 }) {
   const { theme, toggle } = useTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const themeNextLabel =
     theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+  const ExpandIcon = expanded ? Minimize2 : Maximize2;
+  const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
   return (
     <header className="border-b border-border-subtle">
       {/* 3-column grid: left = active route (aligned with the PRD rail icon at
@@ -300,6 +327,16 @@ function GalleryHeader({
           >
             <RotateCcw size={12} strokeWidth={1.75} />
             Reset
+          </button>
+          <button
+            type="button"
+            onClick={onToggleExpanded}
+            aria-pressed={expanded}
+            className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            title={expandLabel}
+          >
+            <ExpandIcon size={12} strokeWidth={1.75} />
+            {expanded ? "Collapse" : "Expand"}
           </button>
           <Link
             href={href}
