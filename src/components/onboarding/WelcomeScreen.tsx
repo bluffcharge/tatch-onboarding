@@ -76,7 +76,7 @@ export function WelcomeScreen({ invite }: Props) {
             {/* CTAs (live on mobile inline; on lg+ they pin to the bottom of
                 the hero column so the right card cluster doesn't push them
                 offscreen). */}
-            <div className="mt-8 space-y-3 lg:mt-10 lg:max-w-[420px]">
+            <div className="mt-8 space-y-3 md:max-w-[480px] lg:mt-10 lg:max-w-[420px]">
               <Button
                 fullWidth
                 size="lg"
