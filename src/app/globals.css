@@ -17,8 +17,6 @@
   font-display: swap;
 }
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
-/* Studio theme fonts — Inter (display + body) + JetBrains Mono (Atmospheric body). */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* ---------------- Brand Primary Palette ---------------- */
@@ -241,146 +239,80 @@
 /* ==========================================================================
    Studio theme — opt-in via [data-theme="studio"] on <html>
    --------------------------------------------------------------------------
-   Single mode that adapts to the system color scheme:
-     • prefers-color-scheme: light → Atmospheric Data Console
-       (warm grey canvas, coral accent, sage text, Inter + JetBrains Mono)
-     • prefers-color-scheme: dark  → Vanguard Premium Apparel
-       (deep black canvas, coral-neon accent, uppercase Inter, glass surfaces)
-   The default (when neither media branch matches) is Atmospheric.
+   Dimensional Interface Schema:
+     • White canvas, glass cards, zinc-900 ink CTAs, blue-500 accent.
+     • System font for everything (display + body + labels).
+     • Tight zinc neutrals for ink + borders; generous 24–40px radii.
+   Single mode (light) — does not adapt to prefers-color-scheme.
    ========================================================================== */
 [data-theme='studio'] {
-  /* Atmospheric — default / light system pref */
-  --studio-accent:        #E15045;
-  --studio-accent-strong: #FF3333;
-  --studio-tertiary:      #76D2B6;
+  --studio-accent:        #3B82F6; /* blue-500  */
+  --studio-accent-strong: #2563EB; /* blue-600  */
+  --studio-tertiary:      #C084FC; /* purple-400 */
 
-  --surface-canvas:  #A09D94;
-  --surface-card:    #DCD9CE;
-  --surface-subtle:  #B5B2A8;
-  --surface-raised:  #DCD9CE;
-  --surface-overlay: rgba(40, 38, 32, 0.65);
-  --surface-stage:   #8E8B82;
+  --surface-canvas:  #FFFFFF;
+  --surface-card:    rgba(255, 255, 255, 0.72);
+  --surface-subtle:  #FAFAFA;
+  --surface-raised:  #FFFFFF;
+  --surface-overlay: rgba(24, 24, 27, 0.55);
+  --surface-stage:   #F4F4F5; /* zinc-100 */
 
-  --border-default:  #FFFFFF;
-  --border-subtle:   rgba(255, 255, 255, 0.55);
-  --border-strong:   #686660;
+  --border-default:  #E4E4E7; /* zinc-200 */
+  --border-subtle:   rgba(228, 228, 231, 0.6);
+  --border-strong:   #3F3F46; /* zinc-700 */
 
-  --text-default:    #686660;
-  --text-title:      #686660;
-  --text-body:       #686660;
-  --text-subtitle:   #686660;
-  --text-caption:    #686660;
-  --text-disabled:   rgba(104, 102, 96, 0.55);
-  --text-link:       #E15045;
-  --text-on-dark:    #DCD9CE;
+  --text-default:    #71717A; /* zinc-500 — neutral foundation per spec */
+  --text-title:      #18181B; /* zinc-900 — text-secondary in spec is the
+                                 high-contrast role used for headings.    */
+  --text-body:       #52525B; /* zinc-600 */
+  --text-subtitle:   #3F3F46; /* zinc-700 */
+  --text-caption:    #71717A;
+  --text-disabled:   #A1A1AA; /* zinc-400 */
+  --text-link:       #3B82F6;
+  --text-on-dark:    #FFFFFF;
 
-  --icon-default:    #686660;
-  --icon-muted:      rgba(104, 102, 96, 0.65);
-  --icon-brand:      #E15045;
+  --icon-default:    #52525B;
+  --icon-muted:      #A1A1AA;
+  --icon-brand:      #3B82F6;
 
-  /* Coral accent overrides the violet brand scale used in product CTAs/dots. */
-  --royal-100: rgba(225, 80, 69, 0.12);
-  --royal-200: rgba(225, 80, 69, 0.20);
-  --royal-300: #F08278;
-  --royal-400: #E15045;
-  --royal-500: #C8362B;
-  --royal-600: #A82922;
+  /* Royal scale → blue, so product chrome that reaches for --royal-400
+     (focus rings, dots, brand accents) reads as DIS blue. */
+  --royal-100: #DBEAFE;
+  --royal-200: #BFDBFE;
+  --royal-300: #93C5FD;
+  --royal-400: #3B82F6;
+  --royal-500: #2563EB;
+  --royal-600: #1D4ED8;
 
-  --font-sans:    'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  --font-display: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans:    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Mono', monospace;
 
-  --shadow-sm: rgba(0,0,0,0.18) 1px 1px 2px 0,
-               rgba(255,255,255,0.55) -1px -1px 1px 0;
-  --shadow-md: rgba(160, 155, 140, 0.6) 4px 4px 8px 0 inset,
-               rgba(255, 255, 255, 0.9) -4px -4px 8px 0 inset,
-               rgba(180, 175, 160, 0.3) 1px 1px 2px 0 inset;
-  --shadow-lg: rgba(160, 155, 140, 0.6) 8px 8px 16px 0 inset,
-               rgba(255, 255, 255, 0.9) -4px -4px 12px 0 inset,
-               rgba(180, 175, 160, 0.3) 2px 2px 4px 0 inset;
+  /* DIS shadows are very soft + diffuse — barely-there at the base, a
+     long-throw lift on hero/elevated surfaces. */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 30px 60px -15px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 100px 100px -50px rgba(0, 0, 0, 0.06),
+               0 25px 50px -12px rgba(228, 228, 231, 0.4);
 
-  --btn-ink-bg:        #E15045;
-  --btn-ink-bg-hover:  #C8362B;
-  --btn-ink-bg-active: #A82922;
-  --btn-ink-fg:        #DCD9CE;
+  /* Primary CTA per spec: zinc-900 pill on white. */
+  --btn-ink-bg:        #18181B;
+  --btn-ink-bg-hover:  #27272A;
+  --btn-ink-bg-active: #09090B;
+  --btn-ink-fg:        #FFFFFF;
 
-  /* Feature pastels — translate to Atmospheric's quiet palette. */
-  --feature-pink-bg:   rgba(225, 80, 69, 0.14);
-  --feature-pink-fg:   #C8362B;
-  --feature-purple-bg: rgba(118, 210, 182, 0.16);
-  --feature-purple-fg: #2E6F5A;
-  --feature-green-bg:  rgba(118, 210, 182, 0.18);
-  --feature-green-fg:  #2E6F5A;
-  --feature-blue-bg:   rgba(104, 102, 96, 0.12);
-  --feature-blue-fg:   #4A4844;
+  /* Feature pastels — DIS-tuned tints (blue primary, purple tertiary). */
+  --feature-pink-bg:   rgba(59, 130, 246, 0.10);
+  --feature-pink-fg:   #1D4ED8;
+  --feature-purple-bg: rgba(192, 132, 252, 0.12);
+  --feature-purple-fg: #7E22CE;
+  --feature-green-bg:  rgba(96, 165, 250, 0.10);
+  --feature-green-fg:  #1E40AF;
+  --feature-blue-bg:   rgba(59, 130, 246, 0.10);
+  --feature-blue-fg:   #1D4ED8;
 
-  --focus-ring:   0 0 0 3px rgba(225, 80, 69, 0.30);
-  --focus-border: #E15045;
-}
-
-@media (prefers-color-scheme: dark) {
-  [data-theme='studio'] {
-    /* Vanguard — dark system pref */
-    --studio-accent:        #FF4F18;
-    --studio-accent-strong: #FF7144;
-    --studio-tertiary:      #A08C6C;
-
-    --surface-canvas:  #050505;
-    --surface-card:    #0E0E0E;
-    --surface-subtle:  #161616;
-    --surface-raised:  #0E0E0E;
-    --surface-overlay: rgba(0, 0, 0, 0.78);
-    --surface-stage:   #000000;
-
-    --border-default:  #262626;
-    --border-subtle:   rgba(255, 255, 255, 0.06);
-    --border-strong:   #FF4F18;
-
-    --text-default:    #FFFFFF;
-    --text-title:      #FF4F18;
-    --text-body:       #FFFFFF;
-    --text-subtitle:   #A3A3A3;
-    --text-caption:    #A3A3A3;
-    --text-disabled:   #6B5C43;
-    --text-link:       #FF4F18;
-    --text-on-dark:    #FFFFFF;
-
-    --icon-default:    #A3A3A3;
-    --icon-muted:      #6B5C43;
-    --icon-brand:      #FF4F18;
-
-    --royal-100: rgba(255, 79, 24, 0.14);
-    --royal-200: rgba(255, 79, 24, 0.24);
-    --royal-300: #FF7144;
-    --royal-400: #FF4F18;
-    --royal-500: #E04412;
-    --royal-600: #B6360E;
-
-    --shadow-sm: rgba(0,0,0,0.4) 0px 3px 5px 0 inset,
-                 rgba(255,255,255,0.3) 0px 1px 1px 0;
-    --shadow-md: rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset,
-                 rgba(255, 255, 255, 0.10) 0px 2px 10px 0 inset,
-                 rgba(0, 0, 0, 0.8) 0px 20px 40px 0;
-    --shadow-lg: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px,
-                 rgba(0, 0, 0, 0.8) 0px 20px 40px 0;
-
-    --btn-ink-bg:        #FF4F18;
-    --btn-ink-bg-hover:  #E04412;
-    --btn-ink-bg-active: #B6360E;
-    --btn-ink-fg:        #050505;
-
-    --feature-pink-bg:   rgba(255, 79, 24, 0.14);
-    --feature-pink-fg:   #FF7144;
-    --feature-purple-bg: rgba(160, 140, 108, 0.18);
-    --feature-purple-fg: #A08C6C;
-    --feature-green-bg:  rgba(160, 140, 108, 0.14);
-    --feature-green-fg:  #A08C6C;
-    --feature-blue-bg:   rgba(38, 38, 38, 0.60);
-    --feature-blue-fg:   #A3A3A3;
-
-    --focus-ring:   0 0 0 3px rgba(255, 79, 24, 0.30);
-    --focus-border: #FF4F18;
-  }
+  --focus-ring:   0 0 0 3px rgba(59, 130, 246, 0.28);
+  --focus-border: #3B82F6;
 }
 
 /* ==========================================================================
@@ -418,45 +350,30 @@ button, input, textarea, select { font-family: inherit; }
 }
 
 /* --------------------------------------------------------------------------
-   Studio theme — type treatments
-   -------------------------------------------------------------------------- */
-/* Atmospheric (light system pref): JetBrains Mono for body + labels, with
-   the design-spec letter-spacing. Display stays in Inter. */
-[data-theme='studio'] .t-mono-label,
-[data-theme='studio'] .t-caption,
-[data-theme='studio'] code {
-  font-family: var(--font-mono);
-  letter-spacing: 0.05em;
+   Studio theme — Dimensional Interface Schema type treatments
+   --------------------------------------------------------------------------
+   Display lands at -0.025em letter-spacing per spec; body sits at the
+   relaxed 26/16 reading rhythm; mono-labels drop the uppercase casing
+   and tighten letter-spacing — DIS leans on sentence case + the system
+   font's natural rhythm rather than mono.                             */
+[data-theme='studio'] .t-display,
+[data-theme='studio'] .t-h1 {
+  letter-spacing: -0.025em;
+  font-weight: var(--fw-medium);
 }
 [data-theme='studio'] .t-body,
 [data-theme='studio'] .t-body-lg {
-  letter-spacing: 0.02em;
+  line-height: 1.625;
+}
+[data-theme='studio'] .t-mono-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: var(--fw-medium);
+  color: var(--text-default);
 }
 
-/* Vanguard (dark system pref): uppercase Inter across display + headings +
-   labels, with the expressive letter-spacing from the spec. */
-@media (prefers-color-scheme: dark) {
-  [data-theme='studio'] .t-display,
-  [data-theme='studio'] .t-h1,
-  [data-theme='studio'] .t-h2,
-  [data-theme='studio'] .t-h3,
-  [data-theme='studio'] .t-h4 {
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    font-weight: var(--fw-medium);
-  }
-  [data-theme='studio'] .t-mono-label {
-    letter-spacing: 0.1em;
-  }
-  [data-theme='studio'] .t-body,
-  [data-theme='studio'] .t-body-lg {
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-}
-
-/* Override the Tatch violet gradient wordmark with the studio accent so
-   inviter / hero copy reads in-palette. */
+/* Studio: replace the Tatch violet gradient wordmark with the DIS blue
+   ramp so personalized "Sara from Summit Builders" copy reads in-palette. */
 [data-theme='studio'] .t-brand-text {
   background: linear-gradient(
     135deg,
@@ -466,6 +383,15 @@ button, input, textarea, select { font-family: inherit; }
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/* DIS card glass — applies to anything using bg-card (the gallery rails,
+   filmstrip tiles, comments panel) so they read as the spec's frosted
+   surface rather than flat blocks. */
+[data-theme='studio'] .bg-card,
+[data-theme='studio'] [class*='bg-card'] {
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
 }
 
 /* Focus ring — softer violet per design.md spec, applies to buttons,
@@ -518,9 +444,8 @@ select:focus-visible {
   opacity: 0.55;
 }
 
-/* Studio mode: hide the violet brand ribbons — they're off-palette against
-   Atmospheric's warm grey + Vanguard's deep black. The studio surfaces
-   carry their own depth via inset shadows and borders. */
+/* Studio mode: hide the violet brand ribbons — DIS leans on glass +
+   soft shadows for depth, not a brand wash. */
 [data-theme="studio"] .brand-ribbons {
   display: none;
 }
