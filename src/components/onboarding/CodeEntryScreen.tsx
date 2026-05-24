@@ -62,7 +62,7 @@ export function CodeEntryScreen() {
             Your operator may have given you a 6–8 character code. Type or paste it below.
           </p>
 
-          <div className="mt-7">
+          <div className="mt-7 md:max-w-[480px] lg:max-w-[520px]">
             <div
               className={[
                 "flex h-14 items-center rounded-lg border bg-card px-4 transition-colors duration-fast ease-snap",

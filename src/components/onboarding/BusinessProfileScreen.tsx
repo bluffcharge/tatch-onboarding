@@ -67,8 +67,8 @@ export function BusinessProfileScreen() {
         {/* 2-col on lg+: form left, live operator-preview right. The
             preview column widens at 2xl so the card has room to read. */}
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12 2xl:grid-cols-[minmax(0,1fr)_460px] 2xl:gap-20">
-          {/* Form */}
-          <div className="space-y-4">
+          {/* Form — cap field width on md+ to track the Continue CTA cap. */}
+          <div className="space-y-4 md:max-w-[480px] lg:max-w-[520px]">
             <TextField
               label="Business name"
               placeholder="e.g. Northwind Roofing"
