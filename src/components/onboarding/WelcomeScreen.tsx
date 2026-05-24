@@ -56,8 +56,9 @@ export function WelcomeScreen({ invite }: Props) {
               {operator.name} and ready to send referrals.
             </p>
 
-            {/* Inviter chip */}
-            <div className="mt-7 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs">
+            {/* Inviter chip — cap on md+ so it tracks the CTA stack below
+                instead of stretching the full hero column. */}
+            <div className="mt-7 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-xs md:max-w-[480px] lg:max-w-[420px]">
               <div className="grid h-10 w-10 place-items-center rounded-pill bg-brand-gradient-4 text-white">
                 <span className="text-[13px] font-semibold">
                   {inviter.firstName[0]}
