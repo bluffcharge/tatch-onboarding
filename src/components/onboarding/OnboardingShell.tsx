@@ -89,7 +89,11 @@ export function OnboardingShell({
           </header>
         )}
 
-        <main className={`mx-auto flex w-full flex-1 flex-col pb-6 pt-2 md:pt-4 lg:pt-6 ${widthCls} ${xPadCls}`}>
+        {/* main grows on mobile (so the sticky footer stays pinned to the
+            viewport bottom and any inner `flex-1` push-down works), then
+            shrinks to its content on md+ so the CTA sits with the form
+            instead of floating at the bottom of a 100dvh canvas. */}
+        <main className={`mx-auto flex w-full flex-1 flex-col pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6 ${widthCls} ${xPadCls}`}>
           {children}
         </main>
 
