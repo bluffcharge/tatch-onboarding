@@ -39,6 +39,18 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Personalize the welcome with the inviting operator + BDM (trust signal).",
     ],
   },
+  "/onboarding/ticket": {
+    oneLine: "P1 — Ticket exploration: hang-tag take on the invite with an ink ticket + accent slip behind.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 1 (alt visual): lands on the ticket hero" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "Visualize the invite as a physical Tatch pass: ink ticket, inviter context, stylized barcode, Tatch wordmark.",
+      "Accent slip behind picks up --royal-400 (DIS blue) — no orange, no brand violet on the chrome.",
+      "Hover: subtle 3D tilt that tracks the cursor; reduced-motion + touch get a flat ticket.",
+    ],
+  },
   "/join": {
     oneLine: "Code-based entry — no email link required.",
     flowRefs: [
