@@ -56,7 +56,7 @@ export function SuccessScreen() {
           )}
         </div>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-6 space-y-3 md:max-w-[480px] lg:max-w-[520px]">
           <Button
             fullWidth
             size="lg"

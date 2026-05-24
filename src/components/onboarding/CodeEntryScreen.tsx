@@ -101,7 +101,7 @@ export function CodeEntryScreen() {
           </p>
         </div>
 
-        <div className="mt-8 space-y-3">
+        <div className="mt-8 space-y-3 md:max-w-[480px] lg:max-w-[520px]">
           <Button fullWidth size="lg" onClick={handleSubmit} disabled={code.length < 4}>
             Continue
           </Button>
