@@ -9,7 +9,9 @@ import {
   type ReactNode,
 } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "light" | "dark" | "studio";
+
+const THEME_ORDER: Theme[] = ["light", "dark", "studio"];
 
 type ThemeCtx = {
   theme: Theme;
@@ -21,17 +23,21 @@ const Ctx = createContext<ThemeCtx | null>(null);
 
 const STORAGE_KEY = "tatch-onboarding-theme";
 
+function isTheme(value: unknown): value is Theme {
+  return value === "light" || value === "dark" || value === "studio";
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = (typeof window !== "undefined" &&
-      (localStorage.getItem(STORAGE_KEY) as Theme | null)) || null;
-    const initial: Theme =
-      stored ??
-      (window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light");
+    const stored =
+      typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+    const initial: Theme = isTheme(stored)
+      ? stored
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
     setThemeState(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);
@@ -41,10 +47,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // origin when localStorage is mutated.
   useEffect(() => {
     function onStorage(e: StorageEvent) {
-      if (e.key !== STORAGE_KEY || !e.newValue) return;
-      const next = e.newValue as Theme;
-      setThemeState(next);
-      document.documentElement.setAttribute("data-theme", next);
+      if (e.key !== STORAGE_KEY || !isTheme(e.newValue)) return;
+      setThemeState(e.newValue);
+      document.documentElement.setAttribute("data-theme", e.newValue);
     }
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -58,10 +63,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  const toggle = useCallback(
-    () => setTheme(theme === "dark" ? "light" : "dark"),
-    [theme, setTheme]
-  );
+  const toggle = useCallback(() => {
+    const next =
+      THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
+    setTheme(next);
+  }, [theme, setTheme]);
 
   return (
     <Ctx.Provider value={{ theme, setTheme, toggle }}>{children}</Ctx.Provider>

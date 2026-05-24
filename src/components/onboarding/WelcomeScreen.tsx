@@ -184,18 +184,20 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const TONE_CLS: Record<Feature["tone"], { card: string; icon: string }> = {
-  pink:   { card: "bg-[color:var(--feature-pink-bg)]",   icon: "bg-card text-[color:var(--feature-pink-fg)]"   },
-  purple: { card: "bg-[color:var(--feature-purple-bg)]", icon: "bg-card text-[color:var(--feature-purple-fg)]" },
-  green:  { card: "bg-[color:var(--feature-green-bg)]",  icon: "bg-card text-[color:var(--feature-green-fg)]"  },
-  blue:   { card: "bg-[color:var(--feature-blue-bg)]",   icon: "bg-card text-[color:var(--feature-blue-fg)]"   },
+// Pastel film removed — the card is a neutral Morphix surface and the
+// per-tone color now lives on the small icon tile (soft tint bg + fg).
+const TONE_CLS: Record<Feature["tone"], { iconBg: string; iconFg: string }> = {
+  pink:   { iconBg: "bg-[color:var(--feature-pink-bg)]",   iconFg: "text-[color:var(--feature-pink-fg)]"   },
+  purple: { iconBg: "bg-[color:var(--feature-purple-bg)]", iconFg: "text-[color:var(--feature-purple-fg)]" },
+  green:  { iconBg: "bg-[color:var(--feature-green-bg)]",  iconFg: "text-[color:var(--feature-green-fg)]"  },
+  blue:   { iconBg: "bg-[color:var(--feature-blue-bg)]",   iconFg: "text-[color:var(--feature-blue-fg)]"   },
 };
 
 function FeatureCard({ title, body, Icon, tone }: Feature) {
   const t = TONE_CLS[tone];
   return (
-    <div className={`flex flex-col gap-3 rounded-2xl p-4 2xl:gap-4 2xl:p-6 ${t.card}`}>
-      <div className={`grid h-9 w-9 place-items-center rounded-xl shadow-xs 2xl:h-11 2xl:w-11 ${t.icon}`}>
+    <div className="morphix-card flex flex-col gap-3 p-4 2xl:gap-4 2xl:p-6">
+      <div className={`grid h-9 w-9 place-items-center rounded-xl 2xl:h-11 2xl:w-11 ${t.iconBg} ${t.iconFg}`}>
         <Icon size={17} strokeWidth={1.75} className="2xl:h-5 2xl:w-5" />
       </div>
       <div>
