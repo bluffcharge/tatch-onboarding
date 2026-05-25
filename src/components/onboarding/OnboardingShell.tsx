@@ -63,7 +63,10 @@ export function OnboardingShell({
   // Wide screens opt out because they own their own multi-column
   // layouts. */
   const centerInRail = !!journey && !wide;
-  const formCapCls = "md:max-w-[280px] lg:max-w-[320px]";
+  // Width bumped +24% from 280/320 (the historical CTA cap) to 348/400
+  // so the form column feels open at desktop sizes — at 320px the field
+  // and headline read as scrunched against the rail-paired column.
+  const formCapCls = "md:max-w-[348px] lg:max-w-[400px]";
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside
@@ -128,7 +131,7 @@ export function OnboardingShell({
                   so the footer sits with the form rather than skewed left
                   of the right pane. */}
               <div
-                className={`${centerInRail ? "mx-auto" : ""} md:max-w-[280px] lg:max-w-[320px]`}
+                className={`${centerInRail ? "mx-auto" : ""} md:max-w-[348px] lg:max-w-[400px]`}
               >
                 {footer}
               </div>

@@ -62,8 +62,9 @@ export function TeamInviteScreen() {
       {/* `mx-auto` + a form/table-shaped cap so the content centers in
           the right pane next to the journey rail rather than skewing
           left of the pane's center. Same pattern as AuthScreen but
-          slightly wider here to give the lg+ table room to breathe. */}
-      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[320px] lg:max-w-[560px]">
+          wider here to give the lg+ table room to breathe — sized
+          alongside the +24% bump applied to the canonical form cap. */}
+      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[400px] lg:max-w-[696px]">
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           Invite your team.
         </h1>

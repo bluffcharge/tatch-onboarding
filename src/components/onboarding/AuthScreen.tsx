@@ -64,8 +64,10 @@ export function AuthScreen() {
           Without this, fields and the breadcrumb stretch the full
           760–920px shell width and read as banners. `mx-auto` so the
           form centers in the right pane (next to the journey rail)
-          rather than skewing left of the pane's center. */}
-      <div className="mt-2 md:mx-auto md:max-w-[280px] lg:max-w-[320px]">
+          rather than skewing left of the pane's center. Width matches
+          the shell's `formCapCls` (348/400) so the body, the back
+          arrow above, and the CTA below all sit in one column. */}
+      <div className="mt-2 md:mx-auto md:max-w-[348px] lg:max-w-[400px]">
         {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
             after the user leaves P1 and is committing real credentials. */}
         <OperatorContext />
