@@ -68,8 +68,10 @@ export function TeamInviteScreen() {
           They&apos;ll get an SMS to set up their own login.
         </p>
 
-        {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout. */}
-        <div className="space-y-3 lg:hidden">
+        {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout.
+            Cap card width on md so the row doesn't stretch the full 640–760px
+            content column at tablet sizes. */}
+        <div className="space-y-3 md:max-w-[480px] lg:hidden">
           {rows.map((row, i) => (
             <div
               key={row.id}
