@@ -9,13 +9,12 @@ import type { InviteContext } from "@/lib/mockInvite";
 
 type Props = { invite: InviteContext };
 
-/* ----------------- Glass primary CTA -----------------
-   Replaces the solid-purple `<Button>` on the ticket route. Translucent
-   surface + backdrop-blur + the canonical gradient outline. The label
-   inherits text-ink-title so it reads white in dark, near-black in light.
-   Defined here before consumers so the bundler doesn't trip on the
-   forward reference inside the client-component boundary.            */
-function GlassPrimaryCTA({
+/* ----------------- On-ticket primary CTA -----------------
+   Sits inside the ticket surface (near-black), so it inverts the glass
+   recipe used elsewhere: white pill on dark, ink-title label. Lives
+   inside the tilt transform — pointer-events stay live through the
+   parent's preserve-3d so clicks land normally. */
+function TicketPrimaryCTA({
   icon,
   children,
   onClick,
@@ -28,7 +27,8 @@ function GlassPrimaryCTA({
     <button
       type="button"
       onClick={onClick}
-      className="gradient-outline glass-surface group relative inline-flex h-12 w-full items-center justify-center gap-2 rounded-pill px-5 text-[14px] font-semibold text-ink-title transition-transform duration-fast ease-snap active:scale-[0.99]"
+      onMouseDown={(e) => e.stopPropagation()}
+      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] shadow-[0_6px_16px_-6px_rgba(0,0,0,0.45)] transition-transform duration-fast ease-snap hover:bg-white/95 active:scale-[0.99]"
     >
       <span className="relative z-[2] inline-flex items-center gap-2">
         {icon}
@@ -74,14 +74,9 @@ export function TicketWelcomeScreen({ invite }: Props) {
             <Ticket inviter={inviter} operator={operator} />
           </div>
 
-          {/* CTAs below the ticket */}
-          <div className="mt-10 w-full max-w-[460px] space-y-3 lg:mt-14">
-            <GlassPrimaryCTA
-              icon={<Phone size={16} strokeWidth={1.75} />}
-              onClick={() => goto("/onboarding/auth?via=phone")}
-            >
-              Continue with phone
-            </GlassPrimaryCTA>
+          {/* Secondary CTAs below the ticket — primary "Continue with phone"
+              now lives on the ticket itself so it tilts with the card. */}
+          <div className="mt-10 w-full max-w-[460px] lg:mt-14">
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="secondary"
@@ -169,7 +164,7 @@ function Ticket({
   return (
     <div
       ref={ref}
-      className="gradient-outline relative h-[460px] w-[340px] origin-center cursor-pointer rounded-[10px] sm:h-[480px] sm:w-[400px] lg:h-[520px] lg:w-[480px]"
+      className="gradient-outline relative h-[460px] w-[340px] origin-center rounded-[10px] sm:h-[480px] sm:w-[400px] lg:h-[520px] lg:w-[480px]"
       style={{
         transform: `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateY(${tilt.lift}px)`,
         transformStyle: "preserve-3d",
@@ -245,7 +240,7 @@ function Ticket({
         </div>
 
         {/* Tatch wordmark */}
-        <div className="absolute inset-x-6 bottom-[92px] flex items-center gap-2">
+        <div className="absolute inset-x-6 bottom-[108px] flex items-center gap-2">
           <Logomark />
           <span className="text-[13px] font-semibold tracking-tight">tatch</span>
           <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white/40">
@@ -253,9 +248,17 @@ function Ticket({
           </span>
         </div>
 
-        {/* Barcode */}
-        <div className="absolute inset-x-6 bottom-[44px] h-9">
-          <Barcode />
+        {/* Primary CTA — sits where the barcode used to live, so it tilts
+            with the ticket. The hairline above echoes the perforation
+            rhythm above the stub row. */}
+        <div className="absolute inset-x-6 bottom-[44px]">
+          <div className="mb-3 border-t border-dashed border-white/8" />
+          <TicketPrimaryCTA
+            icon={<Phone size={15} strokeWidth={1.85} />}
+            onClick={() => goto("/onboarding/auth?via=phone")}
+          >
+            Continue with phone
+          </TicketPrimaryCTA>
         </div>
 
         {/* Serial */}
@@ -300,29 +303,6 @@ function Logomark() {
     >
       T
     </span>
-  );
-}
-
-/* ----------------- Barcode (stylized, decorative) ----------------- */
-
-function Barcode() {
-  // A pseudo-random but stable barcode pattern — width-varying bars.
-  const bars = [3, 1, 2, 4, 1, 2, 1, 3, 2, 1, 4, 1, 2, 3, 1, 2, 1, 4, 2, 1, 3, 2, 1, 4, 2, 1, 2, 3, 1, 2];
-  return (
-    <svg
-      viewBox={`0 0 ${bars.reduce((sum, w) => sum + w + 2, 0)} 36`}
-      preserveAspectRatio="none"
-      className="h-full w-full text-white/80"
-    >
-      {(() => {
-        let x = 0;
-        return bars.map((w, i) => {
-          const el = <rect key={i} x={x} y={0} width={w} height={36} fill="currentColor" />;
-          x += w + 2;
-          return el;
-        });
-      })()}
-    </svg>
   );
 }
 
