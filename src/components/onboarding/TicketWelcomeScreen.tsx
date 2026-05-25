@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, Mail, Phone } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
 import type { InviteContext } from "@/lib/mockInvite";
@@ -18,21 +26,24 @@ function TicketPrimaryCTA({
   icon,
   children,
   onClick,
+  disabled,
 }: {
   icon: ReactNode;
   children: ReactNode;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       onMouseDown={(e) => e.stopPropagation()}
       // Die-cut illusion: white pill reads as the paper-white surface
       // showing *through* the dark card. The inset ring is the cut edge;
       // the inset top shadow + offset bottom highlight sells the depth
       // (card material has thickness, light catches the inner bevel).
-      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] ring-1 ring-inset ring-black/15 shadow-[inset_0_2px_3px_rgba(0,0,0,0.18),inset_0_-1px_0_rgba(255,255,255,0.9),0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-fast ease-snap hover:bg-white active:scale-[0.99]"
+      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] ring-1 ring-inset ring-black/15 shadow-[inset_0_2px_3px_rgba(0,0,0,0.18),inset_0_-1px_0_rgba(255,255,255,0.9),0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-fast ease-snap hover:bg-white active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
     >
       <span className="relative z-[2] inline-flex items-center gap-2">
         {icon}
@@ -52,9 +63,17 @@ function TicketPrimaryCTA({
  * Hover interaction: the ticket has a soft 3D tilt that tracks the cursor
  * (parallax over both axes ~10deg max), plus a tiny rise on Y. On mobile
  * the tilt drops off and the ticket sits flat.
+ *
+ * Flip: clicking "Have a code? Use it instead" below the ticket flips
+ * the card 180° to reveal a back face with a code-entry field. The flow
+ * folds the old standalone `/join` route onto the back of the ticket, so
+ * the link-based and code-based entry paths share one physical object.
  */
 export function TicketWelcomeScreen({ invite }: Props) {
   const { inviter, operator } = invite;
+  const [flipped, setFlipped] = useState(false);
+  const flipToBack = useCallback(() => setFlipped(true), []);
+  const flipToFront = useCallback(() => setFlipped(false), []);
 
   return (
     <OnboardingShell chrome={false}>
@@ -69,18 +88,32 @@ export function TicketWelcomeScreen({ invite }: Props) {
           <span className="t-mono-label">P1 · ticket variant</span>
         </div>
 
-        {/* Stage: ticket centered, hangs from a thin cord at the top. The
-            accent slip behind is gone — the new gradient outline on the
-            ticket itself is the brand pop now. */}
+        {/* Stage: ticket centered, hangs from a thin cord at the top. */}
         <div className="relative mx-auto flex w-full max-w-[600px] flex-1 flex-col items-center pt-6 lg:pt-10">
           <TicketCord />
           <div className="relative mt-2" style={{ perspective: "1200px" }}>
-            <Ticket inviter={inviter} operator={operator} />
+            <Ticket
+              inviter={inviter}
+              operator={operator}
+              flipped={flipped}
+              onFlipBack={flipToFront}
+            />
           </div>
 
-          {/* Secondary CTAs below the ticket — primary "Continue with phone"
-              now lives on the ticket itself so it tilts with the card. */}
-          <div className="mt-10 w-full max-w-[460px] lg:mt-14">
+          {/* Secondary actions — only the front face calls for them, so
+              they fade out when the ticket flips to the back. The "Have a
+              code?" link below the Email/Google row is the flip trigger;
+              it sits in the secondary-action band so it reads as the
+              third path rather than competing with the primary CTA. */}
+          <div
+            aria-hidden={flipped}
+            className="mt-10 w-full max-w-[460px] lg:mt-14"
+            style={{
+              opacity: flipped ? 0 : 1,
+              pointerEvents: flipped ? "none" : "auto",
+              transition: "opacity 280ms ease",
+            }}
+          >
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="secondary"
@@ -101,6 +134,15 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 Google
               </Button>
             </div>
+            <p className="t-caption mt-4 text-center">
+              <button
+                type="button"
+                onClick={flipToBack}
+                className="font-medium text-ink-body hover:text-ink-title hover:underline"
+              >
+                Have a code? Use it instead →
+              </button>
+            </p>
           </div>
 
           {/* Legal */}
@@ -126,12 +168,18 @@ export function TicketWelcomeScreen({ invite }: Props) {
 function Ticket({
   inviter,
   operator,
+  flipped,
+  onFlipBack,
 }: {
   inviter: InviteContext["inviter"];
   operator: InviteContext["operator"];
+  flipped: boolean;
+  onFlipBack: () => void;
 }) {
   // Pointer-tracking 3D tilt — center origin, ~8deg max in each axis.
-  // Reduced-motion users + touch devices get a flat ticket.
+  // Reduced-motion users + touch devices get a flat ticket. We also
+  // skip tilt while the ticket is flipped to the back face — that side
+  // is a focused task (typing a code), not an ambient hover state.
   const ref = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, lift: 0 });
 
@@ -146,12 +194,16 @@ function Ticket({
       window.matchMedia("(pointer: coarse)").matches;
     if (reduce || coarse) return;
 
+    if (flipped) {
+      setTilt({ rx: 0, ry: 0, lift: 0 });
+      return;
+    }
+
     function onMove(e: MouseEvent) {
       if (!el) return;
       const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5; // -0.5 .. 0.5
       const y = (e.clientY - r.top) / r.height - 0.5;
-      // ry follows x (left/right tilt), rx inversely follows y (top/bottom)
       setTilt({ rx: -y * 14, ry: x * 14, lift: -6 });
     }
     function onLeave() {
@@ -163,114 +215,318 @@ function Ticket({
       el.removeEventListener("mousemove", onMove);
       el.removeEventListener("mouseleave", onLeave);
     };
-  }, []);
+  }, [flipped]);
 
   return (
     <div
       ref={ref}
-      className="gradient-outline relative h-[460px] w-[340px] origin-center rounded-[10px] sm:h-[480px] sm:w-[400px] lg:h-[520px] lg:w-[480px]"
+      className="relative h-[460px] w-[340px] origin-center sm:h-[480px] sm:w-[400px] lg:h-[520px] lg:w-[480px]"
       style={{
         transform: `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) translateY(${tilt.lift}px)`,
         transformStyle: "preserve-3d",
         transition: "transform 240ms cubic-bezier(0.2, 0, 0, 1)",
       }}
     >
-      {/* Ticket body: near-black surface inside the conic gradient outline.
-          The 1px gap between bg and pseudo-element ring is intentional —
-          mask-composite paints only the ring. */}
-      <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-[color:var(--grey-950)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.55),0_30px_60px_-20px_rgba(0,0,0,0.55)]">
-        {/* Hole punch */}
-        <div className="absolute left-1/2 top-5 h-3.5 w-3.5 -translate-x-1/2 rounded-pill bg-[color:var(--surface-canvas)] ring-1 ring-white/15" />
-
-        {/* Perforation line just below the hole */}
-        <div className="absolute left-6 right-6 top-12 border-t border-dashed border-white/8" />
-
-        {/* Header copy — wider ticket lets the headline scale up. */}
-        <div className="absolute left-6 right-6 top-[72px]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white">
-            Tatch · invite pass
-          </p>
-          <p className="mt-3 text-[20px] font-semibold leading-[1.1] lg:text-[24px]">
-            You&apos;re on the list.
-          </p>
-          <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white lg:text-[13.5px]">
-            Set up in about 90 seconds and start receiving referrals from {operator.name}.
-          </p>
-        </div>
-
-        {/* Inviter block (mid-ticket) — has more horizontal room now, so
-            the line wraps less and the company name reads as a single line. */}
-        <div className="absolute left-6 right-6 top-[200px] flex items-center gap-3 lg:top-[230px]">
-          <span
-            aria-hidden="true"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-pill bg-white text-[13px] font-semibold text-[color:var(--grey-950)]"
-          >
-            {inviter.firstName[0]}
-          </span>
-          <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-white lg:text-[14px]">
-              {inviter.fullName}
-            </p>
-            <p className="mt-0.5 text-[10.5px] uppercase tracking-[0.14em] text-white">
-              {inviter.title} · {operator.name}
-            </p>
-          </div>
-        </div>
-
-        {/* Stub-style key/value row — three cells now that we have width. */}
-        <div className="absolute inset-x-6 bottom-[140px] grid grid-cols-3 gap-3 border-t border-dashed border-white/8 pt-3">
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
-              Pass
-            </p>
-            <p className="mt-1 font-mono text-[11px] text-white">TATCH-001</p>
-          </div>
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
-              Issued
-            </p>
-            <p className="mt-1 font-mono text-[11px] text-white">
-              {new Date().toISOString().slice(0, 10)}
-            </p>
-          </div>
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
-              Seats
-            </p>
-            <p className="mt-1 font-mono text-[11px] text-white">
-              {operator.teammateCount + 1} active
-            </p>
-          </div>
-        </div>
-
-        {/* Tatch wordmark */}
-        <div className="absolute inset-x-6 bottom-[108px] flex items-center gap-2">
-          <Logomark />
-          <span className="text-[13px] font-semibold tracking-tight">tatch</span>
-          <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white">
-            tatch.com
-          </span>
-        </div>
-
-        {/* Primary CTA — sits where the barcode used to live, so it tilts
-            with the ticket. The hairline above echoes the perforation
-            rhythm above the stub row. */}
-        <div className="absolute inset-x-6 bottom-[44px]">
-          <div className="mb-3 border-t border-dashed border-white/8" />
-          <TicketPrimaryCTA
-            icon={<Phone size={15} strokeWidth={1.85} />}
-            onClick={() => goto("/onboarding/auth?via=phone")}
-          >
-            Continue with phone
-          </TicketPrimaryCTA>
-        </div>
-
-        {/* Serial */}
-        <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white">
-          0001 · {operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · {inviter.firstName.toUpperCase()}
-        </p>
+      {/* Flipper — owns the binary front/back rotation. Lives inside the
+          tilt wrapper so cursor parallax and the flip compose cleanly
+          via preserve-3d rather than fighting inside a single transform
+          string. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          transition: "transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1)",
+        }}
+      >
+        <TicketFace inert={flipped}>
+          <TicketFront inviter={inviter} operator={operator} />
+        </TicketFace>
+        <TicketFace back inert={!flipped}>
+          <TicketBack onFlipBack={onFlipBack} flipped={flipped} />
+        </TicketFace>
       </div>
     </div>
+  );
+}
+
+/* Both faces share the same surface recipe — gradient outline, dark
+   body, inset bevel — so the ticket reads as one physical card with
+   two sides. backface-visibility hides the face that's currently
+   pointing away from the camera. */
+function TicketFace({
+  back,
+  inert,
+  children,
+}: {
+  back?: boolean;
+  inert?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      // `inert` keeps focus and pointer events out of the hidden face so
+      // tabbing through the ticket doesn't land on offscreen controls.
+      // Typed via a spread to dodge React's lagging DOM-prop types.
+      {...({ inert: inert ? "" : undefined } as Record<string, string | undefined>)}
+      // `.gradient-outline` sets `position: relative` (same specificity as
+      // Tailwind utilities, defined later in the cascade), which beats
+      // `absolute inset-0`. Force the layered positioning via inline
+      // style so each face actually fills the flipper instead of
+      // collapsing to height 0.
+      className="gradient-outline rounded-[10px]"
+      style={{
+        position: "absolute",
+        inset: 0,
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
+        transform: back ? "rotateY(180deg)" : undefined,
+      }}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-[color:var(--grey-950)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.55),0_30px_60px_-20px_rgba(0,0,0,0.55)]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------- Front face ----------------- */
+
+function TicketFront({
+  inviter,
+  operator,
+}: {
+  inviter: InviteContext["inviter"];
+  operator: InviteContext["operator"];
+}) {
+  return (
+    <>
+      {/* Hole punch */}
+      <div className="absolute left-1/2 top-5 h-3.5 w-3.5 -translate-x-1/2 rounded-pill bg-[color:var(--surface-canvas)] ring-1 ring-white/15" />
+
+      {/* Perforation line just below the hole */}
+      <div className="absolute left-6 right-6 top-12 border-t border-dashed border-white/8" />
+
+      {/* Header copy — wider ticket lets the headline scale up. */}
+      <div className="absolute left-6 right-6 top-[72px]">
+        <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white">
+          Tatch · invite pass
+        </p>
+        <p className="mt-3 text-[20px] font-semibold leading-[1.1] lg:text-[24px]">
+          You&apos;re on the list.
+        </p>
+        <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white lg:text-[13.5px]">
+          Set up in about 90 seconds and start receiving referrals from {operator.name}.
+        </p>
+      </div>
+
+      {/* Inviter block (mid-ticket) — has more horizontal room now, so
+          the line wraps less and the company name reads as a single line. */}
+      <div className="absolute left-6 right-6 top-[200px] flex items-center gap-3 lg:top-[230px]">
+        <span
+          aria-hidden="true"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-pill bg-white text-[13px] font-semibold text-[color:var(--grey-950)]"
+        >
+          {inviter.firstName[0]}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[13px] font-semibold text-white lg:text-[14px]">
+            {inviter.fullName}
+          </p>
+          <p className="mt-0.5 text-[10.5px] uppercase tracking-[0.14em] text-white">
+            {inviter.title} · {operator.name}
+          </p>
+        </div>
+      </div>
+
+      {/* Stub-style key/value row — three cells now that we have width. */}
+      <div className="absolute inset-x-6 bottom-[140px] grid grid-cols-3 gap-3 border-t border-dashed border-white/8 pt-3">
+        <div>
+          <p className="text-[9px] uppercase tracking-[0.18em] text-white">
+            Pass
+          </p>
+          <p className="mt-1 font-mono text-[11px] text-white">TATCH-001</p>
+        </div>
+        <div>
+          <p className="text-[9px] uppercase tracking-[0.18em] text-white">
+            Issued
+          </p>
+          <p className="mt-1 font-mono text-[11px] text-white">
+            {new Date().toISOString().slice(0, 10)}
+          </p>
+        </div>
+        <div>
+          <p className="text-[9px] uppercase tracking-[0.18em] text-white">
+            Seats
+          </p>
+          <p className="mt-1 font-mono text-[11px] text-white">
+            {operator.teammateCount + 1} active
+          </p>
+        </div>
+      </div>
+
+      {/* Tatch wordmark */}
+      <div className="absolute inset-x-6 bottom-[108px] flex items-center gap-2">
+        <Logomark />
+        <span className="text-[13px] font-semibold tracking-tight">tatch</span>
+        <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white">
+          tatch.com
+        </span>
+      </div>
+
+      {/* Primary CTA — sits where the barcode used to live, so it tilts
+          with the ticket. The hairline above echoes the perforation
+          rhythm above the stub row. */}
+      <div className="absolute inset-x-6 bottom-[44px]">
+        <div className="mb-3 border-t border-dashed border-white/8" />
+        <TicketPrimaryCTA
+          icon={<Phone size={15} strokeWidth={1.85} />}
+          onClick={() => goto("/onboarding/auth?via=phone")}
+        >
+          Continue with phone
+        </TicketPrimaryCTA>
+      </div>
+
+      {/* Serial */}
+      <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white">
+        0001 · {operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · {inviter.firstName.toUpperCase()}
+      </p>
+    </>
+  );
+}
+
+/* ----------------- Back face — code entry ----------------- */
+
+function TicketBack({
+  onFlipBack,
+  flipped,
+}: {
+  onFlipBack: () => void;
+  flipped: boolean;
+}) {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // When the ticket lands on the back face, focus the input so the
+  // user can type immediately. The 720ms timeout matches the flip
+  // duration (+20ms cushion) so the focus ring doesn't appear
+  // mid-rotation.
+  useEffect(() => {
+    if (!flipped) return;
+    const t = window.setTimeout(() => inputRef.current?.focus(), 720);
+    return () => window.clearTimeout(t);
+  }, [flipped]);
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const next = e.target.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9-]/g, "")
+      .slice(0, 12);
+    setCode(next);
+    if (error) setError(null);
+  }
+
+  function handleSubmit() {
+    if (code.length < 4) {
+      setError("Codes are 6–12 characters.");
+      return;
+    }
+    // mock: pretend "BAD" prefix is invalid; everything else routes
+    // through the link-based flow.
+    if (code.startsWith("BAD")) {
+      setError("This code doesn't look right or it's expired. Ask your operator to send a new TatchLink.");
+      return;
+    }
+    router.push("/j/abc123");
+  }
+
+  return (
+    <>
+      {/* Hole + perforation echoing the front so the ticket reads as
+          two sides of the same physical card (the hole goes through). */}
+      <div className="absolute left-1/2 top-5 h-3.5 w-3.5 -translate-x-1/2 rounded-pill bg-[color:var(--surface-canvas)] ring-1 ring-white/15" />
+      <div className="absolute left-6 right-6 top-12 border-t border-dashed border-white/8" />
+
+      {/* Header copy mirrors the front's typographic rhythm so the flip
+          reads as the same object turned over, not a different screen. */}
+      <div className="absolute left-6 right-6 top-[72px]">
+        <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white">
+          Tatch · access code
+        </p>
+        <p className="mt-3 text-[20px] font-semibold leading-[1.1] lg:text-[24px]">
+          Enter your code
+        </p>
+        <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white lg:text-[13.5px]">
+          Your operator may have given you a 6–8 character code. Type or paste it below.
+        </p>
+      </div>
+
+      {/* Code field — dark surface variant of the standalone /join input.
+          Border white/15 default, white/55 on focus; subtle white/4 fill
+          so the field reads as inset on the dark ticket rather than as
+          another button. */}
+      <div className="absolute inset-x-6 top-[210px]">
+        <div
+          className={[
+            "flex h-12 items-center rounded-[10px] border bg-white/[0.04] px-4 transition-colors duration-fast ease-snap",
+            error
+              ? "border-rose-300/60"
+              : "border-white/15 focus-within:border-white/55",
+          ].join(" ")}
+        >
+          <input
+            ref={inputRef}
+            value={code}
+            onChange={handleChange}
+            placeholder="ABC123"
+            aria-label="TatchLink code"
+            inputMode="text"
+            autoComplete="one-time-code"
+            onMouseDown={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSubmit();
+            }}
+            className="w-full bg-transparent text-[18px] font-semibold tracking-[0.18em] text-white outline-none placeholder:text-white/35 placeholder:tracking-[0.18em]"
+          />
+        </div>
+        {error && (
+          <p
+            role="alert"
+            className="mt-2 text-[11.5px] leading-snug text-rose-300/90"
+          >
+            {error}
+          </p>
+        )}
+      </div>
+
+      {/* Primary CTA — same die-cut treatment as the front so the flip
+          doesn't break the primary-action language. */}
+      <div className="absolute inset-x-6 bottom-[44px]">
+        <div className="mb-3 border-t border-dashed border-white/8" />
+        <TicketPrimaryCTA
+          icon={<ArrowRight size={15} strokeWidth={1.85} />}
+          onClick={handleSubmit}
+          disabled={code.length < 4}
+        >
+          Continue
+        </TicketPrimaryCTA>
+      </div>
+
+      {/* Flip-back — uses the serial-line slot on the front, so when the
+          ticket flips the bottom-most band reads as paired metadata
+          rather than a sudden new control. */}
+      <button
+        type="button"
+        onClick={onFlipBack}
+        onMouseDown={(e) => e.stopPropagation()}
+        className="absolute inset-x-6 bottom-4 inline-flex items-center justify-center gap-1.5 text-[9.5px] font-medium uppercase tracking-[0.22em] text-white/55 hover:text-white"
+      >
+        <ArrowLeft size={11} strokeWidth={1.85} />
+        Use the invite link instead
+      </button>
+    </>
   );
 }
 
