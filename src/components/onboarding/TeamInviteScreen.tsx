@@ -71,7 +71,7 @@ export function TeamInviteScreen() {
         {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout.
             Cap card width on md so the row doesn't stretch the full 640–760px
             content column at tablet sizes. */}
-        <div className="space-y-3 md:max-w-[480px] lg:hidden">
+        <div className="space-y-3 md:max-w-[320px] lg:hidden">
           {rows.map((row, i) => (
             <div
               key={row.id}

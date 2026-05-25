@@ -62,7 +62,7 @@ export function CodeEntryScreen() {
             Your operator may have given you a 6–8 character code. Type or paste it below.
           </p>
 
-          <div className="mt-7 md:max-w-[480px] lg:max-w-[520px]">
+          <div className="mt-7 md:max-w-[280px] lg:max-w-[320px]">
             <div
               className={[
                 "flex h-14 items-center rounded-lg border bg-card px-4 transition-colors duration-fast ease-snap",
@@ -101,7 +101,7 @@ export function CodeEntryScreen() {
           </p>
         </div>
 
-        <div className="mt-8 space-y-3 md:max-w-[480px] lg:max-w-[520px]">
+        <div className="mt-8 space-y-3 md:max-w-[280px] lg:max-w-[320px]">
           <Button fullWidth size="lg" onClick={handleSubmit} disabled={code.length < 4}>
             Continue
           </Button>
