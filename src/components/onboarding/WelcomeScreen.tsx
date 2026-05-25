@@ -68,7 +68,7 @@ export function WelcomeScreen({ invite }: Props) {
           {/* Single CTA — phone OTP is the path we want every partner
               on, so the welcome screen commits to one button instead
               of presenting alternatives. */}
-          <div className="mt-8 w-full max-w-[480px] lg:mt-10">
+          <div className="mt-8 w-full md:max-w-[280px] lg:mt-10 lg:max-w-[320px]">
             <Button
               fullWidth
               size="lg"

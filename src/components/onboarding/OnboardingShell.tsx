@@ -103,7 +103,7 @@ export function OnboardingShell({
               {/* Cap CTA widths on wide canvases — a full-bleed button at
                   1800px reads as a banner, not an action. Keeps the footer
                   legible at all sizes while still left-aligning to the form. */}
-              <div className="md:max-w-[480px] lg:max-w-[520px]">
+              <div className="md:max-w-[280px] lg:max-w-[320px]">
                 {footer}
               </div>
             </div>
