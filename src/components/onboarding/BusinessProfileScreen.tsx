@@ -146,7 +146,10 @@ export function BusinessProfileScreen() {
 
             <div className="border-t border-border-subtle pt-4 md:pt-6">
               <p className="t-mono-label mb-3">Primary contact</p>
-              <div className="grid gap-4 md:grid-cols-2 md:gap-5">
+              {/* Phone locked to 140px (~44% reduction from the equal-split
+                  baseline of ~250px) — the minimum width that renders
+                  "(555) 014-2207" without clipping. Email takes the rest. */}
+              <div className="grid gap-4 md:grid-cols-[140px_1fr] md:gap-5">
                 <TextField
                   label="Business phone"
                   type="tel"
