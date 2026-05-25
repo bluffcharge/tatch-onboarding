@@ -6,7 +6,6 @@ import {
   Check,
   Inbox,
   LineChart,
-  Mail,
   Phone,
   UsersRound,
   Wallet,
@@ -66,10 +65,10 @@ export function WelcomeScreen({ invite }: Props) {
             referrals from {operator.name}.
           </p>
 
-          {/* CTAs — primary capped to ~480px; Email + Google split a
-              single secondary row at every size so the stack reads as
-              "one primary + alt options" instead of three siblings. */}
-          <div className="mt-8 w-full max-w-[480px] space-y-2.5 lg:mt-10">
+          {/* Single CTA — phone OTP is the path we want every partner
+              on, so the welcome screen commits to one button instead
+              of presenting alternatives. */}
+          <div className="mt-8 w-full max-w-[480px] lg:mt-10">
             <Button
               fullWidth
               size="lg"
@@ -78,26 +77,6 @@ export function WelcomeScreen({ invite }: Props) {
             >
               Continue with phone
             </Button>
-            <div className="grid grid-cols-2 gap-2.5">
-              <Button
-                variant="secondary"
-                fullWidth
-                size="md"
-                leadingIcon={<Mail size={15} strokeWidth={1.75} />}
-                onClick={() => goto("/onboarding/auth?via=email")}
-              >
-                Email
-              </Button>
-              <Button
-                variant="secondary"
-                fullWidth
-                size="md"
-                leadingIcon={<GoogleMark />}
-                onClick={() => goto("/onboarding/auth?via=google")}
-              >
-                Google
-              </Button>
-            </div>
           </div>
 
           {/* Feature tiles — 4-across at lg+, 2-up at md, stack on phone. */}
@@ -222,15 +201,4 @@ function FeatureCard({ title, body, Icon }: Feature) {
 
 function goto(href: string) {
   if (typeof window !== "undefined") window.location.assign(href);
-}
-
-function GoogleMark() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.79 2.72v2.26h2.9c1.7-1.56 2.68-3.86 2.68-6.62z" fill="#4285F4"/>
-      <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.34A9 9 0 0 0 9 18z" fill="#34A853"/>
-      <path d="M3.95 10.7A5.41 5.41 0 0 1 3.66 9c0-.59.1-1.17.29-1.7V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l2.99-2.34z" fill="#FBBC05"/>
-      <path d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58C13.47.89 11.43 0 9 0A9 9 0 0 0 .96 4.96L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z" fill="#EA4335"/>
-    </svg>
-  );
 }
