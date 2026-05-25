@@ -230,8 +230,6 @@ export default function Home() {
         viewport={viewport}
         onViewportChange={setViewport}
         onReset={() => setResetTick((n) => n + 1)}
-        expanded={expanded}
-        onToggleExpanded={toggleExpanded}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -243,7 +241,12 @@ export default function Home() {
             onToggle={toggleLeft}
           />
         )}
-        <Stage iframeSrc={iframeSrc} spec={spec} />
+        <Stage
+          iframeSrc={iframeSrc}
+          spec={spec}
+          expanded={expanded}
+          onToggleExpanded={toggleExpanded}
+        />
         {!expanded && (
           <CommentsRail
             routeHref={active.href}
@@ -280,23 +283,17 @@ function GalleryHeader({
   viewport,
   onViewportChange,
   onReset,
-  expanded,
-  onToggleExpanded,
 }: {
   title: string;
   href: string;
   viewport: Viewport;
   onViewportChange: (v: Viewport) => void;
   onReset: () => void;
-  expanded: boolean;
-  onToggleExpanded: () => void;
 }) {
   const { theme, toggle } = useTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const themeNextLabel =
     theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
-  const ExpandIcon = expanded ? Minimize2 : Maximize2;
-  const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
   return (
     <header className="border-b border-border-subtle">
       {/* 3-column grid: left = active route (aligned with the PRD rail icon at
@@ -328,16 +325,6 @@ function GalleryHeader({
           >
             <RotateCcw size={12} strokeWidth={1.75} />
             Reset
-          </button>
-          <button
-            type="button"
-            onClick={onToggleExpanded}
-            aria-pressed={expanded}
-            className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
-            title={expandLabel}
-          >
-            <ExpandIcon size={12} strokeWidth={1.75} />
-            {expanded ? "Collapse" : "Expand"}
           </button>
           <Link
             href={href}
@@ -417,12 +404,35 @@ function ViewportSwitcher({
 function Stage({
   iframeSrc,
   spec,
+  expanded,
+  onToggleExpanded,
 }: {
   iframeSrc: string;
   spec: ViewportSpec;
+  expanded: boolean;
+  onToggleExpanded: () => void;
 }) {
+  const ExpandIcon = expanded ? Minimize2 : Maximize2;
+  const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
+      {/* Canvas toolbar — `py-2.5` + `h-8` lands the bar at 52px so its
+          bottom border lines up with the CommentsRail header's bottom
+          border (which is `py-3` + `h-7` = 52px). The Expand button is
+          right-aligned so it pairs with the Comments label across the
+          vertical divider as a single lockup. */}
+      <div className="flex items-center justify-end border-b border-border-subtle px-4 py-2.5">
+        <button
+          type="button"
+          onClick={onToggleExpanded}
+          aria-pressed={expanded}
+          className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+          title={expandLabel}
+        >
+          <ExpandIcon size={12} strokeWidth={1.75} />
+          {expanded ? "Collapse" : "Expand"}
+        </button>
+      </div>
       <div className="mx-auto flex w-full max-w-[1480px] flex-1 flex-col overflow-hidden px-5 pb-2 pt-3">
         <ViewportFrame src={iframeSrc} spec={spec} />
       </div>
