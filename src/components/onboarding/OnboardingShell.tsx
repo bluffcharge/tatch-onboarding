@@ -51,6 +51,19 @@ export function OnboardingShell({
   const xPadCls = wide
     ? "px-4 md:px-10 lg:px-14 2xl:px-20"
     : "px-4 md:px-10 lg:px-12 2xl:px-16";
+
+  // When a journey rail is present and the screen isn't using the wide
+  // multi-column band, the right pane has plenty of room around a
+  // form-shaped content cap. By default our screens left-align the
+  // form inside the wider `widthCls` band, which pulls everything to
+  // the left of the right pane. The shell centers what it owns (the
+  // header chrome and the footer CTA cap) via `mx-auto` here; the body
+  // content cap is screen-specific (a form column is narrow, a desktop
+  // table is wider) so screens add `mx-auto` to their own inner cap.
+  // Wide screens opt out because they own their own multi-column
+  // layouts. */
+  const centerInRail = !!journey && !wide;
+  const formCapCls = "md:max-w-[280px] lg:max-w-[320px]";
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside
@@ -73,13 +86,22 @@ export function OnboardingShell({
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
-              {(backHref || onBack) && (
-                <BackControl backHref={backHref} onBack={onBack} />
-              )}
-              {/* Wordmark hides on md+ since the rail already shows it. */}
-              <span className="md:hidden">
-                <Wordmark />
-              </span>
+              {/* On journey-rail screens, the header chrome (back arrow,
+                  mobile wordmark) sits inside the same centered form cap
+                  as the body content so the back arrow aligns to the
+                  form's left edge instead of skewing toward the left of
+                  the right pane. */}
+              <div
+                className={`flex w-full items-center gap-2 ${centerInRail ? `mx-auto ${formCapCls}` : ""}`}
+              >
+                {(backHref || onBack) && (
+                  <BackControl backHref={backHref} onBack={onBack} />
+                )}
+                {/* Wordmark hides on md+ since the rail already shows it. */}
+                <span className="md:hidden">
+                  <Wordmark />
+                </span>
+              </div>
             </div>
             {step && (
               <div className="mx-auto w-full max-w-[480px] px-4 pb-3 md:hidden">
@@ -101,9 +123,13 @@ export function OnboardingShell({
           <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto w-full border-t border-border-subtle pt-4 pb-2 md:border-t-0 md:pb-10 md:pt-6 lg:pb-14 ${widthCls} ${xPadCls}`}>
               {/* Cap CTA widths on wide canvases — a full-bleed button at
-                  1800px reads as a banner, not an action. Keeps the footer
-                  legible at all sizes while still left-aligning to the form. */}
-              <div className="md:max-w-[280px] lg:max-w-[320px]">
+                  1800px reads as a banner, not an action. On journey-rail
+                  screens the cap also centers (mx-auto via `centerInRail`)
+                  so the footer sits with the form rather than skewed left
+                  of the right pane. */}
+              <div
+                className={`${centerInRail ? "mx-auto" : ""} md:max-w-[280px] lg:max-w-[320px]`}
+              >
                 {footer}
               </div>
             </div>

@@ -59,7 +59,11 @@ export function TeamInviteScreen() {
         </div>
       }
     >
-      <div className="mt-2 md:mt-0">
+      {/* `mx-auto` + a form/table-shaped cap so the content centers in
+          the right pane next to the journey rail rather than skewing
+          left of the pane's center. Same pattern as AuthScreen but
+          slightly wider here to give the lg+ table room to breathe. */}
+      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[320px] lg:max-w-[560px]">
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           Invite your team.
         </h1>
@@ -69,9 +73,9 @@ export function TeamInviteScreen() {
         </p>
 
         {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout.
-            Cap card width on md so the row doesn't stretch the full 640–760px
-            content column at tablet sizes. */}
-        <div className="space-y-3 md:max-w-[320px] lg:hidden">
+            Card width cap is the parent's md:max-w; the row container
+            stretches to fill it. */}
+        <div className="space-y-3 lg:hidden">
           {rows.map((row, i) => (
             <div
               key={row.id}

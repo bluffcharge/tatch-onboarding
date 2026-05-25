@@ -62,8 +62,10 @@ export function AuthScreen() {
     >
       {/* Cap the content column on md+ to track the Continue CTA cap.
           Without this, fields and the breadcrumb stretch the full
-          760–920px shell width and read as banners. */}
-      <div className="mt-2 md:max-w-[280px] lg:max-w-[320px]">
+          760–920px shell width and read as banners. `mx-auto` so the
+          form centers in the right pane (next to the journey rail)
+          rather than skewing left of the pane's center. */}
+      <div className="mt-2 md:mx-auto md:max-w-[280px] lg:max-w-[320px]">
         {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
             after the user leaves P1 and is committing real credentials. */}
         <OperatorContext />
