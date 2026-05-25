@@ -28,7 +28,11 @@ function TicketPrimaryCTA({
       type="button"
       onClick={onClick}
       onMouseDown={(e) => e.stopPropagation()}
-      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] shadow-[0_6px_16px_-6px_rgba(0,0,0,0.45)] transition-transform duration-fast ease-snap hover:bg-white/95 active:scale-[0.99]"
+      // Die-cut illusion: white pill reads as the paper-white surface
+      // showing *through* the dark card. The inset ring is the cut edge;
+      // the inset top shadow + offset bottom highlight sells the depth
+      // (card material has thickness, light catches the inner bevel).
+      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] ring-1 ring-inset ring-black/15 shadow-[inset_0_2px_3px_rgba(0,0,0,0.18),inset_0_-1px_0_rgba(255,255,255,0.9),0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-fast ease-snap hover:bg-white active:scale-[0.99]"
     >
       <span className="relative z-[2] inline-flex items-center gap-2">
         {icon}
@@ -174,7 +178,7 @@ function Ticket({
       {/* Ticket body: near-black surface inside the conic gradient outline.
           The 1px gap between bg and pseudo-element ring is intentional —
           mask-composite paints only the ring. */}
-      <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-[color:var(--grey-950)] text-white shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)]">
+      <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-[color:var(--grey-950)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.10),inset_0_-1px_0_rgba(0,0,0,0.55),0_30px_60px_-20px_rgba(0,0,0,0.55)]">
         {/* Hole punch */}
         <div className="absolute left-1/2 top-5 h-3.5 w-3.5 -translate-x-1/2 rounded-pill bg-[color:var(--surface-canvas)] ring-1 ring-white/15" />
 
@@ -183,13 +187,13 @@ function Ticket({
 
         {/* Header copy — wider ticket lets the headline scale up. */}
         <div className="absolute left-6 right-6 top-[72px]">
-          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white/45">
+          <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-white">
             Tatch · invite pass
           </p>
           <p className="mt-3 text-[20px] font-semibold leading-[1.1] lg:text-[24px]">
             You&apos;re on the list.
           </p>
-          <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white/55 lg:text-[13.5px]">
+          <p className="mt-2 max-w-[34ch] text-[12.5px] leading-snug text-white lg:text-[13.5px]">
             Set up in about 90 seconds and start receiving referrals from {operator.name}.
           </p>
         </div>
@@ -207,7 +211,7 @@ function Ticket({
             <p className="text-[13px] font-semibold text-white lg:text-[14px]">
               {inviter.fullName}
             </p>
-            <p className="mt-0.5 text-[10.5px] uppercase tracking-[0.14em] text-white/45">
+            <p className="mt-0.5 text-[10.5px] uppercase tracking-[0.14em] text-white">
               {inviter.title} · {operator.name}
             </p>
           </div>
@@ -216,24 +220,24 @@ function Ticket({
         {/* Stub-style key/value row — three cells now that we have width. */}
         <div className="absolute inset-x-6 bottom-[140px] grid grid-cols-3 gap-3 border-t border-dashed border-white/8 pt-3">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white/40">
+            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
               Pass
             </p>
-            <p className="mt-1 font-mono text-[11px] text-white/85">TATCH-001</p>
+            <p className="mt-1 font-mono text-[11px] text-white">TATCH-001</p>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white/40">
+            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
               Issued
             </p>
-            <p className="mt-1 font-mono text-[11px] text-white/85">
+            <p className="mt-1 font-mono text-[11px] text-white">
               {new Date().toISOString().slice(0, 10)}
             </p>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-[0.18em] text-white/40">
+            <p className="text-[9px] uppercase tracking-[0.18em] text-white">
               Seats
             </p>
-            <p className="mt-1 font-mono text-[11px] text-white/85">
+            <p className="mt-1 font-mono text-[11px] text-white">
               {operator.teammateCount + 1} active
             </p>
           </div>
@@ -243,7 +247,7 @@ function Ticket({
         <div className="absolute inset-x-6 bottom-[108px] flex items-center gap-2">
           <Logomark />
           <span className="text-[13px] font-semibold tracking-tight">tatch</span>
-          <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white/40">
+          <span className="ml-auto text-[10.5px] uppercase tracking-[0.16em] text-white">
             tatch.com
           </span>
         </div>
@@ -262,7 +266,7 @@ function Ticket({
         </div>
 
         {/* Serial */}
-        <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white/40">
+        <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white">
           0001 · {operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · {inviter.firstName.toUpperCase()}
         </p>
       </div>
