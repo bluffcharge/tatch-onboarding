@@ -96,15 +96,16 @@ export function TicketWelcomeScreen({ invite }: Props) {
               inviter={inviter}
               operator={operator}
               flipped={flipped}
+              onFlipToBack={flipToBack}
               onFlipBack={flipToFront}
             />
           </div>
 
           {/* Secondary actions — only the front face calls for them, so
-              they fade out when the ticket flips to the back. The "Have a
-              code?" link below the Email/Google row is the flip trigger;
-              it sits in the secondary-action band so it reads as the
-              third path rather than competing with the primary CTA. */}
+              they fade out when the ticket flips to the back. The flip
+              trigger ("Have a code? Use it instead") now lives on the
+              ticket itself in the serial slot, so it's not in this
+              block anymore. */}
           <div
             aria-hidden={flipped}
             className="mt-10 w-full max-w-[460px] lg:mt-14"
@@ -134,15 +135,6 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 Google
               </Button>
             </div>
-            <p className="t-caption mt-4 text-center">
-              <button
-                type="button"
-                onClick={flipToBack}
-                className="font-medium text-ink-body hover:text-ink-title hover:underline"
-              >
-                Have a code? Use it instead →
-              </button>
-            </p>
           </div>
 
           {/* Legal */}
@@ -169,11 +161,13 @@ function Ticket({
   inviter,
   operator,
   flipped,
+  onFlipToBack,
   onFlipBack,
 }: {
   inviter: InviteContext["inviter"];
   operator: InviteContext["operator"];
   flipped: boolean;
+  onFlipToBack: () => void;
   onFlipBack: () => void;
 }) {
   // Pointer-tracking 3D tilt — center origin, ~8deg max in each axis.
@@ -240,7 +234,11 @@ function Ticket({
         }}
       >
         <TicketFace inert={flipped}>
-          <TicketFront inviter={inviter} operator={operator} />
+          <TicketFront
+            inviter={inviter}
+            operator={operator}
+            onFlipToBack={onFlipToBack}
+          />
         </TicketFace>
         <TicketFace back inert={!flipped}>
           <TicketBack onFlipBack={onFlipBack} flipped={flipped} />
@@ -295,9 +293,11 @@ function TicketFace({
 function TicketFront({
   inviter,
   operator,
+  onFlipToBack,
 }: {
   inviter: InviteContext["inviter"];
   operator: InviteContext["operator"];
+  onFlipToBack: () => void;
 }) {
   return (
     <>
@@ -387,10 +387,19 @@ function TicketFront({
         </TicketPrimaryCTA>
       </div>
 
-      {/* Serial */}
-      <p className="absolute inset-x-6 bottom-4 text-center font-mono text-[9.5px] tracking-[0.3em] text-white">
-        0001 · {operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · {inviter.firstName.toUpperCase()}
-      </p>
+      {/* Flip-to-back trigger — sits in the serial slot at the bottom of
+          the ticket. Mirrors the back's "Use the invite link instead"
+          slot so the bottom-most band reads as paired metadata across
+          the flip. */}
+      <button
+        type="button"
+        onClick={onFlipToBack}
+        onMouseDown={(e) => e.stopPropagation()}
+        className="absolute inset-x-6 bottom-4 inline-flex items-center justify-center gap-1.5 text-[9.5px] font-medium uppercase tracking-[0.22em] text-white/55 hover:text-white"
+      >
+        Have a code? Use it instead
+        <ArrowRight size={11} strokeWidth={1.85} />
+      </button>
     </>
   );
 }
