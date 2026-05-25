@@ -66,9 +66,10 @@ export function WelcomeScreen({ invite }: Props) {
             referrals from {operator.name}.
           </p>
 
-          {/* CTAs — primary capped to ~480px, secondary row below
-              splits Email + Google side-by-side at md+. */}
-          <div className="mt-8 w-full max-w-[480px] space-y-3 lg:mt-10">
+          {/* CTAs — primary capped to ~480px; Email + Google split a
+              single secondary row at every size so the stack reads as
+              "one primary + alt options" instead of three siblings. */}
+          <div className="mt-8 w-full max-w-[480px] space-y-2.5 lg:mt-10">
             <Button
               fullWidth
               size="lg"
@@ -77,12 +78,12 @@ export function WelcomeScreen({ invite }: Props) {
             >
               Continue with phone
             </Button>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <Button
                 variant="secondary"
                 fullWidth
-                size="lg"
-                leadingIcon={<Mail size={16} strokeWidth={1.75} />}
+                size="md"
+                leadingIcon={<Mail size={15} strokeWidth={1.75} />}
                 onClick={() => goto("/onboarding/auth?via=email")}
               >
                 Email
@@ -90,7 +91,7 @@ export function WelcomeScreen({ invite }: Props) {
               <Button
                 variant="secondary"
                 fullWidth
-                size="lg"
+                size="md"
                 leadingIcon={<GoogleMark />}
                 onClick={() => goto("/onboarding/auth?via=google")}
               >
