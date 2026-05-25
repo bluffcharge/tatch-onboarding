@@ -60,7 +60,10 @@ export function AuthScreen() {
         )
       }
     >
-      <div className="mt-2">
+      {/* Cap the content column on md+ to track the Continue CTA cap.
+          Without this, fields and the breadcrumb stretch the full
+          760–920px shell width and read as banners. */}
+      <div className="mt-2 md:max-w-[480px] lg:max-w-[520px]">
         {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
             after the user leaves P1 and is committing real credentials. */}
         <OperatorContext />
