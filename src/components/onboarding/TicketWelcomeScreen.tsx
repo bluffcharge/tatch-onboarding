@@ -12,46 +12,11 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { TicketPrimaryCTA } from "@/components/ui/TicketPrimaryCTA";
 import { OnboardingShell } from "./OnboardingShell";
 import type { InviteContext } from "@/lib/mockInvite";
 
 type Props = { invite: InviteContext };
-
-/* ----------------- On-ticket primary CTA -----------------
-   Sits inside the ticket surface (near-black), so it inverts the glass
-   recipe used elsewhere: white pill on dark, ink-title label. Lives
-   inside the tilt transform — pointer-events stay live through the
-   parent's preserve-3d so clicks land normally. */
-function TicketPrimaryCTA({
-  icon,
-  children,
-  onClick,
-  disabled,
-}: {
-  icon: ReactNode;
-  children: ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      onMouseDown={(e) => e.stopPropagation()}
-      // Die-cut illusion: white pill reads as the paper-white surface
-      // showing *through* the dark card. The inset ring is the cut edge;
-      // the inset top shadow + offset bottom highlight sells the depth
-      // (card material has thickness, light catches the inner bevel).
-      className="group relative inline-flex h-11 w-full items-center justify-center gap-2 rounded-pill bg-white px-5 text-[13.5px] font-semibold text-[color:var(--grey-950)] ring-1 ring-inset ring-black/15 shadow-[inset_0_2px_3px_rgba(0,0,0,0.18),inset_0_-1px_0_rgba(255,255,255,0.9),0_1px_0_rgba(255,255,255,0.06)] transition-transform duration-fast ease-snap hover:bg-white active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
-    >
-      <span className="relative z-[2] inline-flex items-center gap-2">
-        {icon}
-        {children}
-      </span>
-    </button>
-  );
-}
 
 /**
  * P1 — Ticket variant. Inspired by the Vanguard hang-tag mockup but using

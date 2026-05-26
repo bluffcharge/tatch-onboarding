@@ -51,6 +51,14 @@ export function OnboardingShell({
   const xPadCls = wide
     ? "px-4 md:px-10 lg:px-14 2xl:px-20"
     : "px-4 md:px-10 lg:px-12 2xl:px-16";
+
+  // When a journey rail is present and the screen isn't using the wide
+  // multi-column band, the right pane has plenty of room around a
+  // form-shaped content cap. Center the header chrome (back arrow) so
+  // it aligns with the dark ticket frame's left edge. Wide screens opt
+  // out — they own their own multi-column layouts.
+  const centerInRail = !!journey && !wide;
+  const formCapCls = "md:max-w-[380px] lg:max-w-[460px]";
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside
@@ -73,13 +81,19 @@ export function OnboardingShell({
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
-              {(backHref || onBack) && (
-                <BackControl backHref={backHref} onBack={onBack} />
-              )}
-              {/* Wordmark hides on md+ since the rail already shows it. */}
-              <span className="md:hidden">
-                <Wordmark />
-              </span>
+              {/* Center the back arrow with the dark ticket frame on
+                  rail-paired screens so it sits at the form's left edge
+                  rather than the right pane's. */}
+              <div
+                className={`flex w-full items-center gap-2 ${centerInRail ? `mx-auto ${formCapCls}` : ""}`}
+              >
+                {(backHref || onBack) && (
+                  <BackControl backHref={backHref} onBack={onBack} />
+                )}
+                <span className="md:hidden">
+                  <Wordmark />
+                </span>
+              </div>
             </div>
             {step && (
               <div className="mx-auto w-full max-w-[480px] px-4 pb-3 md:hidden">
