@@ -37,12 +37,25 @@ const OPTION_ICON: Record<string, LucideIcon> = {
   other:      MoreHorizontal,
 };
 
+/** technician_count lives in the page header as a slider rather than
+ *  as a stacked question, so we render the rest of the questions in
+ *  the body loop. The slider preset is 4 (middle of the 2–6 band most
+ *  small operators land in) but the value can range 1–25. */
+const TECH_COUNT_ID = "technician_count";
+const TECH_COUNT_PRESET = 4;
+const TECH_COUNT_MIN = 1;
+const TECH_COUNT_MAX = 25;
+
 export function DiscoveryScreen() {
   const router = useRouter();
   const [answers, setAnswers] = useState<Answers>(() => {
     const seed: Answers = {};
     DISCOVERY_QUESTIONS.forEach((q) => {
-      seed[q.id] = q.type === "multi_select_chips" ? [] : null;
+      if (q.id === TECH_COUNT_ID) {
+        seed[q.id] = String(TECH_COUNT_PRESET);
+      } else {
+        seed[q.id] = q.type === "multi_select_chips" ? [] : null;
+      }
     });
     return seed;
   });
@@ -88,15 +101,36 @@ export function DiscoveryScreen() {
       }
     >
       <div className="mt-2 md:mt-0">
-        <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
-          A couple of quick questions.
-        </h1>
-        <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-8 lg:text-[16px]">
-          This helps your operator route the right referrals to you.
-        </p>
+        {/* Header row: title + helper on the left, technician slider
+            inset to the top-right on md+. Lifting the tech count out
+            of the body loop saves a question's worth of vertical
+            space — keeps the service tiles and the Continue CTA above
+            the fold on a standard desktop. */}
+        <div className="md:flex md:items-start md:justify-between md:gap-8">
+          <div className="md:flex-1">
+            <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
+              A couple of quick questions.
+            </h1>
+            <p className="t-body mb-6 text-ink-subtitle md:mb-8 md:text-[15px] lg:text-[16px]">
+              This helps your operator route the right referrals to you.
+            </p>
+          </div>
+          <div className="mb-6 md:mb-0 md:w-[260px] md:shrink-0 lg:w-[300px]">
+            <TechCountSlider
+              value={parseInt(
+                (answers[TECH_COUNT_ID] as string | null) ??
+                  String(TECH_COUNT_PRESET),
+                10
+              )}
+              onChange={(n) =>
+                setAnswers((s) => ({ ...s, [TECH_COUNT_ID]: String(n) }))
+              }
+            />
+          </div>
+        </div>
 
         <div className="space-y-8 lg:space-y-10">
-          {DISCOVERY_QUESTIONS.map((q) => (
+          {DISCOVERY_QUESTIONS.filter((q) => q.id !== TECH_COUNT_ID).map((q) => (
             <div key={q.id}>
               <h2 className="t-h4 mb-1 lg:text-[18px]">{q.prompt}</h2>
               {q.helperText && (
@@ -258,7 +292,7 @@ function TileGroup(props: TileSingle | TileMulti) {
               }
             }}
             className={[
-              "group relative flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl border p-3 text-center transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
+              "group relative flex h-[88px] items-center gap-3 rounded-2xl border px-3.5 text-left transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
               selected
                 ? "border-[color:var(--text-title)] bg-card shadow-md"
                 : "border-border bg-card hover:-translate-y-0.5 hover:border-strong hover:shadow-sm",
@@ -275,11 +309,11 @@ function TileGroup(props: TileSingle | TileMulti) {
             <span
               aria-hidden="true"
               className={[
-                "grid h-11 w-11 place-items-center rounded-xl transition-colors duration-fast ease-snap",
+                "grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-colors duration-fast ease-snap",
                 selected ? "bg-subtle text-ink-title" : "bg-subtle text-ink-body",
               ].join(" ")}
             >
-              <Icon size={20} strokeWidth={1.75} />
+              <Icon size={18} strokeWidth={1.75} />
             </span>
             <span className="text-[13px] font-semibold leading-tight text-ink-title">
               {o.label}
@@ -287,6 +321,53 @@ function TileGroup(props: TileSingle | TileMulti) {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------------- */
+/* TechCountSlider — inset header control                            */
+/* ----------------------------------------------------------------- */
+
+function TechCountSlider({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  const pct = Math.round(
+    ((value - TECH_COUNT_MIN) / (TECH_COUNT_MAX - TECH_COUNT_MIN)) * 100
+  );
+  return (
+    <div className="rounded-2xl border border-border bg-card px-4 py-3 shadow-xs">
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="t-mono-label">Technicians</p>
+        <p className="text-[24px] font-semibold leading-none text-ink-title tabular-nums">
+          {value}
+          {value === TECH_COUNT_MAX && (
+            <span className="text-[16px] font-medium text-ink-caption">+</span>
+          )}
+        </p>
+      </div>
+      <input
+        type="range"
+        min={TECH_COUNT_MIN}
+        max={TECH_COUNT_MAX}
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value, 10))}
+        aria-label="Number of technicians"
+        className="tech-slider mt-2 h-1.5 w-full appearance-none rounded-pill bg-subtle outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        style={{
+          // Paint the filled portion of the track up to `pct%` with the
+          // ink-title color, leaving the rest as the subtle/grey track.
+          background: `linear-gradient(to right, var(--text-title) 0%, var(--text-title) ${pct}%, var(--surface-subtle) ${pct}%, var(--surface-subtle) 100%)`,
+        }}
+      />
+      <div className="mt-1 flex justify-between text-[10.5px] uppercase tracking-[0.14em] text-ink-caption">
+        <span>{TECH_COUNT_MIN}</span>
+        <span>{TECH_COUNT_MAX}+</span>
+      </div>
     </div>
   );
 }
