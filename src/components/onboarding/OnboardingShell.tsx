@@ -58,7 +58,10 @@ export function OnboardingShell({
   // it aligns with the dark ticket frame's left edge. Wide screens opt
   // out — they own their own multi-column layouts.
   const centerInRail = !!journey && !wide;
-  const formCapCls = "md:max-w-[380px] lg:max-w-[460px]";
+  // Widened to 760/920 so the dark ticket frame reads as a poster-shaped
+  // rectangle (~16:9 at lg) rather than a vertical card — more canvas
+  // commitment, content has horizontal room to breathe.
+  const formCapCls = "md:max-w-[760px] lg:max-w-[920px]";
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside

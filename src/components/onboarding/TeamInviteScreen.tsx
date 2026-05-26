@@ -49,12 +49,12 @@ export function TeamInviteScreen() {
       backHref="/onboarding/discovery"
       journey={{ currentKey: "team" }}
     >
-      <div className="mt-2 md:mx-auto md:max-w-[380px] lg:max-w-[460px]">
+      <div className="mt-2 md:mx-auto md:max-w-[760px] lg:max-w-[920px]">
         <OnboardingTicketFrame
           eyebrow="Step 5 · Team"
           serial="PASS · TEAM · COLLABORATORS"
           footer={
-            <div className="space-y-3">
+            <div className="md:max-w-[420px] md:space-y-3">
               <TicketPrimaryCTA
                 icon={<ArrowRight size={15} strokeWidth={1.85} />}
                 onClick={() => router.push("/onboarding/activating")}
@@ -63,7 +63,7 @@ export function TeamInviteScreen() {
                   ? `Send ${filled} invite${filled === 1 ? "" : "s"} & finish`
                   : "Finish setup"}
               </TicketPrimaryCTA>
-              <div className="text-center">
+              <div className="mt-3 text-center md:mt-0">
                 <DarkTertiaryLink
                   onClick={() => router.push("/onboarding/activating")}
                 >
@@ -73,15 +73,15 @@ export function TeamInviteScreen() {
             </div>
           }
         >
-          <h1 className="text-[22px] font-semibold leading-[1.15] text-white lg:text-[26px]">
+          <h1 className="text-[26px] font-semibold leading-[1.15] text-white md:text-[32px] lg:text-[36px]">
             Invite your team.
           </h1>
-          <p className="mt-2 text-[13px] leading-snug text-white/55 lg:text-[13.5px]">
+          <p className="mt-3 max-w-[52ch] text-[14px] leading-snug text-white/75 lg:text-[15px]">
             Add anyone who&apos;ll be sending referrals or managing this account.
             They&apos;ll get an SMS to set up their own login.
           </p>
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-6 space-y-3 md:max-w-[560px]">
             {rows.map((row, i) => (
               <div
                 key={row.id}
@@ -100,7 +100,7 @@ export function TeamInviteScreen() {
                         onChange={(e) =>
                           updateRow(row.id, { recipient: e.target.value })
                         }
-                        className="h-full w-full bg-transparent text-[14px] text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[14px] text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                   </div>
@@ -116,7 +116,7 @@ export function TeamInviteScreen() {
                   )}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <p className="text-[9.5px] font-medium uppercase tracking-[0.18em] text-white/55">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/70">
                     Role
                   </p>
                   <DarkRoleToggle
@@ -130,7 +130,7 @@ export function TeamInviteScreen() {
             <button
               type="button"
               onClick={addRow}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.14em] text-white/55 hover:text-white"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-[0.14em] text-white/70 hover:text-white"
             >
               <Plus size={12} strokeWidth={2} />
               Add another

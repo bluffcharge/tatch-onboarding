@@ -45,28 +45,30 @@ export function BusinessProfileScreen() {
       backHref="/onboarding/auth"
       journey={{ currentKey: "business" }}
     >
-      <div className="mt-2 md:mx-auto md:max-w-[380px] lg:max-w-[460px]">
+      <div className="mt-2 md:mx-auto md:max-w-[760px] lg:max-w-[920px]">
         <OnboardingTicketFrame
           eyebrow="Step 3 · Business"
           serial="PASS · BUSINESS · IDENTITY"
           footer={
-            <TicketPrimaryCTA
-              icon={<ArrowRight size={15} strokeWidth={1.85} />}
-              onClick={() => router.push("/onboarding/discovery")}
-              disabled={!canContinue}
-            >
-              Continue
-            </TicketPrimaryCTA>
+            <div className="md:max-w-[420px]">
+              <TicketPrimaryCTA
+                icon={<ArrowRight size={15} strokeWidth={1.85} />}
+                onClick={() => router.push("/onboarding/discovery")}
+                disabled={!canContinue}
+              >
+                Continue
+              </TicketPrimaryCTA>
+            </div>
           }
         >
-          <h1 className="text-[22px] font-semibold leading-[1.15] text-white lg:text-[26px]">
+          <h1 className="text-[26px] font-semibold leading-[1.15] text-white md:text-[32px] lg:text-[36px]">
             Tell us about your business.
           </h1>
-          <p className="mt-2 text-[13px] leading-snug text-white/55 lg:text-[13.5px]">
+          <p className="mt-3 max-w-[52ch] text-[14px] leading-snug text-white/75 lg:text-[15px]">
             We use this to match you to nearby operators and to label referrals correctly.
           </p>
 
-          <div className="mt-5 space-y-4">
+          <div className="mt-6 space-y-4 md:max-w-[560px]">
             <div>
               <DarkFieldLabel>Business name</DarkFieldLabel>
               <DarkFieldWrapper>
@@ -75,7 +77,7 @@ export function BusinessProfileScreen() {
                   placeholder="e.g. Northwind Roofing"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                  className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                 />
               </DarkFieldWrapper>
             </div>
@@ -90,7 +92,7 @@ export function BusinessProfileScreen() {
                     placeholder="Start typing your address…"
                     value={addrText}
                     onChange={(e) => setAddrText(e.target.value)}
-                    className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                    className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                   />
                 </DarkFieldWrapper>
                 <DarkFieldHelper>
@@ -112,7 +114,7 @@ export function BusinessProfileScreen() {
                       placeholder="123 Main St."
                       value={line1}
                       onChange={(e) => setLine1(e.target.value)}
-                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                     />
                   </DarkFieldWrapper>
                 </div>
@@ -124,7 +126,7 @@ export function BusinessProfileScreen() {
                         autoComplete="address-level2"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                   </div>
@@ -136,7 +138,7 @@ export function BusinessProfileScreen() {
                         maxLength={2}
                         value={stateVal}
                         onChange={(e) => setStateVal(e.target.value.toUpperCase())}
-                        className="h-full w-full bg-transparent text-[15px] uppercase text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[15px] uppercase text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                   </div>
@@ -149,7 +151,7 @@ export function BusinessProfileScreen() {
                         maxLength={5}
                         value={zip}
                         onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
-                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                   </div>
@@ -174,7 +176,7 @@ export function BusinessProfileScreen() {
                       autoComplete="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                     />
                   </DarkFieldWrapper>
                   <DarkFieldHelper>Pre-filled from your sign-up.</DarkFieldHelper>
@@ -188,7 +190,7 @@ export function BusinessProfileScreen() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="dispatch@northwindroofing.com"
-                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                     />
                   </DarkFieldWrapper>
                   <DarkFieldHelper>Optional — for important account notices.</DarkFieldHelper>

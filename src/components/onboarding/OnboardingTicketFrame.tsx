@@ -55,10 +55,12 @@ export function OnboardingTicketFrame({
         <div className="absolute left-6 right-6 top-12 border-t border-dashed border-white/8" />
 
         {/* Body: eyebrow + children + footer + serial. Padding starts
-            below the perforation line. */}
-        <div className="px-6 pb-4 pt-[68px]">
+            below the perforation line. Roomier horizontal padding on
+            lg+ so the wider card has visible margins inside the
+            gradient outline. */}
+        <div className="px-6 pb-4 pt-[68px] md:px-8 lg:px-10">
           {eyebrow && (
-            <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.22em] text-white/55">
+            <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.22em] text-white/70">
               {eyebrow}
             </p>
           )}
@@ -66,10 +68,10 @@ export function OnboardingTicketFrame({
           {children}
 
           {footer && (
-            <div className="mt-7">
+            <div className="mt-8">
               {/* Perforation echoes the rhythm above the stub on the P1
                   ticket — visually anchors the CTA. */}
-              <div className="mb-4 border-t border-dashed border-white/8" />
+              <div className="mb-5 border-t border-dashed border-white/10" />
               {footer}
             </div>
           )}

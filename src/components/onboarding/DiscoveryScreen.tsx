@@ -60,35 +60,37 @@ export function DiscoveryScreen() {
       backHref="/onboarding/business"
       journey={{ currentKey: "discovery" }}
     >
-      <div className="mt-2 md:mx-auto md:max-w-[380px] lg:max-w-[460px]">
+      <div className="mt-2 md:mx-auto md:max-w-[760px] lg:max-w-[920px]">
         <OnboardingTicketFrame
           eyebrow="Step 4 · Discovery"
           serial="PASS · DISCOVERY · ROUTING"
           footer={
-            <TicketPrimaryCTA
-              icon={<ArrowRight size={15} strokeWidth={1.85} />}
-              onClick={() => router.push("/onboarding/team")}
-              disabled={!allRequiredAnswered}
-            >
-              Continue
-            </TicketPrimaryCTA>
+            <div className="md:max-w-[420px]">
+              <TicketPrimaryCTA
+                icon={<ArrowRight size={15} strokeWidth={1.85} />}
+                onClick={() => router.push("/onboarding/team")}
+                disabled={!allRequiredAnswered}
+              >
+                Continue
+              </TicketPrimaryCTA>
+            </div>
           }
         >
-          <h1 className="text-[22px] font-semibold leading-[1.15] text-white lg:text-[26px]">
+          <h1 className="text-[26px] font-semibold leading-[1.15] text-white md:text-[32px] lg:text-[36px]">
             A couple of quick questions.
           </h1>
-          <p className="mt-2 text-[13px] leading-snug text-white/55 lg:text-[13.5px]">
+          <p className="mt-3 max-w-[52ch] text-[14px] leading-snug text-white/75 lg:text-[15px]">
             This helps your operator route the right referrals to you.
           </p>
 
-          <div className="mt-6 space-y-7">
+          <div className="mt-7 space-y-7 md:max-w-[640px]">
             {DISCOVERY_QUESTIONS.map((q) => (
               <div key={q.id}>
-                <h2 className="mb-1 text-[14px] font-semibold leading-snug text-white">
+                <h2 className="mb-1 text-[15px] font-semibold leading-snug text-white">
                   {q.prompt}
                 </h2>
                 {q.helperText && (
-                  <p className="mb-3 text-[12px] leading-snug text-white/55">
+                  <p className="mb-3 text-[13px] leading-snug text-white/70">
                     {q.helperText}
                   </p>
                 )}
@@ -107,7 +109,7 @@ export function DiscoveryScreen() {
                             : raw;
                         setAnswers((s) => ({ ...s, [q.id]: cleaned }));
                       }}
-                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                     />
                   </DarkFieldWrapper>
                 )}
@@ -153,7 +155,7 @@ export function DiscoveryScreen() {
                                 }))
                               }
                               autoFocus
-                              className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                              className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                             />
                           </DarkFieldWrapper>
                         </div>
@@ -223,8 +225,8 @@ function DarkChipGroup(props: SingleProps | MultiProps) {
             }}
             className={
               active
-                ? "inline-flex h-9 items-center gap-1.5 rounded-pill border border-white/55 bg-white/[0.12] px-3.5 text-[12.5px] font-medium text-white transition-colors duration-fast ease-snap"
-                : "inline-flex h-9 items-center gap-1.5 rounded-pill border border-white/15 bg-white/[0.04] px-3.5 text-[12.5px] font-medium text-white/75 transition-colors duration-fast ease-snap hover:border-white/30 hover:text-white"
+                ? "inline-flex h-9 items-center gap-1.5 rounded-pill border border-white/70 bg-white/[0.14] px-3.5 text-[12.5px] font-medium text-white transition-colors duration-fast ease-snap"
+                : "inline-flex h-9 items-center gap-1.5 rounded-pill border border-white/20 bg-white/[0.05] px-3.5 text-[12.5px] font-medium text-white/80 transition-colors duration-fast ease-snap hover:border-white/40 hover:text-white"
             }
           >
             {active && <Check size={12} strokeWidth={2.5} />}

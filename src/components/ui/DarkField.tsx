@@ -14,7 +14,7 @@ import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from "rea
 
 export function DarkFieldLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/55">
+    <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/70">
       {children}
     </p>
   );
@@ -22,7 +22,7 @@ export function DarkFieldLabel({ children }: { children: ReactNode }) {
 
 export function DarkFieldHelper({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-1.5 text-[11.5px] leading-snug text-white/45">{children}</p>
+    <p className="mt-1.5 text-[12px] leading-snug text-white/65">{children}</p>
   );
 }
 
@@ -45,10 +45,10 @@ export function DarkFieldWrapper({
 }) {
   const border = error
     ? "border-rose-300/60"
-    : "border-white/15 focus-within:border-white/55";
+    : "border-white/20 focus-within:border-white/70";
   return (
     <div
-      className={`flex h-11 items-center gap-2 rounded-[10px] border bg-white/[0.04] px-3 transition-colors duration-fast ease-snap ${border} ${className}`}
+      className={`flex h-12 items-center gap-2 rounded-[10px] border bg-white/[0.05] px-3.5 transition-colors duration-fast ease-snap ${border} ${className}`}
     >
       {children}
     </div>
@@ -89,7 +89,7 @@ export const DarkTextField = forwardRef<HTMLInputElement, DarkTextFieldProps>(
             ref={ref}
             id={inputId}
             aria-invalid={Boolean(error) || undefined}
-            className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+            className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
             {...rest}
           />
           {trailingAdornment && (
@@ -123,15 +123,19 @@ export function DarkTertiaryLink({
     <button
       type={type}
       onClick={onClick}
-      className="text-[12px] font-medium uppercase tracking-[0.14em] text-white/55 hover:text-white"
+      className="text-[12px] font-medium uppercase tracking-[0.14em] text-white/70 hover:text-white"
     >
       {children}
     </button>
   );
 }
 
-/* "Joining Summit Builders · invited by Sara" badge — dark variant of
-   the OperatorContext chip we used on the light AuthScreen. */
+/* "Joining Summit Builders · invited by Sara" badge.
+   Despite the file's `Dark*` naming, this badge lives ABOVE the dark
+   ticket frame on the light canvas (it was pulled out of the card per
+   the design review — having the inviter inside the form added noise
+   the rail-paired journey timeline already carries). Styled for the
+   light surface accordingly. */
 export function DarkInviterBadge({
   initial,
   operatorName,
@@ -142,17 +146,17 @@ export function DarkInviterBadge({
   inviterName: string;
 }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-[10px] border border-white/10 bg-white/[0.04] px-2.5 py-2">
+    <div className="inline-flex items-center gap-2.5 rounded-[10px] border border-border-subtle bg-card px-2.5 py-2">
       <span
         aria-hidden="true"
-        className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-white text-[10px] font-semibold text-[color:var(--grey-950)]"
+        className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-ink-title text-[10px] font-semibold text-canvas"
       >
         {initial}
       </span>
-      <p className="text-[11.5px] leading-snug text-white/75">
+      <p className="text-[12px] leading-snug text-ink-body">
         Joining{" "}
-        <span className="font-semibold text-white">{operatorName}</span>
-        <span className="text-white/45"> · invited by {inviterName}</span>
+        <span className="font-semibold text-ink-title">{operatorName}</span>
+        <span className="text-ink-caption"> · invited by {inviterName}</span>
       </p>
     </div>
   );

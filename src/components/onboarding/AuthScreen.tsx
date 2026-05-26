@@ -76,41 +76,49 @@ export function AuthScreen() {
 
   return (
     <OnboardingShell backHref="/j/abc123" journey={{ currentKey: "auth" }}>
-      <div className="mt-2 md:mx-auto md:max-w-[380px] lg:max-w-[460px]">
-        <OnboardingTicketFrame
-          eyebrow="Step 2 · Identity"
-          serial={`PASS · ${defaultInvite.operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · ${defaultInvite.inviter.firstName.toUpperCase()}`}
-          footer={
-            <TicketPrimaryCTA
-              icon={<ArrowRight size={15} strokeWidth={1.85} />}
-              onClick={submit}
-              disabled={continueDisabled}
-            >
-              {phase === "otp"
-                ? "Verify"
-                : via === "phone"
-                  ? "Send code"
-                  : via === "email"
-                    ? "Continue"
-                    : "Continue with Google"}
-            </TicketPrimaryCTA>
-          }
-        >
-          {/* Inviter context — dark variant of the breadcrumb. */}
+      <div className="mt-2 md:mx-auto md:max-w-[760px] lg:max-w-[920px]">
+        {/* Inviter context lives ABOVE the card on the light canvas — it
+            was eating noise inside the dark frame, and the journey rail
+            already shows the operator name. Kept only on P2 (the auth
+            step) since "who am I committing credentials to" still
+            matters at that moment; dropped on P3+. */}
+        <div className="mb-4">
           <DarkInviterBadge
             initial={defaultInvite.inviter.firstName[0]}
             operatorName={defaultInvite.operator.name}
             inviterName={defaultInvite.inviter.fullName}
           />
+        </div>
 
+        <OnboardingTicketFrame
+          eyebrow="Step 2 · Identity"
+          serial={`PASS · ${defaultInvite.operator.name.replace(/\s+/g, "").toUpperCase().slice(0, 6)} · ${defaultInvite.inviter.firstName.toUpperCase()}`}
+          footer={
+            <div className="md:max-w-[420px]">
+              <TicketPrimaryCTA
+                icon={<ArrowRight size={15} strokeWidth={1.85} />}
+                onClick={submit}
+                disabled={continueDisabled}
+              >
+                {phase === "otp"
+                  ? "Verify"
+                  : via === "phone"
+                    ? "Send code"
+                    : via === "email"
+                      ? "Continue"
+                      : "Continue with Google"}
+              </TicketPrimaryCTA>
+            </div>
+          }
+        >
           {phase === "enter" && (
             <>
-              <h1 className="mt-4 text-[22px] font-semibold leading-[1.15] text-white lg:text-[26px]">
+              <h1 className="text-[26px] font-semibold leading-[1.15] text-white md:text-[32px] lg:text-[36px]">
                 {via === "phone" && "What's your mobile number?"}
                 {via === "email" && "Sign in or create your account."}
                 {via === "google" && "Continue with Google."}
               </h1>
-              <p className="mt-2 text-[13px] leading-snug text-white/55 lg:text-[13.5px]">
+              <p className="mt-3 max-w-[52ch] text-[14px] leading-snug text-white/75 lg:text-[15px]">
                 {via === "phone" &&
                   "We'll text you a 6-digit code to verify. Standard message rates apply."}
                 {via === "email" &&
@@ -120,10 +128,10 @@ export function AuthScreen() {
               </p>
 
               {via === "phone" && (
-                <div className="mt-5">
+                <div className="mt-6 md:max-w-[420px]">
                   <DarkFieldLabel>Mobile number</DarkFieldLabel>
                   <DarkFieldWrapper>
-                    <span className="select-none rounded-[6px] bg-white/[0.08] px-2 py-1 text-[12.5px] font-semibold text-white">
+                    <span className="select-none rounded-[6px] bg-white/[0.12] px-2 py-1 text-[12.5px] font-semibold text-white">
                       +1
                     </span>
                     <input
@@ -136,7 +144,7 @@ export function AuthScreen() {
                       onChange={(e) =>
                         setPhoneValue(new AsYouType("US").input(e.target.value))
                       }
-                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                      className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                     />
                   </DarkFieldWrapper>
                   <DarkFieldHelper>
@@ -146,7 +154,7 @@ export function AuthScreen() {
               )}
 
               {via === "email" && (
-                <div className="mt-5 space-y-3">
+                <div className="mt-6 space-y-3 md:max-w-[420px]">
                   <div>
                     <DarkFieldLabel>Email</DarkFieldLabel>
                     <DarkFieldWrapper>
@@ -159,7 +167,7 @@ export function AuthScreen() {
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           setEmail(e.target.value)
                         }
-                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                   </div>
@@ -174,7 +182,7 @@ export function AuthScreen() {
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
                           setPassword(e.target.value)
                         }
-                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/35"
+                        className="h-full w-full bg-transparent text-[15px] text-white outline-none placeholder:text-white/45"
                       />
                     </DarkFieldWrapper>
                     <DarkFieldHelper>At least 8 characters, with one number.</DarkFieldHelper>
@@ -184,7 +192,7 @@ export function AuthScreen() {
 
               {/* Alt-path tertiary links — uppercase mono-ish to echo the
                   ticket's serial / eyebrow language. */}
-              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
                 {via !== "phone" && (
                   <DarkTertiaryLink onClick={() => router.replace("/onboarding/auth?via=phone")}>
                     Use phone instead →
@@ -201,14 +209,14 @@ export function AuthScreen() {
 
           {phase === "otp" && (
             <>
-              <h1 className="mt-4 text-[22px] font-semibold leading-[1.15] text-white lg:text-[26px]">
+              <h1 className="text-[26px] font-semibold leading-[1.15] text-white md:text-[32px] lg:text-[36px]">
                 Enter the code we sent.
               </h1>
-              <p className="mt-2 text-[13px] leading-snug text-white/55 lg:text-[13.5px]">
+              <p className="mt-3 max-w-[52ch] text-[14px] leading-snug text-white/75 lg:text-[15px]">
                 We just texted a 6-digit code to your number. It expires in 10 minutes.
               </p>
 
-              <div className="mt-5">
+              <div className="mt-6 md:max-w-[420px]">
                 <DarkFieldLabel>Verification code</DarkFieldLabel>
                 <DarkFieldWrapper>
                   <input
@@ -225,7 +233,7 @@ export function AuthScreen() {
                         submit();
                       }
                     }}
-                    className="h-full w-full bg-transparent text-[18px] font-semibold tracking-[0.4em] text-white outline-none placeholder:text-white/35 placeholder:tracking-[0.4em]"
+                    className="h-full w-full bg-transparent text-[18px] font-semibold tracking-[0.4em] text-white outline-none placeholder:text-white/45 placeholder:tracking-[0.4em]"
                   />
                 </DarkFieldWrapper>
                 <DarkFieldHelper>
