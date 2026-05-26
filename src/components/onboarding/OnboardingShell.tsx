@@ -54,14 +54,19 @@ export function OnboardingShell({
 
   // When a journey rail is present and the screen isn't using the wide
   // multi-column band, the right pane has plenty of room around a
-  // form-shaped content cap. Center the header chrome (back arrow) so
-  // it aligns with the dark ticket frame's left edge. Wide screens opt
-  // out — they own their own multi-column layouts.
+  // form-shaped content cap. By default our screens left-align the
+  // form inside the wider `widthCls` band, which pulls everything to
+  // the left of the right pane. The shell centers what it owns (the
+  // header chrome and the footer CTA cap) via `mx-auto` here; the body
+  // content cap is screen-specific (a form column is narrow, a desktop
+  // table is wider) so screens add `mx-auto` to their own inner cap.
+  // Wide screens opt out because they own their own multi-column
+  // layouts. */
   const centerInRail = !!journey && !wide;
-  // Widened to 760/920 so the dark ticket frame reads as a poster-shaped
-  // rectangle (~16:9 at lg) rather than a vertical card — more canvas
-  // commitment, content has horizontal room to breathe.
-  const formCapCls = "md:max-w-[760px] lg:max-w-[920px]";
+  // Width bumped +24% from 280/320 (the historical CTA cap) to 348/400
+  // so the form column feels open at desktop sizes — at 320px the field
+  // and headline read as scrunched against the rail-paired column.
+  const formCapCls = "md:max-w-[348px] lg:max-w-[400px]";
   return (
     <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside
@@ -84,15 +89,18 @@ export function OnboardingShell({
         {chrome && (
           <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
-              {/* Center the back arrow with the dark ticket frame on
-                  rail-paired screens so it sits at the form's left edge
-                  rather than the right pane's. */}
+              {/* On journey-rail screens, the header chrome (back arrow,
+                  mobile wordmark) sits inside the same centered form cap
+                  as the body content so the back arrow aligns to the
+                  form's left edge instead of skewing toward the left of
+                  the right pane. */}
               <div
                 className={`flex w-full items-center gap-2 ${centerInRail ? `mx-auto ${formCapCls}` : ""}`}
               >
                 {(backHref || onBack) && (
                   <BackControl backHref={backHref} onBack={onBack} />
                 )}
+                {/* Wordmark hides on md+ since the rail already shows it. */}
                 <span className="md:hidden">
                   <Wordmark />
                 </span>
@@ -118,9 +126,13 @@ export function OnboardingShell({
           <footer className="safe-pb sticky bottom-0 z-10 bg-canvas/95 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
             <div className={`mx-auto w-full border-t border-border-subtle pt-4 pb-2 md:border-t-0 md:pb-10 md:pt-6 lg:pb-14 ${widthCls} ${xPadCls}`}>
               {/* Cap CTA widths on wide canvases — a full-bleed button at
-                  1800px reads as a banner, not an action. Keeps the footer
-                  legible at all sizes while still left-aligning to the form. */}
-              <div className="md:max-w-[280px] lg:max-w-[320px]">
+                  1800px reads as a banner, not an action. On journey-rail
+                  screens the cap also centers (mx-auto via `centerInRail`)
+                  so the footer sits with the form rather than skewed left
+                  of the right pane. */}
+              <div
+                className={`${centerInRail ? "mx-auto" : ""} md:max-w-[348px] lg:max-w-[400px]`}
+              >
                 {footer}
               </div>
             </div>
