@@ -27,6 +27,10 @@ import {
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { RequirementsRail } from "@/components/gallery/RequirementsRail";
 import { CommentsRail } from "@/components/gallery/CommentsRail";
+import {
+  SourceCodeMenu,
+  type AnimationKey,
+} from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
 
 type Group = "entry" | "onboarding" | "operator" | "edge";
@@ -44,6 +48,10 @@ type Route = {
    *  Flip to false (or delete the flag) to bring the route back. The
    *  URL itself still resolves so the page is reachable directly. */
   hidden?: boolean;
+  /** Animation manifest keys — surfaces a "Source" dropdown in the
+   *  canvas toolbar so engineers can grab the relevant files. Keys are
+   *  defined in `SourceCodeMenu.tsx`'s ANIMATION_MANIFEST. */
+  animations?: AnimationKey[];
 };
 
 // Source-of-truth list including stashed routes. `ROUTES` below is the
@@ -54,14 +62,14 @@ const ALL_ROUTES: Route[] = [
   // Hang-tag ticket with the front→back flip-to-code-entry interaction.
   // Stashed for now; want to keep the flip recipe accessible — flip
   // `hidden` to false to bring it back into the gallery.
-  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true },
+  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true, animations: ["ticket-flip", "brand-ribbons"] },
   { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
-  { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/business",        title: "P3 — Business profile",  subtitle: "Name + address + contact",                group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/discovery",       title: "P4 — Discovery",         subtitle: "Technicians + services (typed array)",    group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/team",            title: "P5 — Invite team",       subtitle: "SMS-first, optional",                     group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/activating",      title: "P6 — Activating",        subtitle: "1–2s two-beat transition",                group: "onboarding", intent: "mobile"  },
+  { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/business",        title: "P3 — Business profile",  subtitle: "Name + address + contact",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/discovery",       title: "P4 — Discovery",         subtitle: "Technicians + services (typed array)",    group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/team",            title: "P5 — Invite team",       subtitle: "SMS-first, optional",                     group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/activating",      title: "P6 — Activating",        subtitle: "1–2s two-beat transition",                group: "onboarding", intent: "mobile", animations: ["activating-spinner"] },
   { href: "/onboarding/done",            title: "P7 — Connected (new)",   subtitle: "New-partner success",                     group: "onboarding", intent: "mobile"  },
   { href: "/onboarding/done?existing=1", title: "P7 — Short-circuit",     subtitle: "Existing-partner copy",                   group: "onboarding", intent: "mobile"  },
   { href: "/partner-admin/invite",       title: "O1 — Operator invite",   subtitle: "Settings panel · codes · recent",         group: "operator",   intent: "desktop" },
@@ -258,6 +266,7 @@ export default function Home() {
           spec={spec}
           expanded={expanded}
           onToggleExpanded={toggleExpanded}
+          animations={active.animations}
         />
         {!expanded && (
           <CommentsRail
@@ -418,11 +427,13 @@ function Stage({
   spec,
   expanded,
   onToggleExpanded,
+  animations,
 }: {
   iframeSrc: string;
   spec: ViewportSpec;
   expanded: boolean;
   onToggleExpanded: () => void;
+  animations?: AnimationKey[];
 }) {
   const ExpandIcon = expanded ? Minimize2 : Maximize2;
   const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
@@ -430,10 +441,13 @@ function Stage({
     <main className="flex flex-1 flex-col overflow-hidden">
       {/* Canvas toolbar — `py-2.5` + `h-8` lands the bar at 52px so its
           bottom border lines up with the CommentsRail header's bottom
-          border (which is `py-3` + `h-7` = 52px). The Expand button is
-          right-aligned so it pairs with the Comments label across the
-          vertical divider as a single lockup. */}
-      <div className="flex items-center justify-end border-b border-border-subtle px-4 py-2.5">
+          border (which is `py-3` + `h-7` = 52px). Source-code dropdown
+          (only when the active route has animation annotations) sits
+          to the left of Expand; Expand is right-aligned so it pairs
+          with the Comments label across the vertical divider as a
+          single lockup. */}
+      <div className="flex items-center justify-end gap-1.5 border-b border-border-subtle px-4 py-2.5">
+        <SourceCodeMenu animations={animations} />
         <button
           type="button"
           onClick={onToggleExpanded}
