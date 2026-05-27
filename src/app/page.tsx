@@ -40,11 +40,21 @@ type Route = {
   /** which viewport this route was *designed* for — seeds the initial
    *  viewport on first gallery load only; user choice persists after. */
   intent: RouteIntent;
+  /** Stashed in the source but kept out of the gallery filmstrip + nav.
+   *  Flip to false (or delete the flag) to bring the route back. The
+   *  URL itself still resolves so the page is reachable directly. */
+  hidden?: boolean;
 };
 
-const ROUTES: Route[] = [
+// Source-of-truth list including stashed routes. `ROUTES` below is the
+// gallery-visible subset — hidden entries stay in the file so we can
+// re-enable them with a one-line flag flip.
+const ALL_ROUTES: Route[] = [
   { href: "/j/abc123",                   title: "P1 — Welcome",           subtitle: "SMS / email link entry",                  group: "entry",      intent: "mobile"  },
-  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile"  },
+  // Hang-tag ticket with the front→back flip-to-code-entry interaction.
+  // Stashed for now; want to keep the flip recipe accessible — flip
+  // `hidden` to false to bring it back into the gallery.
+  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true },
   { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
   { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile"  },
   { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile"  },
@@ -58,6 +68,8 @@ const ROUTES: Route[] = [
   { href: "/join?bad=1",                 title: "Edge — Invalid code",    subtitle: "Code entry error state",                  group: "edge",       intent: "mobile"  },
   { href: "/j/used",                     title: "Edge — Used invite",     subtitle: "Already-claimed error",                   group: "edge",       intent: "mobile"  },
 ];
+
+const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
 
 const GROUP_LABEL: Record<Group, string> = {
   entry:      "Entry",
