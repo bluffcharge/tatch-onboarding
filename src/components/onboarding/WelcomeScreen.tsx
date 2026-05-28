@@ -25,9 +25,10 @@ export function WelcomeScreen({ invite }: Props) {
     <OnboardingShell chrome={false} wide>
       <div className="flex flex-1 flex-col">
         {/* Top brand row + step pill (step pill shows on lg+, where the
-            centered layout has room for it on the right). */}
+            centered layout has room for it on the right). On mobile the
+            wordmark moves to the footer, so it's hidden here below md. */}
         <div className="safe-pt flex items-center justify-between pb-8 pt-1 lg:pb-12">
-          <Wordmark className="h-[18px]" />
+          <Wordmark className="hidden h-[18px] md:block" />
           <div className="hidden lg:block">
             <StepPill current={1} total={6} label="Welcome" />
           </div>
@@ -96,8 +97,11 @@ export function WelcomeScreen({ invite }: Props) {
           </section>
         </div>
 
-        {/* Footer brand + legal links */}
+        {/* Footer brand + legal links. On mobile the wordmark sits here,
+            centered above the microcopy (it's hidden from the top row
+            below md); md+ keeps it top-left and out of the footer. */}
         <div className="mt-12 flex flex-col items-center gap-2 pb-2 text-[12px] text-ink-caption md:flex-row md:justify-between md:gap-4 lg:mt-16">
+          <Wordmark className="mb-1 h-[18px] md:hidden" />
           <p>tatch · onboarding</p>
           <div className="flex items-center gap-4">
             <Link href="#terms" className="text-ink-link underline-offset-2 hover:underline">
