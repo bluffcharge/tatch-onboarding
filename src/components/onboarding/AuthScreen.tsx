@@ -29,45 +29,14 @@ export function AuthScreen() {
     <OnboardingShell
       backHref="/j/abc123"
       journey={{ currentKey: "auth" }}
-      footer={
-        phase === "enter" ? (
-          <Button
-            fullWidth
-            size="lg"
-            disabled={via === "phone" ? !phoneValid : false}
-            onClick={() => {
-              if (via === "google") {
-                // pretend OAuth finished
-                router.push(next);
-              } else {
-                setPhase("otp");
-              }
-            }}
-          >
-            {via === "phone" ? "Send code" : via === "email" ? "Continue" : "Continue with Google"}
-          </Button>
-        ) : (
-          <p className="t-caption text-center">
-            Didn&apos;t get it?{" "}
-            <button
-              type="button"
-              className="font-medium text-ink-body hover:text-ink-title hover:underline"
-              onClick={() => alert("(prototype) — code re-sent")}
-            >
-              Resend in 60s
-            </button>
-          </p>
-        )
-      }
+      center
     >
-      {/* Cap the content column on md+ to track the Continue CTA cap.
-          Without this, fields and the breadcrumb stretch the full
-          760–920px shell width and read as banners. `mx-auto` so the
-          form centers in the right pane (next to the journey rail)
-          rather than skewing left of the pane's center. Width matches
-          the shell's `formCapCls` (348/400) so the body, the back
-          arrow above, and the CTA below all sit in one column. */}
-      <div className="mt-2 md:mx-auto md:max-w-[348px] lg:max-w-[400px]">
+      {/* Single-input-focus per pattern 02. On md+ the form sits in a
+          centered frosted card in the right pane (vertically centered via
+          the shell `center` prop next to the journey rail); on mobile it
+          stays a plain top-aligned form. The Send-code / resend CTA lives
+          inside the card so the whole task reads as one focal unit. */}
+      <div className="mt-2 md:mt-0 md:mx-auto md:w-[440px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
         {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
             after the user leaves P1 and is committing real credentials. */}
         <OperatorContext />
@@ -172,6 +141,39 @@ export function AuthScreen() {
             </div>
           </>
         )}
+
+        {/* CTA / resend — moved out of the shell footer into the card so
+            the form and its action are one focal unit. */}
+        <div className="mt-8">
+          {phase === "enter" ? (
+            <Button
+              fullWidth
+              size="lg"
+              disabled={via === "phone" ? !phoneValid : false}
+              onClick={() => {
+                if (via === "google") {
+                  // pretend OAuth finished
+                  router.push(next);
+                } else {
+                  setPhase("otp");
+                }
+              }}
+            >
+              {via === "phone" ? "Send code" : via === "email" ? "Continue" : "Continue with Google"}
+            </Button>
+          ) : (
+            <p className="t-caption text-center">
+              Didn&apos;t get it?{" "}
+              <button
+                type="button"
+                className="font-medium text-ink-body hover:text-ink-title hover:underline"
+                onClick={() => alert("(prototype) — code re-sent")}
+              >
+                Resend in 60s
+              </button>
+            </p>
+          )}
+        </div>
       </div>
     </OnboardingShell>
   );
