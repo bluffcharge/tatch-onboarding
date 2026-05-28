@@ -38,70 +38,73 @@ export function CodeEntryScreen() {
   }
 
   return (
-    <OnboardingShell chrome={false}>
-      <div className="flex flex-1 flex-col">
-        <div className="safe-pt flex items-center justify-between pb-6 pt-1">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/logo/tatch-logomark.svg"
-              alt="Tatch"
-              width={22}
-              height={22}
-              priority
+    <OnboardingShell chrome={false} center>
+      {/* Brand mark pinned to the canvas top-left so it stays put while the
+          focal card centers in the viewport. */}
+      <div className="safe-pt absolute left-0 top-0 flex items-center gap-2 p-4 md:p-6 lg:p-8">
+        <Image
+          src="/logo/tatch-logomark.svg"
+          alt="Tatch"
+          width={22}
+          height={22}
+          priority
+        />
+        <span className="text-[15px] font-semibold tracking-tight text-ink-title">
+          tatch
+        </span>
+      </div>
+
+      {/* Single-input-focus per pattern 02: a centered focal card frames the
+          one task and gives the content "place" on the glass canvas, so the
+          sparse screen no longer reads as a stack pinned to the top-left of
+          a large empty canvas. Input stays narrower than the card. */}
+      <div className="mx-auto w-full max-w-[480px] rounded-3xl border border-border bg-card p-7 shadow-lg md:p-8">
+        <p className="t-mono-label mb-3">Have a code?</p>
+        <h1 className="t-h1 mb-3 text-balance">Enter your TatchLink code</h1>
+        <p className="t-body-lg text-ink-subtitle">
+          Your operator may have given you a 6–8 character code. Type or paste
+          it below.
+        </p>
+
+        <div className="mt-7">
+          <div
+            className={[
+              "flex h-14 items-center rounded-lg border bg-canvas px-4 transition-colors duration-fast ease-snap",
+              error
+                ? "border-error"
+                : "border-border focus-within:border-royal-400 focus-within:shadow-[0_0_0_2px_var(--royal-100)]",
+            ].join(" ")}
+          >
+            <input
+              autoFocus
+              value={code}
+              onChange={handleChange}
+              placeholder="ABC123"
+              aria-label="TatchLink code"
+              inputMode="text"
+              autoComplete="one-time-code"
+              className="w-full bg-transparent text-[22px] font-semibold tracking-[0.18em] text-ink-title outline-none placeholder:text-ink-disabled placeholder:tracking-[0.18em]"
             />
-            <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-              tatch
-            </span>
           </div>
+          {error && (
+            <p role="alert" className="mt-2 text-[12.5px] text-error">
+              {error}
+            </p>
+          )}
         </div>
 
-        <div className="flex-1">
-          <p className="t-mono-label mb-3">Have a code?</p>
-          <h1 className="t-h1 mb-3 text-balance">Enter your TatchLink code</h1>
-          <p className="t-body-lg max-w-[44ch] text-ink-subtitle">
-            Your operator may have given you a 6–8 character code. Type or paste it below.
-          </p>
+        <p className="t-caption mt-5">
+          No code?{" "}
+          <button
+            type="button"
+            onClick={() => router.push("/j/abc123")}
+            className="font-medium text-ink-body hover:text-ink-title hover:underline"
+          >
+            I have a link instead →
+          </button>
+        </p>
 
-          <div className="mt-7 md:max-w-[280px] lg:max-w-[320px]">
-            <div
-              className={[
-                "flex h-14 items-center rounded-lg border bg-card px-4 transition-colors duration-fast ease-snap",
-                error
-                  ? "border-error"
-                  : "border-border focus-within:border-royal-400 focus-within:shadow-[0_0_0_2px_var(--royal-100)]",
-              ].join(" ")}
-            >
-              <input
-                autoFocus
-                value={code}
-                onChange={handleChange}
-                placeholder="ABC123"
-                aria-label="TatchLink code"
-                inputMode="text"
-                autoComplete="one-time-code"
-                className="w-full bg-transparent text-[22px] font-semibold tracking-[0.18em] text-ink-title outline-none placeholder:text-ink-disabled placeholder:tracking-[0.18em]"
-              />
-            </div>
-            {error && (
-              <p role="alert" className="mt-2 text-[12.5px] text-error">
-                {error}
-              </p>
-            )}
-          </div>
-
-          <p className="t-caption mt-5">
-            No code?{" "}
-            <button
-              type="button"
-              onClick={() => router.push("/j/abc123")}
-              className="font-medium text-ink-body hover:text-ink-title hover:underline"
-            >
-              I have a link instead →
-            </button>
-          </p>
-        </div>
-
-        <div className="mt-8 space-y-3 md:max-w-[280px] lg:max-w-[320px]">
+        <div className="mt-8">
           <Button fullWidth size="lg" onClick={handleSubmit} disabled={code.length < 4}>
             Continue
           </Button>

@@ -27,6 +27,12 @@ type Props = {
    *  on lg+ viewports. Defaults on — opt out on screens that have their
    *  own dominant motion (e.g. P6 Activating's spinner). */
   ornament?: boolean;
+  /** Vertically + horizontally center the content in the viewport. The
+   *  main fills the full height (no md:flex-none shrink) and justifies
+   *  its children to center, so a single focal element (e.g. a code-entry
+   *  card) sits in the middle of the canvas rather than pinned to the top.
+   *  Pairs with a screen that pins its own brand mark absolutely. */
+  center?: boolean;
   children: ReactNode;
 };
 
@@ -39,6 +45,7 @@ export function OnboardingShell({
   journey,
   wide = false,
   ornament = true,
+  center = false,
   children,
 }: Props) {
   // Width classes for header / main / footer wrappers. Standard form pages
@@ -117,8 +124,16 @@ export function OnboardingShell({
         {/* main grows on mobile (so the sticky footer stays pinned to the
             viewport bottom and any inner `flex-1` push-down works), then
             shrinks to its content on md+ so the CTA sits with the form
-            instead of floating at the bottom of a 100dvh canvas. */}
-        <main className={`mx-auto flex w-full flex-1 flex-col pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6 ${widthCls} ${xPadCls}`}>
+            instead of floating at the bottom of a 100dvh canvas.
+            `center` overrides that: main stays full-height and justifies
+            its child to the vertical center of the canvas. */}
+        <main
+          className={`mx-auto flex w-full flex-col ${widthCls} ${xPadCls} ${
+            center
+              ? "flex-1 justify-center py-10"
+              : "flex-1 pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6"
+          }`}
+        >
           {children}
         </main>
 
