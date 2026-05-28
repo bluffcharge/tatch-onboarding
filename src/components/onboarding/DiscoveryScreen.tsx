@@ -6,7 +6,9 @@ import {
   Check,
   Hammer,
   Home,
+  Minus,
   MoreHorizontal,
+  Plus,
   Sun,
   TreePine,
   Wind,
@@ -37,14 +39,15 @@ const OPTION_ICON: Record<string, LucideIcon> = {
   other:      MoreHorizontal,
 };
 
-/** technician_count lives in the page header as a slider rather than
- *  as a stacked question, so we render the rest of the questions in
- *  the body loop. The slider preset is 4 (middle of the 2–6 band most
- *  small operators land in) but the value can range 1–25. */
+/** technician_count lives in the page header as a typeable stepper rather
+ *  than as a stacked question, so we render the rest of the questions in
+ *  the body loop. The preset is 4 (most small shops land in the 2–6 band),
+ *  but the value is free-typed — a slider capped at 25 didn't work for
+ *  larger shops (75+ technicians), so it's a number field with +/- steppers. */
 const TECH_COUNT_ID = "technician_count";
 const TECH_COUNT_PRESET = 4;
 const TECH_COUNT_MIN = 1;
-const TECH_COUNT_MAX = 25;
+const TECH_COUNT_MAX = 999;
 
 export function DiscoveryScreen() {
   const router = useRouter();
@@ -107,7 +110,7 @@ export function DiscoveryScreen() {
             </p>
           </div>
           <div className="mb-6 md:mb-0 md:w-[260px] md:shrink-0 lg:w-[300px]">
-            <TechCountSlider
+            <TechCountStepper
               value={parseInt(
                 (answers[TECH_COUNT_ID] as string | null) ??
                   String(TECH_COUNT_PRESET),
@@ -333,45 +336,76 @@ function TileGroup(props: TileSingle | TileMulti) {
 /* TechCountSlider — inset header control                            */
 /* ----------------------------------------------------------------- */
 
-function TechCountSlider({
+function TechCountStepper({
   value,
   onChange,
 }: {
   value: number;
   onChange: (v: number) => void;
 }) {
-  const pct = Math.round(
-    ((value - TECH_COUNT_MIN) / (TECH_COUNT_MAX - TECH_COUNT_MIN)) * 100
-  );
+  const clamp = (n: number) =>
+    Math.max(TECH_COUNT_MIN, Math.min(TECH_COUNT_MAX, n));
   return (
     <div className="rounded-2xl border border-border bg-card px-4 py-3 shadow-xs">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="t-mono-label">Technicians</p>
-        <p className="text-[24px] font-semibold leading-none text-ink-title tabular-nums">
-          {value}
-          {value === TECH_COUNT_MAX && (
-            <span className="text-[16px] font-medium text-ink-caption">+</span>
-          )}
-        </p>
-      </div>
-      <input
-        type="range"
-        min={TECH_COUNT_MIN}
-        max={TECH_COUNT_MAX}
-        value={value}
-        onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        aria-label="Number of technicians"
-        className="tech-slider mt-2 h-1.5 w-full appearance-none rounded-pill bg-subtle outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        style={{
-          // Paint the filled portion of the track up to `pct%` with the
-          // ink-title color, leaving the rest as the subtle/grey track.
-          background: `linear-gradient(to right, var(--text-title) 0%, var(--text-title) ${pct}%, var(--surface-subtle) ${pct}%, var(--surface-subtle) 100%)`,
-        }}
-      />
-      <div className="mt-1 flex justify-between text-[10.5px] uppercase tracking-[0.14em] text-ink-caption">
-        <span>{TECH_COUNT_MIN}</span>
-        <span>{TECH_COUNT_MAX}+</span>
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <p className="t-mono-label">Technicians</p>
+          <p className="mt-0.5 text-[11px] text-ink-caption">
+            Including owners &amp; 1099s
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <StepButton
+            label="Decrease"
+            onClick={() => onChange(clamp(value - 1))}
+            disabled={value <= TECH_COUNT_MIN}
+          >
+            <Minus size={15} strokeWidth={2} />
+          </StepButton>
+          <input
+            type="text"
+            inputMode="numeric"
+            aria-label="Number of technicians"
+            value={Number.isFinite(value) ? value : ""}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "").slice(0, 3);
+              onChange(digits === "" ? TECH_COUNT_MIN : clamp(parseInt(digits, 10)));
+            }}
+            className="w-[3ch] bg-transparent text-center text-[24px] font-semibold leading-none tabular-nums text-ink-title outline-none"
+          />
+          <StepButton
+            label="Increase"
+            onClick={() => onChange(clamp(value + 1))}
+            disabled={value >= TECH_COUNT_MAX}
+          >
+            <Plus size={15} strokeWidth={2} />
+          </StepButton>
+        </div>
       </div>
     </div>
+  );
+}
+
+function StepButton({
+  label,
+  onClick,
+  disabled,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex h-8 w-8 items-center justify-center rounded-[10px] border border-border bg-canvas text-ink-body transition-colors duration-fast ease-snap hover:bg-subtle hover:text-ink-title disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      {children}
+    </button>
   );
 }
