@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { Check } from "lucide-react";
+import { Wordmark } from "@/components/ui/Wordmark";
 import {
   PARTNER_JOURNEY,
   getStepIndex,
@@ -22,17 +22,8 @@ export function JourneyTimeline({ currentKey }: Props) {
   return (
     <div className="flex h-full flex-col px-7 py-8">
       {/* Brand lockup */}
-      <div className="mb-8 flex items-center gap-2">
-        <Image
-          src="/logo/tatch-logomark.svg"
-          alt=""
-          width={22}
-          height={22}
-          aria-hidden="true"
-        />
-        <span className="text-[14px] font-semibold tracking-tight text-ink-title">
-          tatch
-        </span>
+      <div className="mb-8 flex items-center">
+        <Wordmark className="h-[17px]" />
       </div>
 
       <p className="t-mono-label mb-4">Get set up</p>

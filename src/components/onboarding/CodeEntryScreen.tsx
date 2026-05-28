@@ -2,8 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type ChangeEvent } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
 
 export function CodeEntryScreen() {
@@ -41,17 +41,8 @@ export function CodeEntryScreen() {
     <OnboardingShell chrome={false} center>
       {/* Brand mark pinned to the canvas top-left so it stays put while the
           focal card centers in the viewport. */}
-      <div className="safe-pt absolute left-0 top-0 flex items-center gap-2 p-4 md:p-6 lg:p-8">
-        <Image
-          src="/logo/tatch-logomark.svg"
-          alt="Tatch"
-          width={22}
-          height={22}
-          priority
-        />
-        <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-          tatch
-        </span>
+      <div className="safe-pt absolute left-0 top-0 flex items-center p-4 md:p-6 lg:p-8">
+        <Wordmark className="h-[18px]" />
       </div>
 
       {/* Single-input-focus per pattern 02. On mobile the card fills the

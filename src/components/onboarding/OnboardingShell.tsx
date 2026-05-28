@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { StepperBar } from "./StepperBar";
 import { JourneyTimeline } from "./JourneyTimeline";
 import { BrandRibbons } from "./BrandRibbons";
+import { Wordmark } from "@/components/ui/Wordmark";
 import type { JourneyKey } from "@/lib/journey";
 
 type Props = {
@@ -94,7 +95,15 @@ export function OnboardingShell({
           Stays above the ornament via z-10 so the ribbons read as background. */}
       <div className="relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
         {chrome && (
-          <header className="safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:static md:bg-transparent md:backdrop-blur-none">
+          // In center mode the header overlays the top of the pane at md+
+          // (absolute, out of flow) so `main` fills the full height and
+          // centers its content at the true vertical middle — otherwise the
+          // header's top padding pushes the centered card noticeably low.
+          <header
+            className={`safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:bg-transparent md:backdrop-blur-none ${
+              center ? "md:absolute md:inset-x-0 md:top-0" : "md:static"
+            }`}
+          >
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
               {/* On journey-rail screens, the header chrome (back arrow,
                   mobile wordmark) sits inside the same centered form cap
@@ -109,7 +118,7 @@ export function OnboardingShell({
                 )}
                 {/* Wordmark hides on md+ since the rail already shows it. */}
                 <span className="md:hidden">
-                  <Wordmark />
+                  <Wordmark className="h-4" />
                 </span>
               </div>
             </div>
@@ -197,13 +206,3 @@ function BackControl({
   );
 }
 
-function Wordmark() {
-  return (
-    <span
-      aria-label="Tatch"
-      className="select-none text-[15px] font-semibold tracking-tight text-ink-title"
-    >
-      tatch
-    </span>
-  );
-}

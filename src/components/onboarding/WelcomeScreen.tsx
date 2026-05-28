@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import {
   Check,
   Inbox,
@@ -12,7 +11,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
+import { ValuePropCardStack } from "./ValuePropCardStack";
 import type { InviteContext } from "@/lib/mockInvite";
 
 type Props = { invite: InviteContext };
@@ -26,18 +27,7 @@ export function WelcomeScreen({ invite }: Props) {
         {/* Top brand row + step pill (step pill shows on lg+, where the
             centered layout has room for it on the right). */}
         <div className="safe-pt flex items-center justify-between pb-8 pt-1 lg:pb-12">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/logo/tatch-logomark.svg"
-              alt="Tatch"
-              width={22}
-              height={22}
-              priority
-            />
-            <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-              tatch
-            </span>
-          </div>
+          <Wordmark className="h-[18px]" />
           <div className="hidden lg:block">
             <StepPill current={1} total={6} label="Welcome" />
           </div>
@@ -83,10 +73,18 @@ export function WelcomeScreen({ invite }: Props) {
             </Button>
           </div>
 
-          {/* Feature tiles — 4-across at lg+, 2-up at md, stack on phone. */}
+          {/* Mobile + tablet (< lg): swipeable card stack of the marketing
+              value props. The vertical FeatureCard list read as tappable
+              rows even though it isn't — the deck removes that false
+              affordance and lets us show more than 3–4 props. */}
+          <div className="mt-10 w-full lg:hidden">
+            <ValuePropCardStack />
+          </div>
+
+          {/* Laptop+ (lg+): the existing 4-across feature grid, unchanged. */}
           <section
             aria-label="What you're signing up for"
-            className="mt-10 w-full lg:mt-14"
+            className="mt-10 hidden w-full lg:mt-14 lg:block"
           >
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-5 2xl:gap-6">
               {FEATURES.map((f) => (
