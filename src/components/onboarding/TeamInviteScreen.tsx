@@ -202,7 +202,7 @@ function RoleToggle({
     <div
       role="radiogroup"
       aria-label="Role"
-      className="inline-flex rounded-pill border border-border bg-canvas p-0.5"
+      className="inline-flex rounded-pill border border-border bg-subtle p-0.5"
     >
       {opts.map((o) => {
         const on = value === o.value;
@@ -214,11 +214,15 @@ function RoleToggle({
             aria-checked={on}
             onClick={() => onChange(o.value)}
             className={[
-              "inline-flex h-7 items-center rounded-pill px-3 text-[12px] font-medium",
-              "transition-colors duration-fast ease-snap",
+              "inline-flex h-7 items-center rounded-pill px-3.5 text-[12px] font-semibold",
+              "transition-[background-color,color,box-shadow] duration-fast ease-snap",
+              // Selected reads as an unmistakable ink pill (matches the
+              // gallery's ViewportSwitcher), with a glass top-edge
+              // highlight as the specular cue. Unselected stays a quiet
+              // caption that promotes to a ghost-glass tint on hover.
               on
-                ? "bg-card text-ink-title shadow-xs"
-                : "text-ink-caption hover:text-ink-body",
+                ? "bg-[color:var(--btn-ink-bg)] text-[color:var(--btn-ink-fg)] shadow-[inset_0_1px_0_0_var(--glass-btn-hover-highlight)]"
+                : "text-ink-caption hover:bg-[color:var(--glass-btn-ghost-hover-bg)] hover:text-ink-body",
             ].join(" ")}
           >
             {o.label}

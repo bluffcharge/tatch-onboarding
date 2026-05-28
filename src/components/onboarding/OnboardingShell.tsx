@@ -68,7 +68,7 @@ export function OnboardingShell({
   // and headline read as scrunched against the rail-paired column.
   const formCapCls = "md:max-w-[348px] lg:max-w-[400px]";
   return (
-    <div className="relative flex min-h-[100dvh] flex-col bg-canvas text-ink md:flex-row">
+    <div className="onboarding-canvas relative flex min-h-[100dvh] flex-col text-ink md:flex-row">
       {/* Ornament layer — absolute, behind everything. lg:block gated inside
           the component, so phone/tablet stay clean by default. */}
       {ornament && <BrandRibbons />}
