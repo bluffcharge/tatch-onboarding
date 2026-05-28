@@ -631,14 +631,23 @@ select:-webkit-autofill {
 }
 
 /* P6 Activating — the one place a resting-state pulse is allowed
-   (pattern 04). The focal orb breathes slowly; copy fades in on each
-   beat change. Reduced-motion stills both. */
+   (pattern 04). The orb breathes subtly; the glow breathes WITH it (same
+   1.8s period) so the two read as one soft pulse of light rather than a
+   pill throbbing against a static halo. Copy fades in on each beat change.
+   Reduced-motion stills all three. */
 @keyframes tatch-breathe {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.045); }
+  50% { transform: scale(1.03); }
 }
 .activating-orb {
-  animation: tatch-breathe 1.6s ease-in-out infinite;
+  animation: tatch-breathe 1.8s ease-in-out infinite;
+}
+@keyframes tatch-glow {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.12); opacity: 0.6; }
+}
+.activating-glow {
+  animation: tatch-glow 1.8s ease-in-out infinite;
 }
 @keyframes tatch-fade-in {
   from { opacity: 0; }
@@ -648,7 +657,8 @@ select:-webkit-autofill {
   animation: tatch-fade-in 320ms ease both;
 }
 @media (prefers-reduced-motion: reduce) {
-  .activating-orb { animation: none; }
+  .activating-orb,
+  .activating-glow,
   .activating-copy { animation: none; }
 }
 
