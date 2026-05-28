@@ -643,31 +643,3 @@ select:-webkit-autofill {
     from { opacity: 0; }
   }
 }
-
-
-/* TechCountSlider — custom thumb styling on the input[type=range] used
-   in the discovery header. Tailwind ships no thumb utilities so we
-   target the vendor pseudo-elements directly. Track fill is painted via
-   inline `background` linear-gradient on the element. */
-.tech-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 9999px;
-  background: var(--text-title);
-  border: 2px solid var(--surface-card);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1);
-}
-.tech-slider:active::-webkit-slider-thumb { transform: scale(1.1); }
-.tech-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 9999px;
-  background: var(--text-title);
-  border: 2px solid var(--surface-card);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-}
