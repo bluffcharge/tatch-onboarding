@@ -205,6 +205,9 @@ export function ValuePropCardStack() {
     [index, reduce]
   );
 
+  // startX (a ref) is the source of truth for "pointer is down" so the
+  // handlers work synchronously even when pointerup fires before React has
+  // re-rendered the `dragging` state (e.g. a fast tap).
   const onPointerDown = (e: ReactPointerEvent) => {
     if (busy.current) return;
     startX.current = e.clientX;
@@ -212,17 +215,20 @@ export function ValuePropCardStack() {
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
   };
   const onPointerMove = (e: ReactPointerEvent) => {
-    if (!dragging || startX.current === null) return;
+    if (startX.current === null) return;
     setDrag(e.clientX - startX.current);
   };
   const onPointerUp = () => {
-    if (!dragging) return;
-    setDragging(false);
+    if (startX.current === null) return;
     startX.current = null;
-    if (Math.abs(drag) > width() * 0.28) {
+    setDragging(false);
+    const dist = Math.abs(drag);
+    if (dist < 6) {
+      go(1); // tap (no real drag) = advance to the next card
+    } else if (dist > width() * 0.28) {
       go(drag > 0 ? 1 : -1);
     } else {
-      setDrag(0); // spring back
+      setDrag(0); // small drag under threshold — spring back
     }
   };
 
