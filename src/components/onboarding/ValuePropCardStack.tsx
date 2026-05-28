@@ -317,7 +317,10 @@ export function ValuePropCardStack() {
         <p className="text-[18px] font-medium leading-snug text-ink-title md:text-[20px]">
           {CARDS[index].headline}
         </p>
-        <p className="mt-1 text-[14px] leading-snug text-ink-subtitle md:text-[15px]">
+        {/* Narrow + balanced so the description always wraps to two lines
+            with at least two words on the second line (no single-word
+            orphan like a lone "notes."). */}
+        <p className="mx-auto mt-1 max-w-[230px] text-balance text-[14px] leading-snug text-ink-subtitle md:max-w-[260px] md:text-[15px]">
           {CARDS[index].body}
         </p>
       </div>
