@@ -89,16 +89,7 @@ export function DiscoveryScreen() {
       step={{ current: 2, total: 3 }}
       backHref="/onboarding/business"
       journey={{ currentKey: "discovery" }}
-      footer={
-        <Button
-          fullWidth
-          size="lg"
-          disabled={!allRequiredAnswered}
-          onClick={() => router.push("/onboarding/team")}
-        >
-          Continue
-        </Button>
-      }
+      center
     >
       <div className="mt-2 md:mt-0">
         {/* Header row: title + helper on the left, technician slider
@@ -229,6 +220,19 @@ export function DiscoveryScreen() {
             </div>
           ))}
         </div>
+
+        {/* Continue moved inline (out of the shell footer) so the whole
+            question stack + CTA center together as one group at md+. */}
+        <div className="mx-auto mt-10 w-full md:max-w-[400px]">
+          <Button
+            fullWidth
+            size="lg"
+            disabled={!allRequiredAnswered}
+            onClick={() => router.push("/onboarding/team")}
+          >
+            Continue
+          </Button>
+        </div>
       </div>
     </OnboardingShell>
   );
@@ -258,11 +262,11 @@ type TileMulti = {
 
 function TileGroup(props: TileSingle | TileMulti) {
   const isMulti = props.mode === "multi";
-  // 4-col at lg, 8-col at 2xl so the 8 service tiles spread across a single
-  // row at Wide instead of stacking with 2x4. The 4-option tech-count
-  // question stays 4-col either way.
-  const cols =
-    props.options.length <= 4 ? "grid-cols-4" : "grid-cols-4 2xl:grid-cols-8";
+  // Always 4-up at lg+. The previous 2xl:grid-cols-8 squeezed all 8 service
+  // tiles into one row at Desktop/Wide, which overflowed the content column
+  // (anti-patterns: don't change the grid count between breakpoints — more
+  // margin, same grid). 4-up gives a clean 2×4 at every desktop width.
+  const cols = "grid-cols-4";
   return (
     <div
       role={isMulti ? "group" : "radiogroup"}

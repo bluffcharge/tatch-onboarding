@@ -2,17 +2,35 @@
 
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
 
 export function AlreadyUsedScreen() {
   return (
-    <OnboardingShell>
-      <div className="mt-8 flex flex-col items-start">
+    <OnboardingShell chrome={false} center>
+      {/* Brand mark pinned top-left while the error column centers. */}
+      <div className="safe-pt absolute left-0 top-0 flex items-center gap-2 p-4 md:p-6 lg:p-8">
+        <Image
+          src="/logo/tatch-logomark.svg"
+          alt="Tatch"
+          width={22}
+          height={22}
+          priority
+        />
+        <span className="text-[15px] font-semibold tracking-tight text-ink-title">
+          tatch
+        </span>
+      </div>
+
+      {/* Centered error column — no card or banner per pattern 06; the
+          screen looks like any other Tatch screen, just centered in the
+          viewport with the message as the focal element. */}
+      <div className="flex w-full max-w-[480px] flex-col items-center px-6 text-center">
         <div className="grid h-12 w-12 place-items-center rounded-pill bg-subtle text-ink-body">
           <CircleAlert size={22} strokeWidth={1.75} />
         </div>
-        <h1 className="t-h2 mt-5">This invite has already been used.</h1>
+        <h1 className="t-h1 mt-5">This invite has already been used.</h1>
         <p className="t-body-lg mt-3 max-w-[44ch] text-ink-subtitle">
           Looks like this link was already claimed. Sign in to your existing
           account, or ask your operator to send a fresh TatchLink.

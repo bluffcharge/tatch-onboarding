@@ -46,8 +46,12 @@ export function WelcomeScreen({ invite }: Props) {
         {/* Centered hero column. Single column at all sizes — content
             scales up at lg+ to fill the canvas the way the spec frames
             it (big avatar, large headline, centered CTA stack, tiles in
-            a 4-across row below).                                  */}
-        <div className="mx-auto flex w-full flex-1 flex-col items-center text-center">
+            a 4-across row below). At 2xl+ (Desktop + Wide) the column
+            caps at 840px so the hero + feature tiles read as one focal
+            lockup with intentional margin around it (cap-and-center per
+            01-hero-welcome), instead of stretching across the wide
+            shell. Below 2xl is untouched. */}
+        <div className="mx-auto flex w-full flex-1 flex-col items-center text-center 2xl:max-w-[840px]">
           <InviterAvatar initial={inviter.firstName[0]} />
 
           <p className="mt-5 text-[13.5px] text-ink-subtitle lg:text-[15px]">

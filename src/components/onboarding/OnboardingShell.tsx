@@ -27,6 +27,12 @@ type Props = {
    *  on lg+ viewports. Defaults on — opt out on screens that have their
    *  own dominant motion (e.g. P6 Activating's spinner). */
   ornament?: boolean;
+  /** Vertically + horizontally center the content in the viewport. The
+   *  main fills the full height (no md:flex-none shrink) and justifies
+   *  its children to center, so a single focal element (e.g. a code-entry
+   *  card) sits in the middle of the canvas rather than pinned to the top.
+   *  Pairs with a screen that pins its own brand mark absolutely. */
+  center?: boolean;
   children: ReactNode;
 };
 
@@ -39,6 +45,7 @@ export function OnboardingShell({
   journey,
   wide = false,
   ornament = true,
+  center = false,
   children,
 }: Props) {
   // Width classes for header / main / footer wrappers. Standard form pages
@@ -117,8 +124,26 @@ export function OnboardingShell({
         {/* main grows on mobile (so the sticky footer stays pinned to the
             viewport bottom and any inner `flex-1` push-down works), then
             shrinks to its content on md+ so the CTA sits with the form
-            instead of floating at the bottom of a 100dvh canvas. */}
-        <main className={`mx-auto flex w-full flex-1 flex-col pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6 ${widthCls} ${xPadCls}`}>
+            instead of floating at the bottom of a 100dvh canvas.
+            `center` overrides that entirely: main fills the height and
+            centers its child on both axes, dropping the column cap and
+            padding so the child owns its own layout (e.g. a focal card
+            that is full-bleed on mobile and a floating panel on md+). */}
+        <main
+          className={
+            center
+              ? journey
+                ? // Rail screens keep the capped column + padding, but the
+                  // content fills the right pane and centers vertically at
+                  // md+. Mobile stays top-aligned so a tall form never
+                  // gets its head cut off by vertical centering.
+                  `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:justify-center md:py-10`
+                : // No rail: strip the column cap + padding so the centered
+                  // child owns its own layout (full-bleed mobile, panel md+).
+                  "flex w-full flex-1 flex-col items-center justify-center"
+              : `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6`
+          }
+        >
           {children}
         </main>
 
