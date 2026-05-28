@@ -34,6 +34,11 @@ type Props = {
    *  card) sits in the middle of the canvas rather than pinned to the top.
    *  Pairs with a screen that pins its own brand mark absolutely. */
   center?: boolean;
+  /** Vertical anchor when `center` is set on a rail (journey) screen.
+   *  "center" (default) dead-centers the content; "top" anchors it in the
+   *  upper third (~12vh from the top, pattern 03 for conversational forms)
+   *  so a tall form doesn't read as floating two-thirds down the page. */
+  vAlign?: "center" | "top";
   children: ReactNode;
 };
 
@@ -47,6 +52,7 @@ export function OnboardingShell({
   wide = false,
   ornament = true,
   center = false,
+  vAlign = "center",
   children,
 }: Props) {
   // Width classes for header / main / footer wrappers. Standard form pages
@@ -142,11 +148,17 @@ export function OnboardingShell({
           className={
             center
               ? journey
-                ? // Rail screens keep the capped column + padding, but the
-                  // content fills the right pane and centers vertically at
-                  // md+. Mobile stays top-aligned so a tall form never
-                  // gets its head cut off by vertical centering.
-                  `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:justify-center md:py-10`
+                ? // Rail screens keep the capped column + padding and fill
+                  // the right pane at md+. vAlign picks the anchor: "center"
+                  // dead-centers (single-input cards, pattern 02); "top"
+                  // anchors in the upper third (~12vh) so conversational
+                  // forms (pattern 03) don't float low on tall viewports.
+                  // Mobile stays top-aligned either way.
+                  `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 ${
+                    vAlign === "top"
+                      ? "md:justify-start md:pt-[12vh] md:pb-10"
+                      : "md:justify-center md:py-10"
+                  }`
                 : // No rail: strip the column cap + padding so the centered
                   // child owns its own layout (full-bleed mobile, panel md+).
                   "flex w-full flex-1 flex-col items-center justify-center"

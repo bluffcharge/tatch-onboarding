@@ -34,6 +34,7 @@ export function BusinessProfileScreen() {
       backHref="/onboarding/auth"
       journey={{ currentKey: "business" }}
       center
+      vAlign="top"
     >
       <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[520px]">
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
