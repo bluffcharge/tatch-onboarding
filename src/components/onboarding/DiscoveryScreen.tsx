@@ -93,6 +93,7 @@ export function DiscoveryScreen() {
       backHref="/onboarding/business"
       journey={{ currentKey: "discovery" }}
       center
+      vAlign="top"
     >
       <div className="mt-2 md:mt-0">
         {/* Header row: title + helper on the left, technician slider
