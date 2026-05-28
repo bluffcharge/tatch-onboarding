@@ -37,7 +37,7 @@ export function ActivatingScreen() {
         <div className="relative grid place-items-center">
           <span
             aria-hidden="true"
-            className="absolute h-28 w-28 rounded-full bg-brand-gradient-4 opacity-40 blur-2xl"
+            className="activating-glow absolute h-28 w-28 rounded-full bg-brand-gradient-4 opacity-40 blur-2xl"
           />
           <span
             aria-hidden="true"
