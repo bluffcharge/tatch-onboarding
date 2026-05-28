@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Code2, Download, ExternalLink } from "lucide-react";
 
 /* Manifest of "interesting" animations + the source files developers
@@ -73,6 +73,30 @@ export function SourceCodeMenu({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Cross-origin `<a download>` is ignored by browsers — clicking it
+  // just opens the raw text in a new tab instead of saving. Fetch the
+  // raw bytes ourselves and trigger the save via a Blob URL, which is
+  // same-origin and respects the download attribute.
+  const downloadRaw = useCallback(async (path: string) => {
+    try {
+      const res = await fetch(`${REPO_RAW}/${path}`);
+      if (!res.ok) throw new Error(`fetch ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = path.split("/").pop() ?? "source";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Revoke after the browser has had a chance to start the download.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      // Fallback: open the raw URL in a new tab (the original behavior).
+      window.open(`${REPO_RAW}/${path}`, "_blank", "noreferrer");
+    }
+  }, []);
 
   // Close on click-outside + Escape so the dropdown behaves like a
   // native menu without requiring a focus trap.
@@ -149,16 +173,14 @@ export function SourceCodeMenu({
                           >
                             <ExternalLink size={11} strokeWidth={1.85} />
                           </a>
-                          <a
-                            href={`${REPO_RAW}/${path}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            download={path.split("/").pop()}
+                          <button
+                            type="button"
+                            onClick={() => downloadRaw(path)}
                             title="Download raw"
                             className="inline-flex h-6 w-6 items-center justify-center rounded text-ink-caption hover:bg-card hover:text-ink-body"
                           >
                             <Download size={11} strokeWidth={1.85} />
-                          </a>
+                          </button>
                         </span>
                       </li>
                     ))}
