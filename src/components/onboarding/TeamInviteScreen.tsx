@@ -38,11 +38,16 @@ export function TeamInviteScreen() {
       backHref="/onboarding/discovery"
       journey={{ currentKey: "team" }}
       footer={
-        <div className="space-y-3 lg:flex lg:items-center lg:justify-between lg:space-y-0">
+        // At 2xl+ (Desktop+Wide, the in-scope viewports for this audit
+        // pass), the footer reverts to a vertical CTA-on-top stack with
+        // the skip link below — per pattern 03-form-as-conversation.
+        // Laptop (lg) keeps its horizontal lockup so out-of-scope
+        // viewports are untouched.
+        <div className="space-y-3 lg:flex lg:items-center lg:justify-between lg:space-y-0 2xl:flex-col 2xl:items-stretch 2xl:gap-3 2xl:space-y-0">
           <button
             type="button"
             onClick={() => router.push("/onboarding/activating")}
-            className="block w-full text-center text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline lg:order-1 lg:w-auto"
+            className="block w-full text-center text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline lg:order-1 lg:w-auto 2xl:order-2 2xl:w-full"
           >
             Skip — I&apos;ll add teammates later
           </button>
@@ -50,7 +55,7 @@ export function TeamInviteScreen() {
             fullWidth
             size="lg"
             onClick={() => router.push("/onboarding/activating")}
-            className="lg:order-2 lg:w-auto"
+            className="lg:order-2 lg:w-auto 2xl:order-1 2xl:w-full"
           >
             {filled > 0
               ? `Send ${filled} invite${filled === 1 ? "" : "s"} & finish`
@@ -59,12 +64,14 @@ export function TeamInviteScreen() {
         </div>
       }
     >
-      {/* `mx-auto` + a form/table-shaped cap so the content centers in
-          the right pane next to the journey rail rather than skewing
-          left of the pane's center. Same pattern as AuthScreen but
-          wider here to give the lg+ table room to breathe — sized
-          alongside the +24% bump applied to the canonical form cap. */}
-      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[400px] lg:max-w-[696px]">
+      {/* `mx-auto` + a form-shaped cap so the content centers in the
+          right pane next to the journey rail rather than skewing left
+          of the pane's center. Same pattern as AuthScreen but wider at
+          lg to give the table room to breathe. At 2xl+ (Desktop +
+          Wide) the table layout is hidden in favor of stacked cards
+          (pattern 03 — form-as-conversation), so the column tightens
+          back to 520px so the cards sit in cap-and-center geometry. */}
+      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[400px] lg:max-w-[696px] 2xl:max-w-[520px]">
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           Invite your team.
         </h1>
@@ -73,10 +80,13 @@ export function TeamInviteScreen() {
           They&apos;ll get an SMS to set up their own login.
         </p>
 
-        {/* Mobile / tablet: stacked card per row. Desktop (lg+): table layout.
-            Card width cap is the parent's md:max-w; the row container
+        {/* Mobile / tablet: stacked card per row. Laptop (lg): table
+            layout (kept for out-of-scope laptop viewport). Desktop +
+            Wide (2xl+): back to stacked cards per pattern 03
+            (form-as-conversation; vertical rhythm > horizontal density).
+            Card width cap is the parent's max-w; the row container
             stretches to fill it. */}
-        <div className="space-y-3 lg:hidden">
+        <div className="space-y-3 lg:hidden 2xl:block">
           {rows.map((row, i) => (
             <div
               key={row.id}
@@ -108,8 +118,10 @@ export function TeamInviteScreen() {
           <AddAnother onClick={addRow} />
         </div>
 
-        {/* Desktop table */}
-        <div className="hidden lg:block">
+        {/* Laptop table (lg only; hidden at 2xl+ where the stacked cards
+            return per pattern 03). Kept here so the laptop viewport
+            stays out of scope of this audit pass. */}
+        <div className="hidden lg:block 2xl:hidden">
           <div className="overflow-hidden rounded-2xl border border-border bg-card">
             <div className="grid grid-cols-[1fr_220px_40px] items-center gap-3 border-b border-border-subtle bg-subtle/40 px-4 py-2.5">
               <p className="t-mono-label">Phone or email</p>
