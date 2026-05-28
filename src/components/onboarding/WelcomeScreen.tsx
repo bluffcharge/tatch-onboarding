@@ -54,9 +54,8 @@ export function WelcomeScreen({ invite }: Props) {
           <h1 className="t-h1 mt-2 text-balance lg:mt-3 lg:text-[56px] lg:leading-[1.02] 2xl:text-[72px]">
             invited you to Tatch.
           </h1>
-          <p className="t-body-lg mt-4 max-w-[56ch] text-ink-subtitle lg:mt-5 lg:text-[16px]">
-            Set up your account in about 90 seconds and start receiving
-            referrals from {operator.name}.
+          <p className="t-body-lg mt-3 text-ink-subtitle lg:mt-4 lg:text-[16px]">
+            Set up in about 90 seconds.
           </p>
 
           {/* Single CTA — phone OTP is the path we want every partner
@@ -78,8 +77,9 @@ export function WelcomeScreen({ invite }: Props) {
           {/* Mobile + tablet (< lg): swipeable card stack of the marketing
               value props. The vertical FeatureCard list read as tappable
               rows even though it isn't — the deck removes that false
-              affordance and lets us show more than 3–4 props. */}
-          <div className="mt-10 w-full lg:hidden">
+              affordance and lets us show more than 3–4 props. Extra top
+              margin separates the deck from the CTA above it. */}
+          <div className="mt-14 w-full lg:hidden">
             <ValuePropCardStack />
           </div>
 
