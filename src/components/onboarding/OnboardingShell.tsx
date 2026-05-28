@@ -125,14 +125,16 @@ export function OnboardingShell({
             viewport bottom and any inner `flex-1` push-down works), then
             shrinks to its content on md+ so the CTA sits with the form
             instead of floating at the bottom of a 100dvh canvas.
-            `center` overrides that: main stays full-height and justifies
-            its child to the vertical center of the canvas. */}
+            `center` overrides that entirely: main fills the height and
+            centers its child on both axes, dropping the column cap and
+            padding so the child owns its own layout (e.g. a focal card
+            that is full-bleed on mobile and a floating panel on md+). */}
         <main
-          className={`mx-auto flex w-full flex-col ${widthCls} ${xPadCls} ${
+          className={
             center
-              ? "flex-1 justify-center py-10"
-              : "flex-1 pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6"
-          }`}
+              ? "flex w-full flex-1 flex-col items-center justify-center"
+              : `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6`
+          }
         >
           {children}
         </main>

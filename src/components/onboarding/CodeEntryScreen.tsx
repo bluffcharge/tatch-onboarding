@@ -54,11 +54,12 @@ export function CodeEntryScreen() {
         </span>
       </div>
 
-      {/* Single-input-focus per pattern 02: a centered focal card frames the
-          one task and gives the content "place" on the glass canvas, so the
-          sparse screen no longer reads as a stack pinned to the top-left of
-          a large empty canvas. Input stays narrower than the card. */}
-      <div className="mx-auto w-full max-w-[480px] rounded-3xl border border-border bg-card p-7 shadow-lg md:p-8">
+      {/* Single-input-focus per pattern 02. On mobile the card fills the
+          screen (full-bleed on the glass canvas, no floating margins); at
+          md+ it becomes a 480px frosted panel centered in the viewport so
+          the sparse screen reads as a focal card with intentional margin
+          rather than a top-left stack. Input stays narrower than the card. */}
+      <div className="flex min-h-[100dvh] w-full flex-col justify-center px-6 py-10 md:min-h-0 md:w-[480px] md:rounded-3xl md:border md:border-border md:bg-card md:px-8 md:py-8 md:shadow-lg">
         <p className="t-mono-label mb-3">Have a code?</p>
         <h1 className="t-h1 mb-3 text-balance">Enter your TatchLink code</h1>
         <p className="t-body-lg text-ink-subtitle">
