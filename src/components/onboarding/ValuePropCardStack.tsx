@@ -310,8 +310,10 @@ export function ValuePropCardStack() {
         })}
       </div>
 
-      {/* Headline + body for the active card, below the stack */}
-      <div className="mx-auto mt-5 max-w-[360px] text-center md:max-w-[440px]">
+      {/* Headline + body for the active card, below the stack. Generous top
+          margin so the fan's back card (which overhangs ~24px below the
+          aspect box) clears the text on mobile/tablet. */}
+      <div className="mx-auto mt-14 max-w-[360px] text-center md:max-w-[440px]">
         <p className="text-[18px] font-medium leading-snug text-ink-title md:text-[20px]">
           {CARDS[index].headline}
         </p>
