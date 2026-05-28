@@ -13,6 +13,12 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // When the on-screen keyboard opens on a phone, resize the layout
+  // viewport (so 100dvh shrinks to the area above the keyboard). Combined
+  // with the dvh-based min-heights + vertical centering on the input
+  // screens, the content slides up to stay above the keyboard instead of
+  // being covered by it.
+  interactiveWidget: "resizes-content",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FCFCFC" },
     { media: "(prefers-color-scheme: dark)",  color: "#27292C" },
