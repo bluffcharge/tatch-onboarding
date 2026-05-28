@@ -12,10 +12,10 @@ import {
   Send,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { Wordmark } from "@/components/ui/Wordmark";
 
 type Chip = { id: string; value: string; kind: "phone" | "email" };
 type InviteStatus = "sent" | "opened" | "linked" | "expired";
@@ -61,9 +61,8 @@ function Topbar() {
     <header className="border-b border-border-subtle bg-card">
       <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-5 py-3">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo/tatch-logomark.svg" alt="Tatch" width={20} height={20} />
-            <span className="text-[14px] font-semibold tracking-tight text-ink-title">tatch</span>
+          <Link href="/" className="flex items-center">
+            <Wordmark className="h-[17px]" />
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">
             {["Dash", "Leads", "Records", "Wallet"].map((n) => (

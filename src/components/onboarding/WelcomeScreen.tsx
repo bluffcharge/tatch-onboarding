@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import {
   Check,
   Inbox,
@@ -12,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
 import type { InviteContext } from "@/lib/mockInvite";
 
@@ -26,18 +26,7 @@ export function WelcomeScreen({ invite }: Props) {
         {/* Top brand row + step pill (step pill shows on lg+, where the
             centered layout has room for it on the right). */}
         <div className="safe-pt flex items-center justify-between pb-8 pt-1 lg:pb-12">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/logo/tatch-logomark.svg"
-              alt="Tatch"
-              width={22}
-              height={22}
-              priority
-            />
-            <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-              tatch
-            </span>
-          </div>
+          <Wordmark className="h-[18px]" />
           <div className="hidden lg:block">
             <StepPill current={1} total={6} label="Welcome" />
           </div>

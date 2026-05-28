@@ -2,25 +2,16 @@
 
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
 
 export function AlreadyUsedScreen() {
   return (
     <OnboardingShell chrome={false} center>
       {/* Brand mark pinned top-left while the error column centers. */}
-      <div className="safe-pt absolute left-0 top-0 flex items-center gap-2 p-4 md:p-6 lg:p-8">
-        <Image
-          src="/logo/tatch-logomark.svg"
-          alt="Tatch"
-          width={22}
-          height={22}
-          priority
-        />
-        <span className="text-[15px] font-semibold tracking-tight text-ink-title">
-          tatch
-        </span>
+      <div className="safe-pt absolute left-0 top-0 flex items-center p-4 md:p-6 lg:p-8">
+        <Wordmark className="h-[18px]" />
       </div>
 
       {/* Centered error column — no card or banner per pattern 06; the
