@@ -16,51 +16,49 @@ export function SuccessScreen() {
   const headline = existing
     ? `${operator.name} is now connected to your account.`
     : "You're all set.";
+  // Name the human as the only semibold line (pattern 05).
+  const attribution = existing
+    ? `Invited by ${inviter.fullName}`
+    : `With ${inviter.fullName} at ${operator.name}`;
   const sub = existing
-    ? `${inviter.fullName} and ${operator.teammateCount} teammates have been added to your contacts. Nothing else changed.`
-    : `You're connected to ${operator.name}. ${inviter.fullName} and ${operator.teammateCount} teammates have been added to your contacts.`;
+    ? `${operator.teammateCount} teammates added to your contacts. Nothing else changed.`
+    : `${operator.teammateCount} teammates have been added to your contacts.`;
 
   return (
-    <OnboardingShell chrome={false}>
-      {/* Celebratory screen — center the content block vertically and
-          horizontally on md+. md:min-h-[80vh] gives the inner flex room
-          to center within (the shell's main is shrink-to-content on md+,
-          so without a min-height the content would stack at the top). */}
-      <div className="flex flex-1 flex-col md:min-h-[80vh]">
-        <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="relative mb-7 h-16 w-16">
-            <span className="absolute inset-0 rounded-pill bg-brand-gradient-4 opacity-90" />
-            <span className="absolute inset-0 grid place-items-center text-white">
-              <Check size={28} strokeWidth={2.5} />
-            </span>
-          </div>
-
-          <h1 className="t-h1 mb-3 text-balance">{headline}</h1>
-          <p className="t-body-lg max-w-[44ch] text-ink-subtitle">{sub}</p>
-
-          <button
-            type="button"
-            onClick={() => setShowDetails((s) => !s)}
-            className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-            aria-expanded={showDetails}
-          >
-            View connection details
-            <ChevronDown
-              size={14}
-              strokeWidth={1.75}
-              className={[
-                "transition-transform duration-fast ease-snap",
-                showDetails ? "rotate-180" : "",
-              ].join(" ")}
-            />
-          </button>
-
-          {showDetails && (
-            <ConnectionSummary />
-          )}
+    <OnboardingShell chrome={false} center>
+      <div className="flex w-full max-w-[600px] flex-col items-center px-6 text-center">
+        <div className="relative mb-7 h-16 w-16">
+          <span className="absolute inset-0 rounded-pill bg-brand-gradient-4 opacity-90" />
+          <span className="absolute inset-0 grid place-items-center text-white">
+            <Check size={28} strokeWidth={2.5} />
+          </span>
         </div>
 
-        <div className="mt-6 w-full space-y-3 md:mx-auto md:max-w-[280px] lg:max-w-[320px]">
+        <h1 className="t-h1 mb-2 text-balance 2xl:text-[52px] 2xl:leading-[1.05]">{headline}</h1>
+        <p className="text-[18px] font-semibold text-ink-title md:text-[20px]">{attribution}</p>
+        <p className="t-body-lg mt-2 max-w-[44ch] text-ink-subtitle">{sub}</p>
+
+        <button
+          type="button"
+          onClick={() => setShowDetails((s) => !s)}
+          className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
+          aria-expanded={showDetails}
+        >
+          View connection details
+          <ChevronDown
+            size={14}
+            strokeWidth={1.75}
+            className={[
+              "transition-transform duration-fast ease-snap",
+              showDetails ? "rotate-180" : "",
+            ].join(" ")}
+          />
+        </button>
+
+        {showDetails && <ConnectionSummary />}
+
+        {/* Single CTA — capped per pattern 05 (160–220px, never full-bleed). */}
+        <div className="mt-8 w-full max-w-[220px]">
           <Button
             fullWidth
             size="lg"

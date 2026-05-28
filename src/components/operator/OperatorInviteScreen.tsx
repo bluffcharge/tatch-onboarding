@@ -47,7 +47,7 @@ export function OperatorInviteScreen() {
       <Topbar />
       <div className="mx-auto w-full max-w-[1180px] px-5 pb-16 pt-6">
         <PageHeader />
-        <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_360px]">
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_360px] 2xl:gap-8">
           <SendInviteCard />
           <CodesCard />
         </div>
@@ -95,7 +95,7 @@ function PageHeader() {
     <div className="flex items-start justify-between gap-6">
       <div>
         <p className="t-mono-label mb-2">From your account menu</p>
-        <h1 className="t-h1">Invite a partner</h1>
+        <h1 className="t-h1 2xl:text-[44px]">Invite a partner</h1>
         <p className="t-body mt-2 max-w-[60ch] text-ink-subtitle">
           Send a TatchLink to a new partner company. They&apos;ll get a text (or
           email) to set up their account and link to Summit Builders. Existing
