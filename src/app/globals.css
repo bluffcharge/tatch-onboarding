@@ -201,6 +201,29 @@
   /* DIS focus ring — blue-500 at low opacity. */
   --focus-ring:   0 0 0 3px rgba(59, 130, 246, 0.28);
   --focus-border: #3B82F6;
+
+  /* ---------------- Onboarding glass surface (DIS light) ----------------
+     The onboarding canvas reads as a soft frosted surface rather than
+     flat white. A faint cool base tint gives the cap-and-center margins
+     a "slight fill," and two low-opacity radial washes (royal at the
+     top, a whisper of violet at the lower-right) lift the surface
+     without becoming a colored panel. The top hairline highlight is the
+     cheap specular cue from the glass-hover spec. Restraint per that
+     spec: subtle, not decorative — the wash should register as "this is
+     a surface," never as a gradient background.
+
+     Interactive glass (toggle/button hover + selected) uses the
+     --glass-btn-* tokens; only the two we currently consume are defined
+     — the rest of the glass-hover token set can be wired up when table
+     rows / filled buttons adopt the treatment. */
+  --onboarding-canvas:
+    radial-gradient(125% 90% at 50% -10%, rgba(60, 80, 140, 0.11) 0%, transparent 58%),
+    radial-gradient(95% 75% at 100% 105%, rgba(117, 51, 255, 0.06) 0%, transparent 62%),
+    #F0F3FA;
+  --onboarding-highlight: rgba(255, 255, 255, 0.7);
+
+  --glass-btn-hover-highlight: rgba(255, 255, 255, 0.55);
+  --glass-btn-ghost-hover-bg:  rgba(60, 80, 140, 0.06);
 }
 
 /* ==========================================================================
@@ -280,6 +303,19 @@
      interacts with one. */
   --focus-ring:   0 0 0 3px rgba(255, 255, 255, 0.07);
   --focus-border: rgba(255, 255, 255, 0.6);
+
+  /* Onboarding glass — NeuroSync. A purple lift at the top and an indigo
+     whisper at the corner sit over the near-black canvas; the highlight
+     hairline is barely there. Tints do more work on dark than on light,
+     so opacities run a touch higher, but still well below "selected." */
+  --onboarding-canvas:
+    radial-gradient(125% 90% at 50% -10%, rgba(168, 85, 247, 0.13) 0%, transparent 55%),
+    radial-gradient(90% 70% at 100% 105%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
+    #0A0A14;
+  --onboarding-highlight: rgba(255, 255, 255, 0.06);
+
+  --glass-btn-hover-highlight: rgba(255, 255, 255, 0.10);
+  --glass-btn-ghost-hover-bg:  rgba(255, 255, 255, 0.05);
 }
 
 /* ==========================================================================
@@ -579,6 +615,19 @@ select:-webkit-autofill {
 }
 :root:not([data-theme='dark']) .glass-surface {
   background-color: rgba(255, 255, 255, 0.55);
+}
+
+/* Onboarding canvas — frosted-glass wash applied to the OnboardingShell
+   root, replacing the flat bg-canvas. Layered radial tints give the
+   cap-and-center margins a slight fill instead of stark paint, and the
+   inset top hairline is the glass specular cue. The journey rail and
+   cards (already glass in DIS) now have a tinted backdrop to blur,
+   which completes the frosted read. `fixed` attachment anchors the wash
+   to the viewport so it reads as a stage, not a scrolling background. */
+.onboarding-canvas {
+  background: var(--onboarding-canvas);
+  background-attachment: fixed;
+  box-shadow: inset 0 1px 0 0 var(--onboarding-highlight);
 }
 
 @media (prefers-reduced-motion: reduce) {

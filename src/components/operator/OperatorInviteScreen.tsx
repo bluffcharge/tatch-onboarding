@@ -43,7 +43,7 @@ const RECENT: Array<{
 
 export function OperatorInviteScreen() {
   return (
-    <div className="min-h-[100dvh] bg-canvas text-ink">
+    <div className="onboarding-canvas min-h-[100dvh] text-ink">
       <Topbar />
       <div className="mx-auto w-full max-w-[1180px] px-5 pb-16 pt-6">
         <PageHeader />
