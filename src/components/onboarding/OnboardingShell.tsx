@@ -132,7 +132,15 @@ export function OnboardingShell({
         <main
           className={
             center
-              ? "flex w-full flex-1 flex-col items-center justify-center"
+              ? journey
+                ? // Rail screens keep the capped column + padding, but the
+                  // content fills the right pane and centers vertically at
+                  // md+. Mobile stays top-aligned so a tall form never
+                  // gets its head cut off by vertical centering.
+                  `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:justify-center md:py-10`
+                : // No rail: strip the column cap + padding so the centered
+                  // child owns its own layout (full-bleed mobile, panel md+).
+                  "flex w-full flex-1 flex-col items-center justify-center"
               : `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 md:flex-none md:pt-4 lg:pt-6`
           }
         >
