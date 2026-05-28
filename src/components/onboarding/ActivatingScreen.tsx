@@ -29,27 +29,26 @@ export function ActivatingScreen() {
   const copy = BEATS[beat](defaultInvite.operator.name);
 
   return (
-    <OnboardingShell chrome={false} ornament={false}>
-      {/* Celebratory screen — md:min-h-[80vh] gives the inner flex room
-          to center vertically. The shell's main shrinks to content on md+,
-          so without a min-height the spinner would stack at the top. */}
-      <div className="flex flex-1 flex-col items-center justify-center text-center md:min-h-[80vh]">
-        <div className="relative h-16 w-16">
-          <span className="absolute inset-0 animate-ping rounded-pill bg-brand-gradient opacity-30" />
+    <OnboardingShell chrome={false} ornament={false} center>
+      {/* Transitional beat — no spinner / progress bar (pattern 04). A
+          single focal orb breathes slowly while the copy cross-fades
+          between beats; the atmosphere carries the wait. */}
+      <div className="flex flex-col items-center px-6 text-center">
+        <div className="relative grid place-items-center">
           <span
-            className="absolute inset-0 animate-spin rounded-pill"
-            style={{
-              background:
-                "conic-gradient(from 0deg, transparent 0deg, var(--royal-400) 270deg, transparent 360deg)",
-              mask: "radial-gradient(circle, transparent 60%, black 62%)",
-              WebkitMask:
-                "radial-gradient(circle, transparent 60%, black 62%)",
-              animationDuration: "1.1s",
-            }}
+            aria-hidden="true"
+            className="absolute h-28 w-28 rounded-full bg-brand-gradient-4 opacity-40 blur-2xl"
           />
-          <span className="absolute inset-3 rounded-pill bg-brand-gradient-4" />
+          <span
+            aria-hidden="true"
+            className="activating-orb relative h-16 w-16 rounded-full bg-brand-gradient-4"
+          />
         </div>
-        <p className="t-body-lg mt-6 max-w-[36ch] text-ink-title transition-opacity duration-med ease-snap">
+        <p
+          key={beat}
+          aria-live="polite"
+          className="activating-copy t-body-lg mt-7 max-w-[32ch] text-ink-title"
+        >
           {copy}
         </p>
       </div>

@@ -630,6 +630,28 @@ select:-webkit-autofill {
   box-shadow: inset 0 1px 0 0 var(--onboarding-highlight);
 }
 
+/* P6 Activating — the one place a resting-state pulse is allowed
+   (pattern 04). The focal orb breathes slowly; copy fades in on each
+   beat change. Reduced-motion stills both. */
+@keyframes tatch-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+.activating-orb {
+  animation: tatch-breathe 1.6s ease-in-out infinite;
+}
+@keyframes tatch-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.activating-copy {
+  animation: tatch-fade-in 320ms ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .activating-orb { animation: none; }
+  .activating-copy { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .brand-ribbon {
     animation: ribbon-fade 360ms ease both;
