@@ -33,7 +33,7 @@ import {
 } from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
 
-type Group = "entry" | "onboarding" | "operator" | "edge";
+type Group = "leads" | "records";
 type RouteIntent = "mobile" | "desktop";
 
 type Route = {
@@ -54,42 +54,36 @@ type Route = {
   animations?: AnimationKey[];
 };
 
-// Source-of-truth list including stashed routes. `ROUTES` below is the
-// gallery-visible subset — hidden entries stay in the file so we can
-// re-enable them with a one-line flag flip.
+// Screens are loaded cross-origin from the live partner-prototype deploy.
+// The canvas chrome (viewport switcher, filmstrip, rails) is generic — it
+// just frames whatever URL each route points at — so repurposing it to a
+// different prototype is purely a matter of swapping this manifest + the
+// per-route context in `requirementContext.ts`. To pin a specific deploy,
+// change PARTNER_BASE to a deployment URL.
+const PARTNER_BASE = "https://tatch-partner-prototype.vercel.app";
+
+// Source-of-truth list. `hidden` entries (if any) stay in the file but drop
+// out of the gallery filmstrip + nav; the URL still resolves directly.
 const ALL_ROUTES: Route[] = [
-  { href: "/j/abc123",                   title: "P1 — Welcome",           subtitle: "SMS / email link entry",                  group: "entry",      intent: "mobile"  },
-  // Hang-tag ticket with the front→back flip-to-code-entry interaction.
-  // Stashed for now; want to keep the flip recipe accessible — flip
-  // `hidden` to false to bring it back into the gallery.
-  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true, animations: ["ticket-flip", "brand-ribbons"] },
-  { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
-  { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/business",        title: "P3 — Business profile",  subtitle: "Name + address + contact",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/discovery",       title: "P4 — Discovery",         subtitle: "Technicians + services (typed array)",    group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/team",            title: "P5 — Invite team",       subtitle: "SMS-first, optional",                     group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/activating",      title: "P6 — Activating",        subtitle: "1–2s two-beat transition",                group: "onboarding", intent: "mobile", animations: ["activating-spinner"] },
-  { href: "/onboarding/done",            title: "P7 — Connected (new)",   subtitle: "New-partner success",                     group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/done?existing=1", title: "P7 — Short-circuit",     subtitle: "Existing-partner copy",                   group: "onboarding", intent: "mobile"  },
-  { href: "/partner-admin/invite",       title: "O1 — Operator invite",   subtitle: "Settings panel · codes · recent",         group: "operator",   intent: "desktop" },
-  { href: "/join?bad=1",                 title: "Edge — Invalid code",    subtitle: "Code entry error state",                  group: "edge",       intent: "mobile"  },
-  { href: "/j/used",                     title: "Edge — Used invite",     subtitle: "Already-claimed error",                   group: "edge",       intent: "mobile"  },
+  { href: `${PARTNER_BASE}/leads`,                          title: "Leads — overview",    subtitle: "Pipeline table · filters · bulk actions",   group: "leads",   intent: "desktop" },
+  { href: `${PARTNER_BASE}/leads/marcus-rivera`,            title: "Lead — detail",       subtitle: "Activities · files · dates · financials",   group: "leads",   intent: "desktop" },
+  { href: `${PARTNER_BASE}/records?view=contacts`,          title: "Records — contacts",  subtitle: "Searchable contacts · company filter",      group: "records", intent: "desktop" },
+  { href: `${PARTNER_BASE}/records?view=companies`,         title: "Records — companies", subtitle: "Companies · per-company lead counts",        group: "records", intent: "desktop" },
+  { href: `${PARTNER_BASE}/records/contacts/marisa-waters`, title: "Contact — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records", intent: "desktop" },
+  { href: `${PARTNER_BASE}/records/companies/acme-roofing`, title: "Company — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records", intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
 
 const GROUP_LABEL: Record<Group, string> = {
-  entry:      "Entry",
-  onboarding: "Onboarding",
-  operator:   "Operator",
-  edge:       "Edge cases",
+  leads:   "Leads",
+  records: "Records",
 };
 
-// Note: route is NOT persisted. Every refresh lands on ROUTES[0] (P1) with
-// a fresh iframe so the click-through always starts at the beginning and
-// flow state is wiped. Viewport + rail-collapsed are UI prefs, not flow
-// state, so those still persist.
+// Note: route is NOT persisted. Every refresh lands on ROUTES[0] (Leads
+// overview) with a fresh iframe so the walkthrough always starts at the
+// beginning. Viewport + rail-collapsed are UI prefs, not screen state, so
+// those still persist.
 const VIEWPORT_STORAGE_KEY = "tatch-gallery-viewport";
 const LEFT_RAIL_KEY = "tatch-gallery-left-rail";
 const RIGHT_RAIL_KEY = "tatch-gallery-right-rail";
@@ -576,7 +570,7 @@ function Filmstrip({
           className="flex flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 py-1"
           style={{ scrollbarWidth: "none" }}
           role="tablist"
-          aria-label="Onboarding routes"
+          aria-label="Operator platform screens"
         >
           {routes.map((r, i) => {
             const isActive = r.href === active.href;
@@ -625,10 +619,8 @@ function ArrowButton({
 }
 
 const GROUP_PIP: Record<Group, string> = {
-  entry:      "bg-[#00BBFF]",
-  onboarding: "bg-royal-400",
-  operator:   "bg-[#FF40F5]",
-  edge:       "bg-ink-caption",
+  leads:   "bg-royal-400",
+  records: "bg-[#00BBFF]",
 };
 
 function FilmCard({

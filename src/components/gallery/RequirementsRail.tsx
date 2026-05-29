@@ -18,7 +18,7 @@ export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: P
           type="button"
           onClick={onToggle}
           aria-label="Open requirements rail"
-          title="Show PRD context"
+          title="Show spec context"
           className="grid h-9 w-9 place-items-center rounded-md text-ink-caption hover:bg-subtle hover:text-ink-body"
         >
           <FileText size={14} strokeWidth={1.75} />
@@ -31,7 +31,7 @@ export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: P
       <header className="flex items-center justify-between gap-2 border-b border-border-subtle px-4 py-3">
         <div className="flex items-center gap-2">
           <FileText size={13} strokeWidth={1.75} className="text-ink-caption" />
-          <p className="t-mono-label">From the PRD</p>
+          <p className="t-mono-label">From the spec</p>
         </div>
         <button
           type="button"

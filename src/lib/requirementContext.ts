@@ -1,9 +1,18 @@
 /**
- * Per-route mapping into the PRD that lives in
- * ~/Desktop/SUX/Tatch-Onboarding-Plan.md (and the founder-pasted spec).
- * Powers the left rail on the gallery — keeps reviewers anchored to the
- * "what is this trying to satisfy?" while clicking through screens.
+ * Per-screen mapping into the partner-side product spec. Powers the left
+ * rail on the canvas — keeps reviewers anchored to "what is this screen
+ * trying to satisfy?" while clicking through the operator platform.
+ *
+ * Sourced from the Leads Module and Records Module partner stories
+ * (Notion: "Leads Module - Partner", "Records Module - Partner"). These
+ * are reference links to the relevant stories, not build instructions —
+ * the screens themselves live in the partner prototype.
+ *
+ * Keys MUST match the `href` values in `ALL_ROUTES` (page.tsx) exactly,
+ * including the absolute origin, since `getContextFor` looks up by href.
  */
+
+const PARTNER_BASE = "https://tatch-partner-prototype.vercel.app";
 
 export type RequirementContext = {
   /** Short one-liner for the rail header. */
@@ -12,184 +21,96 @@ export type RequirementContext = {
   flowRefs: { flow: string; step?: string }[];
   /** Which user stories this screen serves. */
   storyRefs: string[];
-  /** 2–5 bullet points lifted from the PRD's "Key Requirements" for this screen. */
+  /** 2–5 bullet points lifted from the spec's key requirements. */
   reqs: string[];
 };
 
-const SAME_AUTH: Pick<RequirementContext, "flowRefs" | "storyRefs"> = {
-  flowRefs: [
-    { flow: "Flow 2 — new partner via link", step: "Step 2: create account" },
-    { flow: "Flow 3 — existing partner", step: "Step 2: log in (or auto-detect)" },
-    { flow: "Flow 4 — sign up with code", step: "Step 4: standard account creation" },
-  ],
-  storyRefs: ["Story 2", "Story 4", "Story 5"],
-};
-
 export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
-  "/j/abc123": {
-    oneLine: "Personalized welcome for a partner clicking an SMS/email invite link.",
+  [`${PARTNER_BASE}/leads`]: {
+    oneLine:
+      "Every submitted lead in one table — filter by submitted-by and stage, sort by any column.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 1: lands on the onboarding screen" },
-      { flow: "Flow 3 — existing partner",     step: "Step 1: clicks invite link" },
+      { flow: "Track Leads (Overview)", step: "Lands on Leads, narrows with search + filters" },
+      { flow: "Bulk Assign", step: "Select rows → floating action bar → reassign" },
     ],
-    storyRefs: ["Story 2", "Story 4"],
+    storyRefs: ["Leads · Story 2", "Leads · Story 3"],
     reqs: [
-      "Invite link lands on a registration/onboarding page.",
-      "Auto-detect existing accounts and skip the company-setup flow.",
-      "Personalize the welcome with the inviting operator + BDM (trust signal).",
+      "Sentence-style header ({count} leads to All Partners from all Submitted by) with inline dropdown filters.",
+      "Filter bar: search, submitted-by dropdown, stage dropdown — no separate sort button.",
+      "Columns sort by clicking the header; bulk-select shows a floating 'Assign to' action bar.",
+      "Search matches contact name, operator, or address.",
     ],
   },
-  "/onboarding/ticket": {
-    oneLine: "P1 — Ticket exploration: hang-tag take on the invite with an ink ticket + accent slip behind.",
+  [`${PARTNER_BASE}/leads/marcus-rivera`]: {
+    oneLine:
+      "Full lifecycle of one lead — activities, files, dates, details, contacts, and financials.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 1 (alt visual): lands on the ticket hero" },
+      { flow: "View Lead Detail", step: "Opens a lead from the overview table" },
+      { flow: "Upload a File", step: "Drag onto Documents — immediately visible to the operator" },
     ],
-    storyRefs: ["Story 2"],
+    storyRefs: ["Leads · Story 4", "Leads · Story 5", "Leads · Story 6", "Leads · Story 7"],
     reqs: [
-      "Visualize the invite as a physical Tatch pass: ink ticket, inviter context, stylized barcode, Tatch wordmark.",
-      "Accent slip behind picks up --royal-400 (DIS blue) — no orange, no brand violet on the chrome.",
-      "Hover: subtle 3D tilt that tracks the cursor; reduced-motion + touch get a flat ticket.",
+      "Two-column layout: activities + (files | dates) on the left, details / contacts / financials on the right.",
+      "Unified activity feed of curated lifecycle events only — no internal operator noise.",
+      "Timeline dates per stage (Received → Contacted → Working → Qualified → Lost); unreached stages read 'Not set'.",
+      "Drag-and-drop file upload, max 250 MB per file; partner and operator files are mutually visible.",
     ],
   },
-  "/join": {
-    oneLine: "Code-based entry — no email link required.",
+  [`${PARTNER_BASE}/records?view=contacts`]: {
+    oneLine:
+      "All contacts you refer leads for — searchable and filterable by company.",
     flowRefs: [
-      { flow: "Flow 4 — sign up with code", step: "Step 2: enters a Company or BDM Code" },
+      { flow: "Records Overview", step: "Contacts view active by default; toggle to Companies" },
     ],
-    storyRefs: ["Story 6"],
+    storyRefs: ["Records · Story 1"],
     reqs: [
-      "Provide an alternative entry point: 'Sign up with Code'.",
-      "Input supports pasting codes; case-insensitive if feasible.",
-      "Codes validated server-side; invalid/expired codes show a clear error.",
+      "Columns: Contact, Title, Company, Phone, Email, BDM — all sortable. No checkboxes or bulk actions.",
+      "Search by name, company, or email; company filter is a multiselect with in-dropdown search + Clear all.",
+      "One BDM per company; all contacts inherit that company's BDM.",
+      "Permission scoping: Admin sees all, Manager sees own + team, Member sees own.",
     ],
   },
-  "/join?bad=1": {
-    oneLine: "Edge state — partner entered an invalid or expired code.",
+  [`${PARTNER_BASE}/records?view=companies`]: {
+    oneLine:
+      "All companies you refer leads to — with per-company lead counts.",
     flowRefs: [
-      { flow: "Flow 4 — sign up with code", step: "Step 3: server-side validation failed" },
+      { flow: "Records Overview", step: "Toggle the header to the Companies view" },
     ],
-    storyRefs: ["Story 6"],
+    storyRefs: ["Records · Story 3"],
     reqs: [
-      "Invalid/expired codes show a clear error.",
-      "Don't reveal whether the code format is wrong vs. expired vs. unknown.",
-      "Suggest next steps (ask operator for a new TatchLink).",
+      "Columns: Company, Street, City, State, ZIP, Phone, Email, Industry, BDM, Leads — all sortable.",
+      "Search only (no filter button); matches name, industry, or city.",
+      "Leads column shows the count of leads submitted to that company.",
+      "No Total Revenue column; permission scoping applies (Admin / Manager / Member).",
     ],
   },
-  "/j/used": {
-    oneLine: "Edge state — invite link was already claimed.",
+  [`${PARTNER_BASE}/records/contacts/marisa-waters`]: {
+    oneLine:
+      "A contact's performance, history, files, referrals, and fee terms on one page.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 1: link is single-use after first claim" },
+      { flow: "Contact Detail", step: "Opens a contact; company name links to the parent company" },
+      { flow: "Cross-Navigation", step: "Breadcrumbs + company link move between records" },
     ],
-    storyRefs: ["Story 2"],
+    storyRefs: ["Records · Story 2", "Records · Story 5", "Records · Story 6"],
     reqs: [
-      "Once-claimed invite links can't be reused.",
-      "Offer sign-in as the next step (likely already has an account).",
-      "Provide an easy contact path back to the operator.",
+      "Seven-KPI metrics card: Leads Sent, Sold, Lost, Conversion Rate, Rewards Earned, Last Lead Sent, Days Since.",
+      "KPIs scoped to leads where the contact is BDM (Admin sees all; Member sees only their own).",
+      "Activities + (Files | Referral Summary) on the left; Record Details + Fee Structure on the right.",
+      "Fee structure is inherited from the parent company and read-only for the partner.",
     ],
   },
-  "/onboarding/auth?via=phone": {
-    oneLine: "Phone-OTP authentication — primary path, SMS-first posture.",
-    ...SAME_AUTH,
-    reqs: [
-      "Support email + password and Gmail OAuth.",
-      "Phone OTP is the default for SMS-first comms (operator preference).",
-      "Operator-context breadcrumb keeps the inviting company in view.",
-    ],
-  },
-  "/onboarding/auth?via=email": {
-    oneLine: "Email + password authentication — secondary path.",
-    ...SAME_AUTH,
-    reqs: [
-      "Support email + password registration.",
-      "Support Gmail OAuth as an alternative signup method.",
-      "Pre-fill email when invited by partner admin during onboarding.",
-    ],
-  },
-  "/onboarding/business": {
-    oneLine: "Business profile — name, address, primary contact.",
+  [`${PARTNER_BASE}/records/companies/acme-roofing`]: {
+    oneLine:
+      "A company's performance, history, files, referrals, and fee terms on one page.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 3: enters business info" },
-      { flow: "Flow 4 — sign up with code",    step: "Step 5: completes onboarding if needed" },
+      { flow: "Company Detail", step: "Opens a company from the Companies table" },
     ],
-    storyRefs: ["Story 2"],
+    storyRefs: ["Records · Story 4", "Records · Story 5", "Records · Story 6"],
     reqs: [
-      "Collects: business name, business address, primary contact info.",
-      "Address autocomplete preferred; manual fallback when API unreliable.",
-      "Pre-fill phone from the auth step ('change if you'd like').",
-    ],
-  },
-  "/onboarding/discovery": {
-    oneLine: "Discovery questions — technicians count + services provided.",
-    flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 5: answers one or more questions" },
-    ],
-    storyRefs: ["Story 2"],
-    reqs: [
-      "Q1: 'How many technicians do you have?' (short text, numeric).",
-      "Q2: 'What services do you provide?' (multi-select). If 'Other' is selected, prompt to specify.",
-      "Designed as a typed array — additional questions are config, not screens.",
-    ],
-  },
-  "/onboarding/team": {
-    oneLine: "Team invites — optional, SMS-first, role assignment.",
-    flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 4: invites additional team members" },
-    ],
-    storyRefs: ["Story 2", "Story 5"],
-    reqs: [
-      "Invite teammates by email and/or SMS during onboarding.",
-      "Role assignment optional (Admin / Member for V1).",
-      "Skip is equal-weight to Send — never block activation on team invites.",
-    ],
-  },
-  "/onboarding/activating": {
-    oneLine: "Transition — linkage and contact propagation happen here.",
-    flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 6→7 (transition)" },
-    ],
-    storyRefs: ["Story 3"],
-    reqs: [
-      "Auto-link partner company to inviting operator.",
-      "Add all operator contacts to all activated partner users.",
-      "Two-beat micro-copy makes the system feel substantial.",
-    ],
-  },
-  "/onboarding/done": {
-    oneLine: "Success — new partner is connected, contacts added.",
-    flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 6: completes onboarding" },
-    ],
-    storyRefs: ["Story 2", "Story 3"],
-    reqs: [
-      "Partner company auto-linked to inviting operator.",
-      "All operator contacts added to all activated partner user accounts.",
-      "Confirm the linkage in copy ('Sara and 4 teammates have been added').",
-    ],
-  },
-  "/onboarding/done?existing=1": {
-    oneLine: "Short-circuit success — existing partner, new operator linkage.",
-    flowRefs: [
-      { flow: "Flow 3 — existing partner", step: "Step 5: sees confirmation" },
-    ],
-    storyRefs: ["Story 3", "Story 4"],
-    reqs: [
-      "Skip the company-setup flow for existing partners.",
-      "Create the operator-partner linkage automatically.",
-      "Add all operator contacts (not just the BDM) to existing partner users.",
-      "Show a confirmation summarizing the new connection ('Nothing else changed').",
-    ],
-  },
-  "/partner-admin/invite": {
-    oneLine: "Operator UI — invite partners via TatchLink + manage codes.",
-    flowRefs: [
-      { flow: "Flow 1 — operator sends invite", step: "All 5 steps" },
-    ],
-    storyRefs: ["Story 1", "Story 6"],
-    reqs: [
-      "Lives under the avatar menu → Invite Partner.",
-      "Supports multiple emails/phones in a single batch invite.",
-      "Generates a unique invite link per recipient (SMS or email).",
-      "Company Code + BDM Code panels with copy, share, rotate; rotation doesn't break existing linkages.",
+      "Same seven KPIs as contact detail; Admin sees company-level totals, Member sees only their submissions.",
+      "Two-column layout: Activities + (Files | Referral Summary) left, Details + Fee Structure right.",
+      "Fee structure is flat or tiered, read-only, set by the operator during onboarding.",
+      "No Related Contacts tile on the company view.",
     ],
   },
 };
