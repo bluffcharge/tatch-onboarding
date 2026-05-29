@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState } from "react";
 import {
   Check,
   Copy,
@@ -8,6 +8,7 @@ import {
   Mail,
   MessageSquareText,
   MoreVertical,
+  Plus,
   RotateCcw,
   Send,
   X,
@@ -17,7 +18,6 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Wordmark } from "@/components/ui/Wordmark";
 
-type Chip = { id: string; value: string; kind: "phone" | "email" };
 type InviteStatus = "sent" | "opened" | "linked" | "expired";
 
 const STATUS_STYLE: Record<InviteStatus, { label: string; cls: string }> = {
@@ -106,31 +106,54 @@ function PageHeader() {
   );
 }
 
+type Recipient = { id: string; value: string; touched: boolean };
+
+function rid() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+/** Each recipient validates on its own so the operator can see exactly
+ *  which entries are bad (Ernest's note) — phone or email per row. */
+function classifyRecipient(v: string): "phone" | "email" | "empty" | "invalid" {
+  const t = v.trim();
+  if (!t) return "empty";
+  if (t.includes("@")) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t) ? "email" : "invalid";
+  }
+  const digits = t.replace(/\D/g, "");
+  return digits.length >= 10 && digits.length <= 15 ? "phone" : "invalid";
+}
+
 function SendInviteCard() {
-  const [chips, setChips] = useState<Chip[]>([]);
-  const [draft, setDraft] = useState("");
+  const [rows, setRows] = useState<Recipient[]>(() => [{ id: rid(), value: "", touched: false }]);
+  const [submitted, setSubmitted] = useState(false);
   const [sentToast, setSentToast] = useState<string | null>(null);
 
-  function commit() {
-    const v = draft.trim();
-    if (!v) return;
-    const kind: Chip["kind"] = v.includes("@") ? "email" : "phone";
-    setChips((cs) => [...cs, { id: Math.random().toString(36).slice(2, 9), value: v, kind }]);
-    setDraft("");
+  function update(id: string, value: string) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, value } : r)));
   }
-  function onKey(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" || e.key === "," || e.key === "Tab") {
-      e.preventDefault();
-      commit();
-    }
-    if (e.key === "Backspace" && !draft && chips.length) {
-      setChips((cs) => cs.slice(0, -1));
-    }
+  function touch(id: string) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, touched: true } : r)));
   }
+  function addRow() {
+    setRows((rs) => [...rs, { id: rid(), value: "", touched: false }]);
+  }
+  function removeRow(id: string) {
+    setRows((rs) => (rs.length > 1 ? rs.filter((r) => r.id !== id) : rs));
+  }
+
+  const nonEmpty = rows.filter((r) => r.value.trim());
+  const validCount = nonEmpty.filter((r) => classifyRecipient(r.value) !== "invalid").length;
+  const invalidCount = nonEmpty.length - validCount;
+
   function send() {
-    if (!chips.length) return;
-    setSentToast(`Invite${chips.length === 1 ? "" : "s"} sent to ${chips.length} recipient${chips.length === 1 ? "" : "s"}.`);
-    setChips([]);
+    setSubmitted(true);
+    if (invalidCount > 0 || validCount === 0) return; // surface per-row errors
+    setSentToast(
+      `Invite${validCount === 1 ? "" : "s"} sent to ${validCount} recipient${validCount === 1 ? "" : "s"}.`
+    );
+    setRows([{ id: rid(), value: "", touched: false }]);
+    setSubmitted(false);
     setTimeout(() => setSentToast(null), 3500);
   }
 
@@ -142,37 +165,65 @@ function SendInviteCard() {
       </p>
 
       <label className="text-[13px] font-medium text-ink-body">Recipients</label>
-      <div className="mt-1.5 flex min-h-[44px] flex-wrap items-center gap-1.5 rounded-md border border-border bg-card p-1.5 focus-within:border-royal-400 focus-within:shadow-[0_0_0_2px_var(--royal-100)]">
-        {chips.map((c) => (
-          <span
-            key={c.id}
-            className="inline-flex items-center gap-1.5 rounded-pill bg-subtle py-1 pl-1 pr-2 text-[12.5px] font-medium text-ink-title"
-          >
-            <span className="grid h-5 w-5 place-items-center rounded-pill bg-card text-ink-caption">
-              {c.kind === "phone" ? <MessageSquareText size={11} /> : <Mail size={11} />}
-            </span>
-            {c.value}
-            <button
-              type="button"
-              onClick={() => setChips((cs) => cs.filter((x) => x.id !== c.id))}
-              aria-label={`Remove ${c.value}`}
-              className="ml-0.5 text-ink-caption hover:text-ink-title"
-            >
-              <X size={12} />
-            </button>
-          </span>
-        ))}
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={onKey}
-          onBlur={commit}
-          placeholder={chips.length ? "" : "Enter phone numbers (or emails)"}
-          className="min-w-[160px] flex-1 bg-transparent px-1.5 py-1 text-[13px] outline-none placeholder:text-ink-disabled"
-        />
+      {/* One input per recipient so each phone/email validates on its own —
+          invalid entries are flagged individually instead of disappearing
+          into a single combined field. */}
+      <div className="mt-1.5 space-y-2">
+        {rows.map((row) => {
+          const kind = classifyRecipient(row.value);
+          const showErr = (row.touched || submitted) && kind === "invalid";
+          return (
+            <div key={row.id}>
+              <div
+                className={[
+                  "flex items-center gap-2 rounded-md border bg-card px-2.5 transition-colors duration-fast ease-snap",
+                  showErr
+                    ? "border-error"
+                    : "border-border focus-within:border-royal-400 focus-within:shadow-[0_0_0_2px_var(--royal-100)]",
+                ].join(" ")}
+              >
+                <span className={["shrink-0", showErr ? "text-error" : "text-ink-caption"].join(" ")}>
+                  {row.value.includes("@") ? <Mail size={14} /> : <MessageSquareText size={14} />}
+                </span>
+                <input
+                  value={row.value}
+                  onChange={(e) => update(row.id, e.target.value)}
+                  onBlur={() => touch(row.id)}
+                  placeholder="Phone number or email"
+                  aria-invalid={showErr}
+                  aria-label="Recipient phone number or email"
+                  className="h-10 flex-1 bg-transparent text-[13px] text-ink-title outline-none placeholder:text-ink-disabled"
+                />
+                {rows.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeRow(row.id)}
+                    aria-label="Remove recipient"
+                    className="shrink-0 text-ink-caption hover:text-ink-title"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              {showErr && (
+                <p role="alert" className="mt-1 text-[12px] text-error">
+                  Enter a valid phone number or email.
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
-      <p className="t-caption mt-1.5">
-        Press Enter or comma to add. By sending, you confirm recipients have consented to receive marketing texts.
+      <button
+        type="button"
+        onClick={addRow}
+        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
+      >
+        <Plus size={14} strokeWidth={1.75} />
+        Add another
+      </button>
+      <p className="t-caption mt-2">
+        By sending, you confirm recipients have consented to receive marketing texts.
       </p>
 
       <div className="mt-5">
@@ -194,7 +245,7 @@ function SendInviteCard() {
         </p>
         <Button
           size="md"
-          disabled={!chips.length}
+          disabled={nonEmpty.length === 0}
           onClick={send}
           leadingIcon={<Send size={14} strokeWidth={1.75} />}
         >
