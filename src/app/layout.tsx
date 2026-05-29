@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { DevPalette } from "@/components/dev/DevPalette";
 
 export const metadata: Metadata = {
-  title: "Tatch Operator Platform — canvas",
+  title: "Tatch Partner Platform — canvas",
   description:
     "Breakpoint walkthrough of the Tatch partner platform — Leads and Records — across phone, tablet, laptop, desktop, and wide.",
 };

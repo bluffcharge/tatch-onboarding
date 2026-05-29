@@ -553,7 +553,7 @@ function Filmstrip({
           className="flex flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 py-1"
           style={{ scrollbarWidth: "none" }}
           role="tablist"
-          aria-label="Operator platform screens"
+          aria-label="Partner platform screens"
         >
           {routes.map((r, i) => {
             const isActive = r.href === active.href;
