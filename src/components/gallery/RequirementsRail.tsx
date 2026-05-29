@@ -46,7 +46,7 @@ export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: P
 
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {!context ? (
-          <p className="t-caption">No PRD mapping for this route yet.</p>
+          <p className="t-caption">Not part of the Leads / Records spec — placeholder nav destination.</p>
         ) : (
           <div className="space-y-5">
             <section>

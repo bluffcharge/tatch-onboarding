@@ -26,14 +26,13 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { RequirementsRail } from "@/components/gallery/RequirementsRail";
-import { CommentsRail } from "@/components/gallery/CommentsRail";
 import {
   SourceCodeMenu,
   type AnimationKey,
 } from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
 
-type Group = "leads" | "records";
+type Group = "platform" | "leads" | "records";
 type RouteIntent = "mobile" | "desktop";
 
 type Route = {
@@ -64,20 +63,26 @@ const PARTNER_BASE = "https://tatch-partner-prototype.vercel.app";
 
 // Source-of-truth list. `hidden` entries (if any) stay in the file but drop
 // out of the gallery filmstrip + nav; the URL still resolves directly.
+// Filmstrip order mirrors the partner top-nav: Dash, Leads, Records, Wallet.
+// Dash + Wallet are placeholder destinations in the partner prototype, kept
+// here so the platform's full nav surface is walkable at every breakpoint.
 const ALL_ROUTES: Route[] = [
-  { href: `${PARTNER_BASE}/leads`,                          title: "Leads — overview",    subtitle: "Pipeline table · filters · bulk actions",   group: "leads",   intent: "desktop" },
-  { href: `${PARTNER_BASE}/leads/marcus-rivera`,            title: "Lead — detail",       subtitle: "Activities · files · dates · financials",   group: "leads",   intent: "desktop" },
-  { href: `${PARTNER_BASE}/records?view=contacts`,          title: "Records — contacts",  subtitle: "Searchable contacts · company filter",      group: "records", intent: "desktop" },
-  { href: `${PARTNER_BASE}/records?view=companies`,         title: "Records — companies", subtitle: "Companies · per-company lead counts",        group: "records", intent: "desktop" },
-  { href: `${PARTNER_BASE}/records/contacts/marisa-waters`, title: "Contact — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records", intent: "desktop" },
-  { href: `${PARTNER_BASE}/records/companies/acme-roofing`, title: "Company — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records", intent: "desktop" },
+  { href: `${PARTNER_BASE}/dash`,                           title: "Dash",                subtitle: "Platform home · coming soon",               group: "platform", intent: "desktop" },
+  { href: `${PARTNER_BASE}/leads`,                          title: "Leads — overview",    subtitle: "Pipeline table · filters · bulk actions",   group: "leads",    intent: "desktop" },
+  { href: `${PARTNER_BASE}/leads/marcus-rivera`,            title: "Lead — detail",       subtitle: "Activities · files · dates · financials",   group: "leads",    intent: "desktop" },
+  { href: `${PARTNER_BASE}/records?view=contacts`,          title: "Records — contacts",  subtitle: "Searchable contacts · company filter",      group: "records",  intent: "desktop" },
+  { href: `${PARTNER_BASE}/records?view=companies`,         title: "Records — companies", subtitle: "Companies · per-company lead counts",        group: "records",  intent: "desktop" },
+  { href: `${PARTNER_BASE}/records/contacts/marisa-waters`, title: "Contact — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records",  intent: "desktop" },
+  { href: `${PARTNER_BASE}/records/companies/acme-roofing`, title: "Company — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records",  intent: "desktop" },
+  { href: `${PARTNER_BASE}/wallet`,                         title: "Wallet",              subtitle: "Payouts & balance · coming soon",           group: "platform", intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
 
 const GROUP_LABEL: Record<Group, string> = {
-  leads:   "Leads",
-  records: "Records",
+  platform: "Platform",
+  leads:    "Leads",
+  records:  "Records",
 };
 
 // Note: route is NOT persisted. Every refresh lands on ROUTES[0] (Leads
@@ -86,7 +91,6 @@ const GROUP_LABEL: Record<Group, string> = {
 // those still persist.
 const VIEWPORT_STORAGE_KEY = "tatch-gallery-viewport";
 const LEFT_RAIL_KEY = "tatch-gallery-left-rail";
-const RIGHT_RAIL_KEY = "tatch-gallery-right-rail";
 
 /* ------------------------------------------------------------------ */
 /* Viewport catalog                                                    */
@@ -127,8 +131,7 @@ export default function Home() {
   const [viewport, setViewportState] = useState<Viewport>("phone");
   const [resetTick, setResetTick] = useState(0);
   const [leftCollapsed, setLeftCollapsedState]   = useState(false);
-  const [rightCollapsed, setRightCollapsedState] = useState(false);
-  // Expanded mode collapses both rails + hides the filmstrip so the iframe
+  // Expanded mode collapses the rail + hides the filmstrip so the iframe
   // canvas fills the gallery viewport. Useful for hero-y screens (P1 ticket
   // variant especially) where the stage feels cramped behind chrome.
   const [expanded, setExpanded] = useState(false);
@@ -147,7 +150,6 @@ export default function Home() {
       setViewportState(intentToViewport(ROUTES[0].intent));
     }
     setLeftCollapsedState(localStorage.getItem(LEFT_RAIL_KEY) === "1");
-    setRightCollapsedState(localStorage.getItem(RIGHT_RAIL_KEY) === "1");
     hydratedViewport.current = true;
   }, []);
 
@@ -158,14 +160,6 @@ export default function Home() {
       return next;
     });
   }, []);
-  const toggleRight = useCallback(() => {
-    setRightCollapsedState((prev) => {
-      const next = !prev;
-      try { localStorage.setItem(RIGHT_RAIL_KEY, next ? "1" : "0"); } catch {}
-      return next;
-    });
-  }, []);
-
   const setViewport = useCallback((v: Viewport) => {
     setViewportState(v);
     try { localStorage.setItem(VIEWPORT_STORAGE_KEY, v); } catch {}
@@ -262,14 +256,6 @@ export default function Home() {
           onToggleExpanded={toggleExpanded}
           animations={active.animations}
         />
-        {!expanded && (
-          <CommentsRail
-            routeHref={active.href}
-            routeTitle={active.title}
-            collapsed={rightCollapsed}
-            onToggle={toggleRight}
-          />
-        )}
       </div>
 
       {!expanded && (
@@ -433,13 +419,10 @@ function Stage({
   const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
-      {/* Canvas toolbar — `py-2.5` + `h-8` lands the bar at 52px so its
-          bottom border lines up with the CommentsRail header's bottom
-          border (which is `py-3` + `h-7` = 52px). Source-code dropdown
-          (only when the active route has animation annotations) sits
-          to the left of Expand; Expand is right-aligned so it pairs
-          with the Comments label across the vertical divider as a
-          single lockup. */}
+      {/* Canvas toolbar — `py-2.5` + `h-8` lands the bar at 52px, matching
+          the header rows above. Source-code dropdown (only when the active
+          route has animation annotations) sits to the left of Expand;
+          Expand is right-aligned. */}
       <div className="flex items-center justify-end gap-1.5 border-b border-border-subtle px-4 py-2.5">
         <SourceCodeMenu animations={animations} />
         <button
@@ -619,8 +602,9 @@ function ArrowButton({
 }
 
 const GROUP_PIP: Record<Group, string> = {
-  leads:   "bg-royal-400",
-  records: "bg-[#00BBFF]",
+  platform: "bg-[#FF40F5]",
+  leads:    "bg-royal-400",
+  records:  "bg-[#00BBFF]",
 };
 
 function FilmCard({
