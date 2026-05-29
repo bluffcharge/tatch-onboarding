@@ -632,7 +632,7 @@ function FilmCard({
         "h-20 w-[252px]",
         "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
         isActive
-          ? "border-royal-400 bg-card shadow-[0_4px_16px_-4px_rgba(129,69,255,0.25),0_0_0_2px_var(--royal-100)]"
+          ? "border-[#22D3EE] bg-card shadow-[0_4px_18px_-4px_rgba(34,211,238,0.45),0_0_0_2px_rgba(34,211,238,0.55)]"
           : "border-border bg-card shadow-sm hover:-translate-y-0.5 hover:border-strong hover:shadow-md",
       ].join(" ")}
     >
@@ -651,7 +651,7 @@ function FilmCard({
       <span
         className={[
           "truncate text-[13px] font-semibold leading-tight",
-          isActive ? "text-royal-700" : "text-ink-title",
+          isActive ? "text-[#22D3EE]" : "text-ink-title",
         ].join(" ")}
       >
         {route.title}
