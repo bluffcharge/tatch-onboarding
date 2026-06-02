@@ -101,17 +101,14 @@ export function OnboardingShell({
       )}
 
       {/* Mobile-first content column. On md+ this becomes the right pane.
-          Stays above the ornament via z-10 so the ribbons read as background. */}
-      <div className="relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
-        {/* Horizontal journey stepper, 2xl+ only. Spills the journey across
-            the top of the canvas now that the left rail is hidden. */}
-        {journey && (
-          <div className="hidden border-b border-border-subtle bg-canvas/60 px-8 pb-5 pt-6 2xl:block">
-            <div className="mx-auto w-full max-w-[1100px]">
-              <JourneyTimelineHorizontal currentKey={journey.currentKey} />
-            </div>
-          </div>
-        )}
+          Stays above the ornament via z-10 so the ribbons read as background.
+          At 2xl with a journey, reserve bottom padding so the content clears
+          the fixed glass stepper anchored to the viewport bottom. */}
+      <div
+        className={`relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-h-0 ${
+          journey ? "2xl:pb-28" : ""
+        }`}
+      >
         {chrome && (
           // In center mode the header overlays the top of the pane at md+
           // (absolute, out of flow) so `main` fills the full height and
@@ -119,14 +116,7 @@ export function OnboardingShell({
           // header's top padding pushes the centered card noticeably low.
           <header
             className={`safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:bg-transparent md:backdrop-blur-none ${
-              center
-                ? // Absolute overlay at md+ for true centering. With a journey
-                  // rail, the horizontal stepper takes over the top at 2xl, so
-                  // revert the header to in-flow so it sits below the stepper.
-                  journey
-                  ? "md:absolute md:inset-x-0 md:top-0 2xl:static"
-                  : "md:absolute md:inset-x-0 md:top-0"
-                : "md:static"
+              center ? "md:absolute md:inset-x-0 md:top-0" : "md:static"
             }`}
           >
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
@@ -204,6 +194,20 @@ export function OnboardingShell({
           </footer>
         )}
       </div>
+
+      {/* Fixed glass stepper anchored to the viewport bottom at 2xl+. The
+          left rail is hidden at this breakpoint (above), and the stepper
+          floats here with a soft translucent surface so content can scroll
+          under it on the rare screen that runs past the fold. */}
+      {journey && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 hidden 2xl:block">
+          <div className="pointer-events-auto border-t border-border-subtle bg-card/70 px-8 py-4 backdrop-blur-md">
+            <div className="mx-auto w-full max-w-[1100px]">
+              <JourneyTimelineHorizontal currentKey={journey.currentKey} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
