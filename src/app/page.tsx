@@ -632,7 +632,7 @@ function FilmCard({
         "h-20 w-[252px]",
         "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
         isActive
-          ? "border-[#22D3EE] bg-card shadow-[0_4px_18px_-4px_rgba(34,211,238,0.45),0_0_0_2px_rgba(34,211,238,0.55)]"
+          ? "film-active bg-card"
           : "border-border bg-card shadow-sm hover:-translate-y-0.5 hover:border-strong hover:shadow-md",
       ].join(" ")}
     >
@@ -648,12 +648,7 @@ function FilmCard({
           {String(index).padStart(2, "0")}
         </span>
       </div>
-      <span
-        className={[
-          "truncate text-[13px] font-semibold leading-tight",
-          isActive ? "text-[#22D3EE]" : "text-ink-title",
-        ].join(" ")}
-      >
+      <span className="truncate text-[13px] font-semibold leading-tight text-ink-title">
         {route.title}
       </span>
       <span className="truncate text-[11.5px] leading-tight text-ink-caption">
