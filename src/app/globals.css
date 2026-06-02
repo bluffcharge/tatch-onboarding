@@ -84,6 +84,11 @@
   --surface-canvas:  #FFFFFF;
   --surface-card:    rgba(255, 255, 255, 0.72);
   --surface-subtle:  #FAFAFA;
+  /* Filmstrip selected state — minimal glass rim (masked gradient outline)
+     + a soft lift. Light theme: cool steel highlight that separates the
+     frosted card from the lavender canvas without a hard accent line. */
+  --film-active-rim:  linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(148,163,184,0.55) 42%, rgba(255,255,255,0.30) 62%, rgba(100,116,139,0.50) 100%);
+  --film-active-glow: 0 10px 26px -12px rgba(30,41,59,0.40), 0 0 0 1px rgba(255,255,255,0.55);
   --surface-raised:  #FFFFFF;
   --surface-overlay: rgba(24, 24, 27, 0.55);
   /* Gallery / preview-chrome surface — a step quieter than the iframe's
@@ -239,6 +244,10 @@
   --surface-canvas:  #0A0A14;
   --surface-card:    #141424;
   --surface-subtle:  #1A1A2A;
+  /* Filmstrip selected state — glass rim reads as a bright edge highlight
+     fading to near-nothing across the NeuroSync card. */
+  --film-active-rim:  linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.12) 38%, rgba(255,255,255,0.04) 62%, rgba(255,255,255,0.45) 100%);
+  --film-active-glow: 0 10px 28px -12px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.10);
   --surface-raised:  #1A1A2A;
   --surface-overlay: rgba(5, 5, 12, 0.75);
   /* Stage chrome — deeper than the iframe canvas so the previewed UI
@@ -399,6 +408,28 @@ button, input, textarea, select { font-family: inherit; }
 :root:not([data-theme='dark']) [class*='bg-card'] {
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+
+/* Filmstrip selected card — minimal glass gradient outline. The ::after
+   paints a 1px gradient ring masked to the border only (so it follows the
+   rounded corners and is independent of the card fill / theme); the element
+   itself carries a soft lift. Replaces the solid accent border. */
+.film-active {
+  border-color: transparent !important;
+  box-shadow: var(--film-active-glow);
+}
+.film-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--film-active-rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Focus ring — applies to buttons, links, and anything without its own
