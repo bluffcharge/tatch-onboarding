@@ -102,3 +102,75 @@ export function JourneyTimeline({ currentKey }: Props) {
     </div>
   );
 }
+
+/**
+ * Horizontal step bar shown at the top of the content pane on 2xl+
+ * viewports. Replaces the vertical rail when the canvas is wide enough to
+ * spill the journey horizontally — badges + labels in a row, with thin
+ * connecting lines between adjacent badges. The vertical rail is hidden
+ * at the same breakpoint (see OnboardingShell).
+ */
+export function JourneyTimelineHorizontal({ currentKey }: Props) {
+  const currentIdx = getStepIndex(currentKey);
+  return (
+    <nav aria-label="Onboarding progress" className="w-full">
+      <ol className="flex w-full items-start">
+        {PARTNER_JOURNEY.map((step, i) => {
+          const completed = i < currentIdx;
+          const current = i === currentIdx;
+          const Icon = step.icon;
+          const isLast = i === PARTNER_JOURNEY.length - 1;
+          return (
+            <li
+              key={step.key}
+              className="relative flex flex-1 flex-col items-center gap-2"
+              aria-current={current ? "step" : undefined}
+            >
+              {/* Connecting line from this badge's center to the next.
+                  left:50% + w-full spans exactly one column-width, which
+                  is the distance between two adjacent badge centers. */}
+              {!isLast && (
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "pointer-events-none absolute left-1/2 top-[17px] -z-0 h-px w-full",
+                    completed ? "bg-ink-title" : "bg-border",
+                  ].join(" ")}
+                />
+              )}
+
+              {/* Badge */}
+              <span
+                aria-hidden="true"
+                className={[
+                  "z-10 grid h-9 w-9 shrink-0 place-items-center rounded-pill border bg-canvas transition-colors duration-fast ease-snap",
+                  completed
+                    ? "border-[color:var(--text-title)] bg-[color:var(--text-title)] text-[color:var(--surface-canvas)]"
+                    : current
+                    ? "border-[color:var(--text-title)] bg-card text-ink-title"
+                    : "border-border text-ink-disabled",
+                ].join(" ")}
+              >
+                {completed ? (
+                  <Check size={14} strokeWidth={2.25} />
+                ) : (
+                  <Icon size={15} strokeWidth={1.75} />
+                )}
+              </span>
+
+              {/* Label — compact, centered under the badge. */}
+              <span
+                className={[
+                  "max-w-[10ch] text-center text-[12px] font-semibold leading-tight",
+                  current || completed ? "text-ink-title" : "text-ink-caption",
+                ].join(" ")}
+              >
+                {step.label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}

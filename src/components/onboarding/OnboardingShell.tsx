@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { StepperBar } from "./StepperBar";
-import { JourneyTimeline } from "./JourneyTimeline";
+import { JourneyTimeline, JourneyTimelineHorizontal } from "./JourneyTimeline";
 import { BrandRibbons } from "./BrandRibbons";
 import { Wordmark } from "@/components/ui/Wordmark";
 import type { JourneyKey } from "@/lib/journey";
@@ -87,10 +87,13 @@ export function OnboardingShell({
           the component, so phone/tablet stay clean by default. */}
       {ornament && <BrandRibbons />}
 
-      {/* Wide-viewport left rail: timeline of the full journey. */}
+      {/* Left rail — vertical timeline of the full journey at md–xl. At 2xl
+          the rail is hidden and the journey moves to a horizontal stepper
+          at the top of the content pane (more horizontal real estate than
+          a tall rail needs). */}
       {journey && (
         <aside
-          className="relative z-10 hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col xl:w-[340px] 2xl:w-[400px]"
+          className="relative z-10 hidden shrink-0 border-r border-border-subtle bg-subtle/40 md:flex md:w-[300px] md:flex-col xl:w-[340px] 2xl:hidden"
           aria-label="Onboarding progress"
         >
           <JourneyTimeline currentKey={journey.currentKey} />
@@ -100,6 +103,15 @@ export function OnboardingShell({
       {/* Mobile-first content column. On md+ this becomes the right pane.
           Stays above the ornament via z-10 so the ribbons read as background. */}
       <div className="relative z-10 flex min-h-[100dvh] flex-1 flex-col md:min-h-0">
+        {/* Horizontal journey stepper, 2xl+ only. Spills the journey across
+            the top of the canvas now that the left rail is hidden. */}
+        {journey && (
+          <div className="hidden border-b border-border-subtle bg-canvas/60 px-8 pb-5 pt-6 2xl:block">
+            <div className="mx-auto w-full max-w-[1100px]">
+              <JourneyTimelineHorizontal currentKey={journey.currentKey} />
+            </div>
+          </div>
+        )}
         {chrome && (
           // In center mode the header overlays the top of the pane at md+
           // (absolute, out of flow) so `main` fills the full height and
@@ -107,7 +119,14 @@ export function OnboardingShell({
           // header's top padding pushes the centered card noticeably low.
           <header
             className={`safe-pt sticky top-0 z-10 bg-canvas/85 backdrop-blur-[6px] md:bg-transparent md:backdrop-blur-none ${
-              center ? "md:absolute md:inset-x-0 md:top-0" : "md:static"
+              center
+                ? // Absolute overlay at md+ for true centering. With a journey
+                  // rail, the horizontal stepper takes over the top at 2xl, so
+                  // revert the header to in-flow so it sits below the stepper.
+                  journey
+                  ? "md:absolute md:inset-x-0 md:top-0 2xl:static"
+                  : "md:absolute md:inset-x-0 md:top-0"
+                : "md:static"
             }`}
           >
             <div className={`mx-auto flex w-full items-center gap-2 pb-3 pt-2 md:pt-10 lg:pt-14 ${widthCls} ${xPadCls}`}>
