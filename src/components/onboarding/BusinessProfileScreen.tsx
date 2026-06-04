@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { AddressAutocomplete, type StructuredAddress } from "@/components/ui/AddressAutocomplete";
 import { OnboardingShell } from "./OnboardingShell";
+import { useInvite } from "@/lib/useInvite";
 
 export function BusinessProfileScreen() {
   const router = useRouter();
+  const invite = useInvite();
   const [name, setName] = useState("");
   const [addrText, setAddrText] = useState("");
   const [picked, setPicked] = useState<StructuredAddress | null>(null);
@@ -20,8 +22,21 @@ export function BusinessProfileScreen() {
   const [stateVal, setStateVal] = useState("");
   const [zip, setZip] = useState("");
 
-  const [phone, setPhone] = useState("(555) 014-2207");
-  const [email, setEmail] = useState("");
+  // Phone + email pre-fill from the operator's invite payload. Falls
+  // back to the invited recipient's phone (legacy default), then to the
+  // demo phone number when nothing's been carried through.
+  const [phone, setPhone] = useState(
+    invite.prefill?.phone ??
+      (invite.invitedRecipient?.kind === "phone"
+        ? invite.invitedRecipient.value
+        : "(555) 014-2207")
+  );
+  const [email, setEmail] = useState(
+    invite.prefill?.email ??
+      (invite.invitedRecipient?.kind === "email"
+        ? invite.invitedRecipient.value
+        : "")
+  );
 
   const addressOk = manual
     ? line1.trim().length > 1 && city.trim().length > 1 && stateVal.length === 2 && zip.length === 5

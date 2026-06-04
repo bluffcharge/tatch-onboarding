@@ -1,28 +1,31 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, ChevronsRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
-import { defaultInvite } from "@/lib/mockInvite";
+import { useInvite } from "@/lib/useInvite";
 
 export function SuccessScreen() {
-  const sp = useSearchParams();
-  const existing = sp.get("existing") === "1";
+  const invite = useInvite();
+  const existing = invite.isExistingPartner;
   const [showDetails, setShowDetails] = useState(false);
-  const { inviter, operator } = defaultInvite;
+  const { inviter, operator, linkedCompany } = invite;
 
   const headline = existing
     ? `${operator.name} is now connected to your account.`
-    : "You're all set.";
+    : linkedCompany
+      ? `You're connected — under ${linkedCompany.name}.`
+      : "You're all set.";
   // Name the human as the only semibold line (pattern 05).
   const attribution = existing
     ? `Invited by ${inviter.fullName}`
     : `With ${inviter.fullName} at ${operator.name}`;
   const sub = existing
     ? `${operator.teammateCount} teammates added to your contacts. Nothing else changed.`
-    : `${operator.teammateCount} teammates have been added to your contacts.`;
+    : linkedCompany
+      ? `Your account rolls up under ${linkedCompany.name}. ${operator.teammateCount} teammates from ${operator.name} have been added to your contacts.`
+      : `${operator.teammateCount} teammates have been added to your contacts.`;
 
   return (
     <OnboardingShell chrome={false} center>
@@ -55,7 +58,7 @@ export function SuccessScreen() {
           />
         </button>
 
-        {showDetails && <ConnectionSummary />}
+        {showDetails && <ConnectionSummary invite={invite} />}
 
         {/* Single CTA — capped per pattern 05 (160–220px, never full-bleed). */}
         <div className="mt-8 w-full max-w-[220px]">
@@ -67,20 +70,29 @@ export function SuccessScreen() {
             Go to home
           </Button>
         </div>
+
+        <ResolvedRecordSummary invite={invite} />
       </div>
     </OnboardingShell>
   );
 }
 
-function ConnectionSummary() {
+function ConnectionSummary({ invite }: { invite: ReturnType<typeof useInvite> }) {
+  const { operator, inviter, linkedCompany } = invite;
   return (
-    <div className="mt-4 rounded-lg border border-border bg-card p-4 shadow-xs">
-      <Row label="Operator">{defaultInvite.operator.name}</Row>
+    <div className="mt-4 w-full rounded-lg border border-border bg-card p-4 text-left shadow-xs">
+      <Row label="Operator">{operator.name}</Row>
       <Row label="Invited by">
-        {defaultInvite.inviter.fullName} · {defaultInvite.inviter.title}
+        {inviter.fullName} · {inviter.title}
       </Row>
+      {linkedCompany && (
+        <Row label="Joined company">
+          {linkedCompany.name}
+          {linkedCompany.industry ? ` · ${linkedCompany.industry}` : ""}
+        </Row>
+      )}
       <Row label="Linked at">{new Date().toLocaleString()}</Row>
-      <Row label="Teammates added">{defaultInvite.operator.teammateCount}</Row>
+      <Row label="Teammates added">{operator.teammateCount}</Row>
     </div>
   );
 }
@@ -92,6 +104,74 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       <span className="text-right text-[13px] font-medium text-ink-title">
         {children}
       </span>
+    </div>
+  );
+}
+
+/* ----------------- Resolved partner record (contract preview) -----------
+   On a real acceptance, the partner side emits this payload back to the
+   operator system so they can update the Prospect record we created when
+   the invite was sent (correct legal name, address, etc.). This panel
+   shows the contract shape so the engineering teams on both sides can
+   wire it without ambiguity. Collapsed by default; hidden in production. */
+
+function ResolvedRecordSummary({ invite }: { invite: ReturnType<typeof useInvite> }) {
+  const [open, setOpen] = useState(false);
+  const payload = {
+    inviteToken: "abc123",
+    acceptedAt: new Date().toISOString(),
+    operator: { id: "summit", name: invite.operator.name },
+    invitee: {
+      firstName: invite.prefill?.firstName ?? null,
+      lastName: invite.prefill?.lastName ?? null,
+      email: invite.prefill?.email ?? null,
+      phone:
+        invite.invitedRecipient?.kind === "phone"
+          ? invite.invitedRecipient.value
+          : invite.prefill?.phone ?? null,
+    },
+    company: invite.linkedCompany
+      ? { kind: "linked" as const, id: invite.linkedCompany.id, name: invite.linkedCompany.name }
+      : {
+          kind: "created" as const,
+          // In the create variant the partner side would emit the
+          // fields the invitee typed in BusinessProfileScreen here.
+          name: "(value the invitee entered)",
+          address: "(value the invitee entered)",
+        },
+    nextStage: "ACTIVE",
+  };
+  return (
+    <div className="mt-10 w-full">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2.5 py-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-caption hover:bg-subtle hover:text-ink-body"
+      >
+        <ChevronsRight
+          size={11}
+          strokeWidth={1.85}
+          className={[
+            "transition-transform duration-fast ease-snap",
+            open ? "rotate-90" : "",
+          ].join(" ")}
+        />
+        Resolved partner record (contract)
+      </button>
+      {open && (
+        <div className="mt-2 rounded-lg border border-border bg-subtle/40 p-3 text-left">
+          <p className="t-caption mb-2">
+            Payload the partner side will emit to the operator after
+            acceptance — used to update the Prospect contact record
+            created by the &ldquo;+ Invite User&rdquo; flow. Shown here for
+            cross-team contract reference.
+          </p>
+          <pre className="overflow-x-auto rounded-md bg-canvas p-3 font-mono text-[11px] leading-relaxed text-ink-body">
+{JSON.stringify(payload, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
