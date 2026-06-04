@@ -14,7 +14,13 @@ export type RequirementContext = {
   storyRefs: string[];
   /** 2–5 bullet points lifted from the PRD's "Key Requirements" for this screen. */
   reqs: string[];
+  /** Deeper references — source prototype, spec sections, sibling screens. */
+  links?: { label: string; href: string }[];
 };
+
+/* Source-of-truth references shared across the operator flow. */
+const ARMEN_PROTOTYPE = "https://tatch-operator-onboarding.vercel.app";
+const ROADMAP_BRAND = "https://tatch-field-brand.vercel.app";
 
 const SAME_AUTH: Pick<RequirementContext, "flowRefs" | "storyRefs"> = {
   flowRefs: [
@@ -41,6 +47,10 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Sign-up toggle drops straight into Step 1 (Create account).",
       "Black CTA (--op-ink); violet reserved for links only.",
     ],
+    links: [
+      { label: "Armen's signup prototype ↗", href: ARMEN_PROTOTYPE },
+      { label: "Roadmap brand reference ↗", href: ROADMAP_BRAND },
+    ],
   },
   "/operator/account": {
     oneLine: "Step 1 — create the operator account (your details).",
@@ -51,6 +61,9 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Password rule: ≥ 8 chars with one special character (shown inline).",
       "Google OAuth shortcut bypasses the password fields.",
       "Legal consent line links Privacy Policy + Terms of Service.",
+    ],
+    links: [
+      { label: "Armen's signup prototype ↗", href: ARMEN_PROTOTYPE },
     ],
   },
   "/operator/plan": {
@@ -63,6 +76,11 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Usage fee: $10 per lead OR 10% of the reward, whichever is greater.",
       "Partner portal access is always free — partners are never billed.",
       "Estimate is platform + seats; usage billed per lead on top.",
+    ],
+    links: [
+      { label: "Armen's plan screen ↗", href: ARMEN_PROTOTYPE },
+      { label: "Scaled example — 3 branches, 8 seats ↗", href: "/operator/plan?branches=3&seats=8" },
+      { label: "Annual billing variant ↗", href: "/operator/plan?cycle=annual" },
     ],
   },
   "/operator/plan?cycle=annual": {
@@ -85,6 +103,37 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Add another stacks rows; adding past the seat count implies a seat add.",
       "Skip is equal-weight — never block activation on team invites.",
     ],
+    links: [
+      { label: "Armen's invite screen ↗", href: ARMEN_PROTOTYPE },
+      { label: "Seat-overage variant — 2 invited ↗", href: "/operator/team?seeded=1" },
+    ],
+  },
+  "/operator/team?seeded=1": {
+    oneLine: "Step 3 variant — a teammate added past the included seat (overage).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 5: Invite team (seat overage)" }],
+    storyRefs: ["Multi-operator accounts"],
+    reqs: [
+      "Adding past the 1 included seat surfaces a '+1 seat · $45/mo' line.",
+      "Meter goes 2 of 1 — the overage reads clearly, not silently.",
+      "Each invitee keeps an independent Member / Admin role.",
+      "Estimate from Step 2 should reconcile with the added seat at checkout.",
+    ],
+    links: [
+      { label: "Default invite screen ↗", href: "/operator/team" },
+    ],
+  },
+  "/operator/plan?branches=3&seats=8": {
+    oneLine: "Step 2 variant — a scaled account (3 branches, 8 seats).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 5: Choose plan (scaled)" }],
+    storyRefs: ["Transparent self-serve pricing"],
+    reqs: [
+      "Platform $223 × 3 branches + seats $45 × 8 = $1,029/mo estimate.",
+      "Steppers drive the total live; no plan tiers, pure usage-based config.",
+      "Usage fees still stack per lead on top of the platform + seat total.",
+    ],
+    links: [
+      { label: "Default (1 branch / 1 seat) ↗", href: "/operator/plan" },
+    ],
   },
   "/operator/payment": {
     oneLine: "Step 4 — payment + order summary (Card).",
@@ -95,6 +144,10 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Order summary mirrors the plan: platform + seats + usage = total.",
       "Card is charged after the trial ends (stated up front).",
       "Trust line: guaranteed safe & secure, all transactions protected.",
+    ],
+    links: [
+      { label: "Armen's payment screen ↗", href: ARMEN_PROTOTYPE },
+      { label: "ACH variant ↗", href: "/operator/payment?method=ach" },
     ],
   },
   "/operator/payment?method=ach": {
@@ -125,6 +178,9 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Confirms the Tatch Connect account is provisioned.",
       "Single black CTA routes into the operator dashboard.",
       "Gradient check-badge closes the loop opened by the activating orb.",
+    ],
+    links: [
+      { label: "Armen's success screen ↗", href: ARMEN_PROTOTYPE },
     ],
   },
 

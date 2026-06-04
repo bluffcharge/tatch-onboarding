@@ -63,9 +63,11 @@ type Route = {
 const ALL_ROUTES: Route[] = [
   { href: "/operator/signin",             title: "Sign in",                subtitle: "Entry · sign-in / sign-up toggle",        group: "account", intent: "desktop" },
   { href: "/operator/account",            title: "Create account",         subtitle: "Step 1 · your details",                   group: "account", intent: "desktop" },
-  { href: "/operator/plan",               title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
-  { href: "/operator/plan?cycle=annual",  title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
-  { href: "/operator/team",               title: "Invite team",            subtitle: "Step 3 · seats + roles",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/plan",                  title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?cycle=annual",     title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled", subtitle: "Step 2 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
+  { href: "/operator/team",                  title: "Invite team",            subtitle: "Step 3 · seats + roles",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/team?seeded=1",         title: "Invite team — overage",  subtitle: "Step 3 · seat over included",             group: "plan",    intent: "desktop" },
   { href: "/operator/payment",            title: "Payment — card",         subtitle: "Step 4 · confirm & pay",                  group: "payment", intent: "desktop" },
   { href: "/operator/payment?method=ach", title: "Payment — ACH",          subtitle: "Step 4 · bank transfer variant",          group: "payment", intent: "desktop" },
   { href: "/operator/activating",         title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
@@ -252,6 +254,7 @@ export default function Home() {
           <RequirementsRail
             context={reqContext}
             routeTitle={active.title}
+            routeHref={active.href}
             collapsed={leftCollapsed}
             onToggle={toggleLeft}
           />

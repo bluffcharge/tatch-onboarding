@@ -8,6 +8,12 @@ import { OperatorShell } from "./OperatorShell";
 const PLATFORM = 223; // $/branch/mo
 const SEAT = 45; // $/user/mo
 
+/** Seed a stepper from a query param (e.g. ?branches=3), clamped 1–99. */
+function clampParam(v: string | null): number {
+  const n = parseInt(v ?? "", 10);
+  return Number.isFinite(n) ? Math.min(99, Math.max(1, n)) : 1;
+}
+
 const FEATURES = [
   "Partner Portal",
   "Partner Directory",
@@ -33,8 +39,8 @@ export function ChoosePlanScreen() {
   const [cycle, setCycle] = useState<"monthly" | "annual">(
     sp.get("cycle") === "annual" ? "annual" : "monthly"
   );
-  const [branches, setBranches] = useState(1);
-  const [seats, setSeats] = useState(1);
+  const [branches, setBranches] = useState(() => clampParam(sp.get("branches")));
+  const [seats, setSeats] = useState(() => clampParam(sp.get("seats")));
 
   const monthly = PLATFORM * branches + SEAT * seats;
   const perMonth = cycle === "annual" ? Math.round(monthly * 0.9) : monthly;

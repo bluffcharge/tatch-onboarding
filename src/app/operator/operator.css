@@ -106,19 +106,29 @@
   letter-spacing: -0.03em;
 }
 
+/* Eyebrow pill (field-brand §4.2.2) — violet "now" dot marks the live step.
+   The brand's signature small-caps eyebrow, repurposed as the step counter. */
 .op-stepcount {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 6px 11px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
   color: var(--op-muted);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(124, 92, 252, 0.22);
+  border-radius: var(--op-r-btn);
+  box-shadow: 0 1px 2px rgba(11, 11, 12, 0.05);
+  backdrop-filter: blur(6px);
 }
 .op-stepcount::before {
   content: "";
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   border-radius: 999px;
-  background: var(--op-ink);
+  background: var(--op-accent);
 }
 
 .op-foot-meta { font-size: 12.5px; color: var(--op-faint); }
@@ -146,8 +156,33 @@
   justify-content: center;
   padding: 40px 24px 56px;
 }
-.op-content-inner { width: 100%; max-width: 560px; }
+.op-content-inner { position: relative; width: 100%; max-width: 560px; }
 .op-content-inner.is-wide { max-width: 760px; }
+
+/* Signature spine (field-brand §4.2.1) — a hairline pinned to the content's
+   left edge, capped by two violet outlined ticks. The brand violet's first,
+   quietest whisper. Desktop/Wide only; drops on stacked breakpoints. */
+.op-spine { display: none; }
+@media (min-width: 1280px) {
+  .op-spine {
+    display: block;
+    position: absolute;
+    left: -30px; top: 2px; bottom: 2px;
+    width: 1px;
+    background: rgba(11, 11, 12, 0.10);
+  }
+  .op-spine::before,
+  .op-spine::after {
+    content: "";
+    position: absolute;
+    left: -3.5px;
+    width: 8px; height: 8px;
+    background: var(--op-bg);
+    border: 1px solid rgba(124, 92, 252, 0.5);
+  }
+  .op-spine::before { top: -1px; }
+  .op-spine::after  { bottom: -1px; }
+}
 
 /* --------------------------------------------------------------------- */
 /* Wizard rail (GET SET UP)                                               */
@@ -189,7 +224,12 @@
   color: var(--op-faint);
   background: var(--op-bg);
 }
-.op-step.is-active .op-step-dot { border-color: var(--op-ink); color: var(--op-ink); }
+/* Active = "now" → violet ring + soft halo (field-brand "alive/now" rule). */
+.op-step.is-active .op-step-dot {
+  border-color: var(--op-accent);
+  color: var(--op-ink);
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.12);
+}
 .op-step.is-done .op-step-dot {
   background: var(--op-ink);
   border-color: var(--op-ink);
@@ -227,8 +267,9 @@
 }
 .op-sub {
   font-size: 16px;
+  font-weight: 400; /* quiet body against 800 headings — the contrast IS the brand */
   color: var(--op-muted);
-  line-height: 1.5;
+  line-height: 1.55;
   margin-top: 10px;
 }
 .op-section-label {
@@ -302,12 +343,14 @@
 }
 .op-btn--primary:hover { background: #232326; }
 .op-btn--primary:disabled { background: var(--op-dash); color: #fff; cursor: not-allowed; box-shadow: none; }
+/* Ghost glass (field-brand §4.2 secondary) — translucent, blurred, ink hairline. */
 .op-btn--secondary {
-  background: var(--op-bg);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--op-ink);
-  border-color: var(--op-dash);
+  border-color: rgba(11, 11, 12, 0.10);
+  backdrop-filter: blur(6px);
 }
-.op-btn--secondary:hover { background: var(--op-soft); }
+.op-btn--secondary:hover { background: #fff; }
 .op-btn--inline { width: auto; height: 44px; padding: 0 22px; }
 
 .op-or {
@@ -458,6 +501,39 @@
 .op-seat-track { height: 6px; border-radius: 999px; background: var(--op-line); margin: 14px 0 8px; overflow: hidden; }
 .op-seat-fill { height: 100%; background: var(--op-success); border-radius: 999px; }
 .op-seat-meta { font-size: 12.5px; color: var(--op-muted); }
+.op-seat-chip {
+  display: inline-flex; align-items: center;
+  margin-left: 9px; padding: 2px 8px;
+  font-size: 11.5px; font-weight: 700;
+  color: var(--op-accent);
+  background: rgba(124, 92, 252, 0.10);
+  border-radius: var(--op-r-pill);
+  vertical-align: middle;
+}
+
+/* Pre-seeded invitee row (overage variant) */
+.op-invitee {
+  display: flex; align-items: center; gap: 11px;
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-btn);
+  background: var(--op-bg);
+  padding: 11px 13px;
+  margin-bottom: 16px;
+}
+.op-invitee-avatar {
+  width: 30px; height: 30px; border-radius: 999px;
+  display: grid; place-items: center; flex: 0 0 auto;
+  font-size: 12px; font-weight: 700; color: #fff;
+  background: var(--op-ink);
+}
+.op-invitee-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.op-invitee-name { font-size: 13.5px; font-weight: 600; color: var(--op-ink); }
+.op-invitee-meta { font-size: 12px; color: var(--op-faint); }
+.op-invitee-x {
+  background: none; border: 0; cursor: pointer; color: var(--op-faint);
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
+}
+.op-invitee-x:hover { background: var(--op-soft); color: var(--op-ink); }
 
 .op-invite-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: end; }
 .op-add-another {

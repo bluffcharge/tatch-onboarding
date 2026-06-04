@@ -89,8 +89,7 @@ export function OperatorShell({
   children,
 }: Props) {
   const meta = OPERATOR_STEPS.find((s) => s.n === step);
-  const counterLabel =
-    counter ?? (meta ? `Step ${meta.n} of 5 · ${meta.title}` : null);
+  const counterLabel = counter ?? (meta ? `Step ${meta.n} of 5` : null);
 
   const back =
     backHref || onBack ? (
@@ -120,6 +119,7 @@ export function OperatorShell({
             {step >= 1 && step <= 5 && <WizardRail step={step} />}
             <div className="op-content">
               <div className={`op-content-inner${wide ? " is-wide" : ""}`}>
+                <span className="op-spine" aria-hidden="true" />
                 {back}
                 {children}
               </div>

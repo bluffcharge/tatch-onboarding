@@ -1,16 +1,17 @@
 "use client";
 
-import { ChevronsLeft, FileText } from "lucide-react";
+import { ChevronsLeft, FileText, ArrowUpRight, Maximize2 } from "lucide-react";
 import type { RequirementContext } from "@/lib/requirementContext";
 
 type Props = {
   context: RequirementContext | null;
   routeTitle: string;
+  routeHref: string;
   collapsed: boolean;
   onToggle: () => void;
 };
 
-export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: Props) {
+export function RequirementsRail({ context, routeTitle, routeHref, collapsed, onToggle }: Props) {
   if (collapsed) {
     return (
       <aside className="flex w-9 shrink-0 flex-col items-center border-r border-border-subtle bg-[color:var(--surface-stage)] py-3">
@@ -105,6 +106,38 @@ export function RequirementsRail({ context, routeTitle, collapsed, onToggle }: P
                     className="relative pl-3.5 text-[12.5px] leading-relaxed text-ink-body before:absolute before:left-0 before:top-[7px] before:h-1.5 before:w-1.5 before:rounded-pill before:bg-royal-400"
                   >
                     {r}
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <Divider />
+
+            <section>
+              <p className="t-mono-label mb-2">References</p>
+              <ul className="space-y-1.5">
+                <li>
+                  <a
+                    href={routeHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-royal-400 hover:underline"
+                  >
+                    <Maximize2 size={12} strokeWidth={2} />
+                    Open this screen full-screen
+                  </a>
+                </li>
+                {context.links?.map((l) => (
+                  <li key={l.href + l.label}>
+                    <a
+                      href={l.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-royal-400 hover:underline"
+                    >
+                      <ArrowUpRight size={12} strokeWidth={2} className="shrink-0" />
+                      <span>{l.label.replace(/\s*↗\s*$/, "")}</span>
+                    </a>
                   </li>
                 ))}
               </ul>
