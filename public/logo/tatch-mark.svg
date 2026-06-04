@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 619 559" fill="currentColor" role="img" aria-label="Tatch">
+  <path d="M33 0 L256 0 A33 33 0 0 1 289 33 L289 146 C291.69 180.96 317.3 209.34 352 214 L452 214 A33 33 0 0 1 485 247 L485 525 A33 33 0 0 1 452 558 L359 558 A33 33 0 0 1 326 525 L327 291 C334.2 238.65 291.86 193.2 249 180 L33 180 A33 33 0 0 1 0 147 L0 33 A33 33 0 0 1 33 0 Z"/>
+  <rect x="328" y="0" width="290" height="180" rx="33"/>
+  <rect x="133" y="213" width="157" height="345" rx="33"/>
+</svg>

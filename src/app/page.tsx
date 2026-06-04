@@ -33,7 +33,7 @@ import {
 } from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
 
-type Group = "entry" | "onboarding" | "operator" | "edge";
+type Group = "account" | "plan" | "payment" | "finish";
 type RouteIntent = "mobile" | "desktop";
 
 type Route = {
@@ -56,34 +56,29 @@ type Route = {
 
 // Source-of-truth list including stashed routes. `ROUTES` below is the
 // gallery-visible subset — hidden entries stay in the file so we can
-// re-enable them with a one-line flag flip.
+// re-enable them with a one-line flag flip. These are Armen's operator
+// signup flow, rebuilt as same-origin /operator/* routes in the new
+// "Tatch Creative Roadmap" brand (Urbanist, ink-on-white, black CTAs).
+// Variant rows (annual plan, ACH payment) are the canvas "view selectors".
 const ALL_ROUTES: Route[] = [
-  { href: "/j/abc123",                   title: "P1 — Welcome",           subtitle: "SMS / email link entry",                  group: "entry",      intent: "mobile"  },
-  // Hang-tag ticket with the front→back flip-to-code-entry interaction.
-  // Stashed for now; want to keep the flip recipe accessible — flip
-  // `hidden` to false to bring it back into the gallery.
-  { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true, animations: ["ticket-flip", "brand-ribbons"] },
-  { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
-  { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/business",        title: "P3 — Business profile",  subtitle: "Name + address + contact",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/discovery",       title: "P4 — Discovery",         subtitle: "Technicians + services (typed array)",    group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/team",            title: "P5 — Invite team",       subtitle: "SMS-first, optional",                     group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/activating",      title: "P6 — Activating",        subtitle: "1–2s two-beat transition",                group: "onboarding", intent: "mobile", animations: ["activating-spinner"] },
-  { href: "/onboarding/done",            title: "P7 — Connected (new)",   subtitle: "New-partner success",                     group: "onboarding", intent: "mobile"  },
-  { href: "/onboarding/done?existing=1", title: "P7 — Short-circuit",     subtitle: "Existing-partner copy",                   group: "onboarding", intent: "mobile"  },
-  { href: "/partner-admin/invite",       title: "O1 — Operator invite",   subtitle: "Settings panel · codes · recent",         group: "operator",   intent: "desktop" },
-  { href: "/join?bad=1",                 title: "Edge — Invalid code",    subtitle: "Code entry error state",                  group: "edge",       intent: "mobile"  },
-  { href: "/j/used",                     title: "Edge — Used invite",     subtitle: "Already-claimed error",                   group: "edge",       intent: "mobile"  },
+  { href: "/operator/signin",             title: "Sign in",                subtitle: "Entry · sign-in / sign-up toggle",        group: "account", intent: "desktop" },
+  { href: "/operator/account",            title: "Create account",         subtitle: "Step 1 · your details",                   group: "account", intent: "desktop" },
+  { href: "/operator/plan",               title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?cycle=annual",  title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
+  { href: "/operator/team",               title: "Invite team",            subtitle: "Step 3 · seats + roles",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/payment",            title: "Payment — card",         subtitle: "Step 4 · confirm & pay",                  group: "payment", intent: "desktop" },
+  { href: "/operator/payment?method=ach", title: "Payment — ACH",          subtitle: "Step 4 · bank transfer variant",          group: "payment", intent: "desktop" },
+  { href: "/operator/activating",         title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
+  { href: "/operator/done",               title: "You're all set",         subtitle: "Step 5 · account ready",                  group: "finish",  intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
 
 const GROUP_LABEL: Record<Group, string> = {
-  entry:      "Entry",
-  onboarding: "Onboarding",
-  operator:   "Operator",
-  edge:       "Edge cases",
+  account: "Account",
+  plan:    "Plan & team",
+  payment: "Payment",
+  finish:  "Finish",
 };
 
 // Note: route is NOT persisted. Every refresh lands on ROUTES[0] (P1) with
@@ -625,10 +620,10 @@ function ArrowButton({
 }
 
 const GROUP_PIP: Record<Group, string> = {
-  entry:      "bg-[#00BBFF]",
-  onboarding: "bg-royal-400",
-  operator:   "bg-[#FF40F5]",
-  edge:       "bg-ink-caption",
+  account: "bg-ink-title",
+  plan:    "bg-royal-400",
+  payment: "bg-[#7C5CFC]",
+  finish:  "bg-[#1FA971]",
 };
 
 function FilmCard({

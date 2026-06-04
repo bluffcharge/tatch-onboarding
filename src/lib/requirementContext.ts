@@ -25,7 +25,110 @@ const SAME_AUTH: Pick<RequirementContext, "flowRefs" | "storyRefs"> = {
   storyRefs: ["Story 2", "Story 4", "Story 5"],
 };
 
+/* Shared flow ref for the operator signup wizard (Armen's prototype,
+   tatch-operator-onboarding.vercel.app). */
+const OP_FLOW = "Operator signup — self-serve Tatch Connect";
+
 export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
+  /* ----------------------------- Operator signup ----------------------------- */
+  "/operator/signin": {
+    oneLine: "Entry point — sign in, or toggle to sign-up to start the wizard.",
+    flowRefs: [{ flow: OP_FLOW, step: "Entry: returning operator signs in" }],
+    storyRefs: ["Operator self-serve onboarding"],
+    reqs: [
+      "Email + password with show/hide, Remember me, Forgot password.",
+      "Google OAuth as an alternate path; same destination as email.",
+      "Sign-up toggle drops straight into Step 1 (Create account).",
+      "Black CTA (--op-ink); violet reserved for links only.",
+    ],
+  },
+  "/operator/account": {
+    oneLine: "Step 1 — create the operator account (your details).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account" }],
+    storyRefs: ["Operator self-serve onboarding"],
+    reqs: [
+      "Collects first/last name, work email, company name, password.",
+      "Password rule: ≥ 8 chars with one special character (shown inline).",
+      "Google OAuth shortcut bypasses the password fields.",
+      "Legal consent line links Privacy Policy + Terms of Service.",
+    ],
+  },
+  "/operator/plan": {
+    oneLine: "Step 2 — configure the Tatch Connect plan (Monthly).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 5: Choose plan" }],
+    storyRefs: ["Transparent self-serve pricing"],
+    reqs: [
+      "Platform fee $223 / branch / mo · Operator seats $45 / user / mo.",
+      "Branches + seats are steppers; estimate recomputes live.",
+      "Usage fee: $10 per lead OR 10% of the reward, whichever is greater.",
+      "Partner portal access is always free — partners are never billed.",
+      "Estimate is platform + seats; usage billed per lead on top.",
+    ],
+  },
+  "/operator/plan?cycle=annual": {
+    oneLine: "Step 2 variant — Annual billing applies a 10% discount.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 5: Choose plan (annual)" }],
+    storyRefs: ["Transparent self-serve pricing"],
+    reqs: [
+      "Annual toggle discounts the monthly-equivalent by 10%.",
+      "Same line items; only the per-month rate changes.",
+      "Label clarifies 'monthly (billed yearly)' so the cadence is unambiguous.",
+    ],
+  },
+  "/operator/team": {
+    oneLine: "Step 3 — invite operators; seat math drives the meter.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 5: Invite team" }],
+    storyRefs: ["Multi-operator accounts"],
+    reqs: [
+      "Seat meter reflects seats purchased in Step 2 (1 of 1 used incl. you).",
+      "Invite by phone OR email; per-invite Member / Admin role.",
+      "Add another stacks rows; adding past the seat count implies a seat add.",
+      "Skip is equal-weight — never block activation on team invites.",
+    ],
+  },
+  "/operator/payment": {
+    oneLine: "Step 4 — payment + order summary (Card).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 5: Payment" }],
+    storyRefs: ["Self-serve checkout"],
+    reqs: [
+      "Card or ACH; card collects number / expiry / CVC / country / ZIP.",
+      "Order summary mirrors the plan: platform + seats + usage = total.",
+      "Card is charged after the trial ends (stated up front).",
+      "Trust line: guaranteed safe & secure, all transactions protected.",
+    ],
+  },
+  "/operator/payment?method=ach": {
+    oneLine: "Step 4 variant — ACH bank transfer instead of a card.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 5: Payment (ACH)" }],
+    storyRefs: ["Self-serve checkout"],
+    reqs: [
+      "ACH collects account + routing number in place of card fields.",
+      "Order summary + total are identical to the card path.",
+      "Country / ZIP still captured for billing.",
+    ],
+  },
+  "/operator/activating": {
+    oneLine: "Transition — provisioning the Tatch Connect account.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 → 5 (transition)" }],
+    storyRefs: ["Self-serve checkout"],
+    reqs: [
+      "Brand-gradient orb is the one gradient moment in the flow.",
+      "Auto-advances to the success screen after a short beat (~2s).",
+      "Copy ('This will only take a moment') makes the setup feel substantial.",
+    ],
+  },
+  "/operator/done": {
+    oneLine: "Step 5 — account ready; hand off to the dashboard.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 5 of 5: You're all set" }],
+    storyRefs: ["Operator self-serve onboarding"],
+    reqs: [
+      "Confirms the Tatch Connect account is provisioned.",
+      "Single black CTA routes into the operator dashboard.",
+      "Gradient check-badge closes the loop opened by the activating orb.",
+    ],
+  },
+
+  /* ----------------------------- Partner onboarding (P1–P7) ----------------------------- */
   "/j/abc123": {
     oneLine: "Personalized welcome for a partner clicking an SMS/email invite link.",
     flowRefs: [
