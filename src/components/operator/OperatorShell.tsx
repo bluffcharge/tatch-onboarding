@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 
@@ -132,6 +133,8 @@ export function OperatorShell({
   const counterLabel = counter ?? (meta ? `Step ${meta.n} of 5` : null);
   const dir = useSlideDir();
   const slide = `op-slide op-slide--${dir}`;
+  // Brand A/B: ?brand=prd re-skins to the PRD/partner system for comparison.
+  const brandPrd = useSearchParams().get("brand") === "prd";
 
   const back =
     backHref || onBack ? (
@@ -147,7 +150,7 @@ export function OperatorShell({
     ) : null;
 
   return (
-    <div className="op-app">
+    <div className={`op-app${brandPrd ? " brand-prd" : ""}`}>
       <div className="op-shell">
         <header className="op-header">
           <TatchMark />

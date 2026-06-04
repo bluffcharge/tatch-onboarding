@@ -204,6 +204,41 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Armen's success screen ↗", href: ARMEN_PROTOTYPE }],
   },
 
+  /* ============================== Brand A/B ============================== */
+  "/operator/account?brand=prd": {
+    oneLine: "Same screen, PRD/partner-system skin — for the brand decision.",
+    flowRefs: [{ flow: "Brand decision — roadmap vs PRD", step: "Create account, PRD skin" }],
+    storyRefs: ["Decision · brand direction"],
+    reqs: [
+      "PRD UX spec: DM Sans, lavender #F2F0F5 canvas, white card, dark #1E1E1E buttons.",
+      "Inputs 10px radius, 1.5px #E8E8EE borders, #1E1E1E focus.",
+      "Drops the roadmap field-brand signature (eyebrow pill, violet now-accents, spine).",
+      "Conflict: PRD references the OLD partner system; Rob's newer direction is the roadmap brand.",
+    ],
+    links: [{ label: "Roadmap-brand version ↗", href: "/operator/account" }],
+  },
+  "/operator/plan?brand=prd": {
+    oneLine: "Choose Plan in the PRD/partner skin — compare to the roadmap.",
+    flowRefs: [{ flow: "Brand decision — roadmap vs PRD", step: "Choose plan, PRD skin" }],
+    storyRefs: ["Decision · brand direction"],
+    reqs: [
+      "Identical layout + logic; only tokens + typeface swap.",
+      "DM Sans body/headings vs Urbanist's heavy 800 display.",
+      "Lavender-on-lavender vs ink-on-white foundation.",
+    ],
+    links: [{ label: "Roadmap-brand version ↗", href: "/operator/plan" }],
+  },
+  "/operator/team?seats=3&invites=4&brand=prd": {
+    oneLine: "Dynamic license (over-seat) in the PRD skin — same behavior.",
+    flowRefs: [{ flow: "Brand decision — roadmap vs PRD", step: "Invite team overage, PRD skin" }],
+    storyRefs: ["Decision · brand direction"],
+    reqs: [
+      "Shows the US4 warning/upgrade flow re-skinned — logic is brand-agnostic.",
+      "Demonstrates that the brand swap is a token change, not a rebuild.",
+    ],
+    links: [{ label: "Roadmap-brand version ↗", href: "/operator/team?seats=3&invites=4" }],
+  },
+
   /* ========================= Partner onboarding (P1–P7) ========================= */
   "/j/abc123": {
     oneLine: "Personalized welcome for a partner clicking an SMS/email invite link.",
