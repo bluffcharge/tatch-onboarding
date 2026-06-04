@@ -6,11 +6,11 @@ import type { ReactNode } from "react";
 
 /* The five wizard steps shown in the GET SET UP rail + top-right counter. */
 export const OPERATOR_STEPS = [
-  { n: 1, title: "Create account", sub: "Your details" },
-  { n: 2, title: "Choose plan", sub: "Tatch Connect" },
-  { n: 3, title: "Invite team", sub: "Add your operators" },
-  { n: 4, title: "Payment", sub: "Confirm & pay" },
-  { n: 5, title: "You're all set", sub: "Start using Tatch" },
+  { n: 1, title: "Create account", sub: "Your details", href: "/operator/account" },
+  { n: 2, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
+  { n: 3, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
+  { n: 4, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
+  { n: 5, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
 ] as const;
 
 function TatchMark() {
@@ -26,23 +26,40 @@ function TatchMark() {
   );
 }
 
-function WizardRail({ step }: { step: number }) {
+function WizardRail({ step, query }: { step: number; query: string }) {
   return (
     <aside className="op-rail" aria-label="Setup progress">
       <p className="op-rail-eyebrow">Get set up</p>
       <ol className="op-steps">
         {OPERATOR_STEPS.map((s) => {
-          const state =
-            s.n < step ? "is-done" : s.n === step ? "is-active" : "";
+          const state = s.n < step ? "is-done" : s.n === step ? "is-active" : "";
+          // US6: completed + current steps are clickable links (data preserved
+          // via the threaded query); future steps stay inert.
+          const clickable = s.n <= step && s.n !== 5;
+          const dot = (
+            <span className="op-step-dot" aria-hidden="true">
+              {s.n < step ? <Check14 /> : s.n}
+            </span>
+          );
+          const text = (
+            <span className="op-step-text">
+              <span className="op-step-title">{s.title}</span>
+              <span className="op-step-sub">{s.sub}</span>
+            </span>
+          );
           return (
-            <li key={s.n} className={`op-step ${state}`}>
-              <span className="op-step-dot" aria-hidden="true">
-                {s.n < step ? <Check14 /> : s.n}
-              </span>
-              <span className="op-step-text">
-                <span className="op-step-title">{s.title}</span>
-                <span className="op-step-sub">{s.sub}</span>
-              </span>
+            <li key={s.n} className={`op-step ${state}${clickable ? " is-link" : ""}`}>
+              {clickable ? (
+                <Link href={`${s.href}${query}`} className="op-step-hit">
+                  {dot}
+                  {text}
+                </Link>
+              ) : (
+                <div className="op-step-hit">
+                  {dot}
+                  {text}
+                </div>
+              )}
             </li>
           );
         })}
@@ -76,6 +93,8 @@ type Props = {
   onBack?: () => void;
   /** Wider content column (plan / payment screens). */
   wide?: boolean;
+  /** Threaded wizard query (e.g. "?seats=3&billing=annual") for sidebar links. */
+  query?: string;
   children: ReactNode;
 };
 
@@ -86,6 +105,7 @@ export function OperatorShell({
   backHref,
   onBack,
   wide,
+  query = "",
   children,
 }: Props) {
   const meta = OPERATOR_STEPS.find((s) => s.n === step);
@@ -116,7 +136,7 @@ export function OperatorShell({
           <div className="op-center">{children}</div>
         ) : (
           <div className="op-body">
-            {step >= 1 && step <= 5 && <WizardRail step={step} />}
+            {step >= 1 && step <= 5 && <WizardRail step={step} query={query} />}
             <div className="op-content">
               <div className={`op-content-inner${wide ? " is-wide" : ""}`}>
                 <span className="op-spine" aria-hidden="true" />

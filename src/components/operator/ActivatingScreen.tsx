@@ -1,15 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { OperatorShell } from "./OperatorShell";
+import { buildQuery, readWizard } from "./wizardParams";
 
 export function ActivatingScreen() {
   const router = useRouter();
+  const sp = useSearchParams();
+  const { invites } = readWizard(sp);
+
   useEffect(() => {
-    const t = setTimeout(() => router.push("/operator/done"), 2200);
+    const t = setTimeout(() => router.push(`/operator/done${buildQuery({ invites })}`), 2200);
     return () => clearTimeout(t);
-  }, [router]);
+  }, [router, invites]);
 
   return (
     <OperatorShell variant="center">

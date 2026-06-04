@@ -1,14 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, TriangleAlert } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
 import { GoogleButton } from "./bits";
 
+const DASHBOARD = "https://tatch-half-mvp.vercel.app";
+
 export function SignInScreen() {
   const router = useRouter();
+  const sp = useSearchParams();
+  const demoError = sp.get("error") === "1";
+
   const [show, setShow] = useState(false);
+  const [email, setEmail] = useState(demoError ? "jane@acme.com" : "");
+  const [password, setPassword] = useState(demoError ? "••••••••" : "");
+  const [error, setError] = useState(demoError);
+  const [forgot, setForgot] = useState(false);
+
+  const signIn = () => {
+    // Flow 2: existing operator → dashboard. Prototype treats any filled
+    // credentials as valid; empty (or the demo flag) surfaces the error.
+    if (!email || !password) { setError(true); return; }
+    window.top!.location.href = DASHBOARD;
+  };
 
   return (
     <OperatorShell variant="center">
@@ -18,19 +34,38 @@ export function SignInScreen() {
           Enter your credentials to access your account.
         </p>
 
+        {error && (
+          <div className="op-banner op-banner--error" style={{ marginBottom: 18 }}>
+            <span className="op-banner-icon"><TriangleAlert size={16} /></span>
+            <div className="op-banner-body">
+              <div className="op-banner-title">We couldn&apos;t sign you in.</div>
+              <p className="op-banner-text">That email and password don&apos;t match an account. Check them and try again.</p>
+            </div>
+          </div>
+        )}
+
         <label className="op-field">
           <span className="op-field-label">Email</span>
-          <input className="op-input" type="email" placeholder="you@company.com" autoComplete="email" />
+          <input
+            className={`op-input${error ? " is-error" : ""}`}
+            type="email"
+            placeholder="you@company.com"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(false); }}
+          />
         </label>
 
         <label className="op-field" style={{ marginBottom: 10 }}>
           <span className="op-field-label">Password</span>
           <span className="op-input-wrap">
             <input
-              className="op-input"
+              className={`op-input${error ? " is-error" : ""}`}
               type={show ? "text" : "password"}
               placeholder="Enter password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(false); }}
             />
             <button
               type="button"
@@ -46,22 +81,32 @@ export function SignInScreen() {
         <div className="op-inline-row">
           <label className="op-check">
             <input type="checkbox" />
-            <span className="op-check-box">
-              <CheckTiny />
-            </span>
+            <span className="op-check-box"><CheckTiny /></span>
             Remember me
           </label>
-          <a className="op-link" href="#forgot" style={{ fontSize: 13.5 }}>
+          <button
+            className="op-link"
+            style={{ background: "none", border: 0, cursor: "pointer", fontSize: 13.5 }}
+            onClick={() => setForgot((f) => !f)}
+          >
             Forgot password?
-          </a>
+          </button>
         </div>
 
-        <button className="op-btn op-btn--primary" onClick={() => router.push("/operator/account")}>
+        {forgot && (
+          <div className="op-note" style={{ marginBottom: 18 }}>
+            <span className="op-note-body">
+              Password reset is coming soon. For now, contact your Tatch rep and we&apos;ll get you back in.
+            </span>
+          </div>
+        )}
+
+        <button className="op-btn op-btn--primary" onClick={signIn}>
           Sign in
         </button>
 
         <div className="op-or">or</div>
-        <GoogleButton onClick={() => router.push("/operator/account")} />
+        <GoogleButton onClick={() => { window.top!.location.href = DASHBOARD; }} />
 
         <p className="op-meta-line">
           Don&apos;t have an account?{" "}

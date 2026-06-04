@@ -61,17 +61,19 @@ type Route = {
 // "Tatch Creative Roadmap" brand (Urbanist, ink-on-white, black CTAs).
 // Variant rows (annual plan, ACH payment) are the canvas "view selectors".
 const ALL_ROUTES: Route[] = [
-  { href: "/operator/signin",             title: "Sign in",                subtitle: "Entry · sign-in / sign-up toggle",        group: "account", intent: "desktop" },
-  { href: "/operator/account",            title: "Create account",         subtitle: "Step 1 · your details",                   group: "account", intent: "desktop" },
-  { href: "/operator/plan",                  title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
-  { href: "/operator/plan?cycle=annual",     title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
-  { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled", subtitle: "Step 2 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
-  { href: "/operator/team",                  title: "Invite team",            subtitle: "Step 3 · seats + roles",                  group: "plan",    intent: "desktop" },
-  { href: "/operator/team?seeded=1",         title: "Invite team — overage",  subtitle: "Step 3 · seat over included",             group: "plan",    intent: "desktop" },
-  { href: "/operator/payment",            title: "Payment — card",         subtitle: "Step 4 · confirm & pay",                  group: "payment", intent: "desktop" },
-  { href: "/operator/payment?method=ach", title: "Payment — ACH",          subtitle: "Step 4 · bank transfer variant",          group: "payment", intent: "desktop" },
-  { href: "/operator/activating",         title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
-  { href: "/operator/done",               title: "You're all set",         subtitle: "Step 5 · account ready",                  group: "finish",  intent: "desktop" },
+  { href: "/operator/signin",                  title: "Sign in",                subtitle: "Entry · sign-in / sign-up toggle",        group: "account", intent: "desktop" },
+  { href: "/operator/signin?error=1",          title: "Sign in — error",        subtitle: "Invalid credentials state",               group: "account", intent: "desktop" },
+  { href: "/operator/account",                 title: "Create account",         subtitle: "Step 1 · your details",                   group: "account", intent: "desktop" },
+  { href: "/operator/account?error=1",         title: "Create account — errors", subtitle: "Step 1 · client-side validation",        group: "account", intent: "desktop" },
+  { href: "/operator/plan",                    title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?billing=annual",     title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled",   subtitle: "Step 2 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
+  { href: "/operator/team?seats=3",            title: "Invite team",            subtitle: "Step 3 · seats + roles",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/team?seats=3&invites=4",  title: "Invite team — overage",  subtitle: "Step 3 · over-seat warning",              group: "plan",    intent: "desktop" },
+  { href: "/operator/payment?branches=2&seats=4&billing=annual", title: "Payment — card", subtitle: "Step 4 · dynamic order summary",   group: "payment", intent: "desktop" },
+  { href: "/operator/payment?method=ach",      title: "Payment — ACH",          subtitle: "Step 4 · bank transfer variant",          group: "payment", intent: "desktop" },
+  { href: "/operator/activating",              title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
+  { href: "/operator/done?invites=3",          title: "You're all set",         subtitle: "Step 5 · account ready",                  group: "finish",  intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);

@@ -4,15 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Box, Users, Zap, Minus, Plus, ArrowRight, Check } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
-
-const PLATFORM = 223; // $/branch/mo
-const SEAT = 45; // $/user/mo
-
-/** Seed a stepper from a query param (e.g. ?branches=3), clamped 1–99. */
-function clampParam(v: string | null): number {
-  const n = parseInt(v ?? "", 10);
-  return Number.isFinite(n) ? Math.min(99, Math.max(1, n)) : 1;
-}
+import { PLATFORM_FEE, SEAT_FEE, pricing, buildQuery, money, readWizard, type Billing } from "./wizardParams";
 
 const FEATURES = [
   "Partner Portal",
@@ -36,17 +28,17 @@ const FEATURES = [
 export function ChoosePlanScreen() {
   const router = useRouter();
   const sp = useSearchParams();
-  const [cycle, setCycle] = useState<"monthly" | "annual">(
-    sp.get("cycle") === "annual" ? "annual" : "monthly"
-  );
-  const [branches, setBranches] = useState(() => clampParam(sp.get("branches")));
-  const [seats, setSeats] = useState(() => clampParam(sp.get("seats")));
+  const seed = readWizard(sp);
+  const [billing, setBilling] = useState<Billing>(seed.billing);
+  const [branches, setBranches] = useState(seed.branches);
+  const [seats, setSeats] = useState(seed.seats);
 
-  const monthly = PLATFORM * branches + SEAT * seats;
-  const perMonth = cycle === "annual" ? Math.round(monthly * 0.9) : monthly;
+  const state = { branches, seats, billing, invites: 0 };
+  const p = pricing(state);
+  const query = buildQuery({ branches, seats, billing });
 
   return (
-    <OperatorShell step={2} backHref="/operator/account" wide>
+    <OperatorShell step={2} backHref={`/operator/account`} query={query} wide>
       <h1 className="op-h1">Tatch Connect.</h1>
       <p className="op-sub" style={{ marginBottom: 22 }}>
         Everything you need to launch and manage your referral partner program.
@@ -54,18 +46,18 @@ export function ChoosePlanScreen() {
 
       <div className="op-seg" role="tablist" aria-label="Billing cycle" style={{ marginBottom: 22 }}>
         <button
-          className={`op-seg-opt${cycle === "monthly" ? " is-active" : ""}`}
-          onClick={() => setCycle("monthly")}
+          className={`op-seg-opt${billing === "monthly" ? " is-active" : ""}`}
+          onClick={() => setBilling("monthly")}
           role="tab"
-          aria-selected={cycle === "monthly"}
+          aria-selected={billing === "monthly"}
         >
           Monthly
         </button>
         <button
-          className={`op-seg-opt${cycle === "annual" ? " is-active" : ""}`}
-          onClick={() => setCycle("annual")}
+          className={`op-seg-opt${billing === "annual" ? " is-active" : ""}`}
+          onClick={() => setBilling("annual")}
           role="tab"
-          aria-selected={cycle === "annual"}
+          aria-selected={billing === "annual"}
         >
           Annual <span className="op-seg-badge">Save 10%</span>
         </button>
@@ -75,7 +67,7 @@ export function ChoosePlanScreen() {
         <Tile
           icon={<Box size={17} />}
           label="Platform fee"
-          price={PLATFORM}
+          price={PLATFORM_FEE}
           unit="/branch/mo"
           stepperLabel="Branches"
           value={branches}
@@ -85,7 +77,7 @@ export function ChoosePlanScreen() {
         <Tile
           icon={<Users size={17} />}
           label="Operator seats"
-          price={SEAT}
+          price={SEAT_FEE}
           unit="/user/mo"
           stepperLabel="Seats"
           value={seats}
@@ -119,13 +111,20 @@ export function ChoosePlanScreen() {
 
       <div className="op-summary-bar">
         <div>
-          <div className="op-summary-label">Estimated {cycle === "annual" ? "monthly (billed yearly)" : "monthly"}</div>
+          <div className="op-summary-label">Estimated monthly</div>
           <div className="op-summary-val">
-            <b>${perMonth.toLocaleString()}</b><span>/mo</span>
+            <b>{money(p.perMonth)}</b><span>/mo</span>
           </div>
-          <div className="op-summary-note">+ usage fees per lead</div>
+          <div className="op-summary-note">
+            {billing === "annual"
+              ? `Billed annually at ${money(p.annualTotal)} · + usage fees per lead`
+              : "+ usage fees per lead"}
+          </div>
         </div>
-        <button className="op-btn op-btn--primary op-btn--inline" onClick={() => router.push("/operator/team")}>
+        <button
+          className="op-btn op-btn--primary op-btn--inline"
+          onClick={() => router.push(`/operator/team${buildQuery({ branches, seats, billing })}`)}
+        >
           Continue <ArrowRight size={17} />
         </button>
       </div>
