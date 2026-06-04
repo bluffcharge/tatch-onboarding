@@ -7,13 +7,14 @@ import { OnboardingShell } from "./OnboardingShell";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { OtpInput } from "@/components/ui/OtpInput";
 import { TextField } from "@/components/ui/TextField";
-import { defaultInvite } from "@/lib/mockInvite";
+import { useInvite } from "@/lib/useInvite";
 
 type Phase = "enter" | "otp";
 
 export function AuthScreen() {
   const sp = useSearchParams();
   const router = useRouter();
+  const invite = useInvite();
   const via = (sp.get("via") || "phone") as "phone" | "email" | "google";
 
   // existing-account branch: ?existing=1 routes the success straight to short-circuit
@@ -24,6 +25,16 @@ export function AuthScreen() {
 
   const [phase, setPhase] = useState<Phase>("enter");
   const [phoneValid, setPhoneValid] = useState(false);
+  // Pre-fill the phone field from the invited recipient (legacy default)
+  // and the email field from any operator-typed prefill on the invite.
+  const phoneDefault =
+    invite.invitedRecipient?.kind === "phone"
+      ? invite.invitedRecipient.value
+      : invite.prefill?.phone ?? "";
+  const emailDefault =
+    invite.invitedRecipient?.kind === "email"
+      ? invite.invitedRecipient.value
+      : invite.prefill?.email ?? "";
 
   return (
     <OnboardingShell
@@ -39,7 +50,11 @@ export function AuthScreen() {
       <div className="mt-2 md:mt-0 md:mx-auto md:w-[440px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
         {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
             after the user leaves P1 and is committing real credentials. */}
-        <OperatorContext />
+        <OperatorContext
+          inviterFullName={invite.inviter.fullName}
+          inviterInitial={invite.inviter.firstName[0]}
+          operatorName={invite.operator.name}
+        />
 
         {phase === "enter" && (
           <>
@@ -60,7 +75,7 @@ export function AuthScreen() {
             {via === "phone" && (
               <PhoneInput
                 autoFocus
-                defaultValue={defaultInvite.invitedRecipient?.kind === "phone" ? defaultInvite.invitedRecipient.value : ""}
+                defaultValue={phoneDefault}
                 onChange={(_v, valid) => setPhoneValid(valid)}
                 helper="We'll never share your number. Reply STOP any time to opt out."
               />
@@ -74,6 +89,7 @@ export function AuthScreen() {
                   autoComplete="email"
                   autoFocus
                   placeholder="you@yourcompany.com"
+                  defaultValue={emailDefault}
                 />
                 <TextField
                   label="Password"
@@ -179,20 +195,27 @@ export function AuthScreen() {
   );
 }
 
-function OperatorContext() {
-  const { inviter, operator } = defaultInvite;
+function OperatorContext({
+  inviterFullName,
+  inviterInitial,
+  operatorName,
+}: {
+  inviterFullName: string;
+  inviterInitial: string;
+  operatorName: string;
+}) {
   return (
     <div className="mb-5 flex items-center gap-2.5 rounded-md border border-border-subtle bg-subtle px-2.5 py-2">
       <span
         aria-hidden="true"
         className="grid h-6 w-6 shrink-0 place-items-center rounded-pill bg-ink-title text-[10px] font-semibold text-canvas"
       >
-        {inviter.firstName[0]}
+        {inviterInitial}
       </span>
       <p className="t-caption flex-1 leading-snug">
         Joining{" "}
-        <span className="font-semibold text-ink-title">{operator.name}</span>
-        <span className="text-ink-disabled"> · invited by {inviter.fullName}</span>
+        <span className="font-semibold text-ink-title">{operatorName}</span>
+        <span className="text-ink-disabled"> · invited by {inviterFullName}</span>
       </p>
     </div>
   );
