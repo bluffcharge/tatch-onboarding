@@ -490,6 +490,11 @@
   background: var(--op-soft);
   padding: 18px 22px;
   margin-top: 26px;
+  /* Sticky pricing summary — stays visible while the feature list scrolls. */
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -12px 22px -14px rgba(11, 11, 12, 0.14);
 }
 .op-summary-label { font-size: 12.5px; color: var(--op-muted); }
 .op-summary-val b { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
@@ -631,6 +636,7 @@
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   text-align: center; padding: 40px 24px;
+  overflow-y: auto; overflow-x: hidden;
 }
 .op-orb {
   width: 84px; height: 84px; border-radius: 999px;
@@ -652,6 +658,25 @@
 .op-center .op-btn { width: auto; min-width: 220px; margin-top: 26px; }
 
 /* --------------------------------------------------------------------- */
+/* Step transitions — forward slides from the right, back from the left   */
+/* (PRD US1 FR3 / US6 FR3). Direction set at the navigation source.        */
+/* --------------------------------------------------------------------- */
+
+@keyframes op-in-fwd {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes op-in-back {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: none; }
+}
+.op-slide--fwd  { animation: op-in-fwd  0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.op-slide--back { animation: op-in-back 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .op-slide--fwd, .op-slide--back { animation: none; }
+}
+
+/* --------------------------------------------------------------------- */
 /* Responsive — keyed to canvas viewport widths (390/820/1440/1920/2560)  */
 /* --------------------------------------------------------------------- */
 
@@ -665,16 +690,18 @@
     border-radius: var(--op-r-card);
     box-shadow: var(--op-shadow);
     overflow: hidden;
-    min-height: min(720px, calc(100dvh - 56px));
+    /* Fixed card height → content scrolls internally; rail + header stay put. */
+    height: min(720px, calc(100dvh - 56px));
   }
-  .op-rail { display: block; }
+  .op-body { overflow: hidden; }
+  .op-rail { display: block; overflow-y: auto; }
   .op-header, .op-footer { padding: 20px 30px; }
-  .op-content { padding: 48px 44px 60px; }
+  .op-content { padding: 48px 44px 60px; overflow-y: auto; overflow-x: hidden; }
 }
 
 @media (min-width: 1280px) {
   .op-app { padding: 44px; }
-  .op-shell { min-height: min(760px, calc(100dvh - 88px)); }
+  .op-shell { height: min(760px, calc(100dvh - 88px)); }
   .op-h1 { font-size: 40px; }
   .op-content { padding: 64px 64px 72px; }
   .op-rail { flex-basis: 280px; padding: 44px 34px; }
@@ -682,7 +709,7 @@
 
 @media (min-width: 1700px) {
   .op-app { padding: 64px; }
-  .op-shell { max-width: 1280px; min-height: min(820px, calc(100dvh - 128px)); }
+  .op-shell { max-width: 1280px; height: min(820px, calc(100dvh - 128px)); }
   .op-h1 { font-size: 46px; }
   .op-content-inner { max-width: 600px; }
   .op-content-inner.is-wide { max-width: 820px; }

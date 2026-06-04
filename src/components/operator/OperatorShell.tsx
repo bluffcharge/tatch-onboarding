@@ -2,7 +2,27 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
+
+/* Direction is stamped on the source side (back arrow / earlier sidebar
+   steps set "back"; everything else defaults to "fwd"), then read + cleared
+   on the destination's first paint. */
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+export function markBackNav() {
+  try { sessionStorage.setItem("op-nav-dir", "back"); } catch {}
+}
+
+function useSlideDir(): "fwd" | "back" {
+  const [dir, setDir] = useState<"fwd" | "back">("fwd");
+  useIsoLayoutEffect(() => {
+    try {
+      if (sessionStorage.getItem("op-nav-dir") === "back") setDir("back");
+      sessionStorage.removeItem("op-nav-dir");
+    } catch {}
+  }, []);
+  return dir;
+}
 
 /* The five wizard steps shown in the GET SET UP rail + top-right counter. */
 export const OPERATOR_STEPS = [
@@ -50,7 +70,7 @@ function WizardRail({ step, query }: { step: number; query: string }) {
           return (
             <li key={s.n} className={`op-step ${state}${clickable ? " is-link" : ""}`}>
               {clickable ? (
-                <Link href={`${s.href}${query}`} className="op-step-hit">
+                <Link href={`${s.href}${query}`} className="op-step-hit" onClick={markBackNav}>
                   {dot}
                   {text}
                 </Link>
@@ -110,11 +130,13 @@ export function OperatorShell({
 }: Props) {
   const meta = OPERATOR_STEPS.find((s) => s.n === step);
   const counterLabel = counter ?? (meta ? `Step ${meta.n} of 5` : null);
+  const dir = useSlideDir();
+  const slide = `op-slide op-slide--${dir}`;
 
   const back =
     backHref || onBack ? (
       backHref ? (
-        <Link href={backHref} className="op-back" aria-label="Back">
+        <Link href={backHref} className="op-back" aria-label="Back" onClick={markBackNav}>
           <ChevronLeft size={20} />
         </Link>
       ) : (
@@ -133,12 +155,12 @@ export function OperatorShell({
         </header>
 
         {variant === "center" ? (
-          <div className="op-center">{children}</div>
+          <div className={`op-center ${slide}`}>{children}</div>
         ) : (
           <div className="op-body">
             {step >= 1 && step <= 5 && <WizardRail step={step} query={query} />}
             <div className="op-content">
-              <div className={`op-content-inner${wide ? " is-wide" : ""}`}>
+              <div className={`op-content-inner ${slide}${wide ? " is-wide" : ""}`}>
                 <span className="op-spine" aria-hidden="true" />
                 {back}
                 {children}
