@@ -87,22 +87,23 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Provide an easy contact path back to the operator.",
     ],
   },
-  "/onboarding/auth?via=phone": {
-    oneLine: "Phone-OTP authentication — primary path, SMS-first posture.",
+  "/onboarding/auth?mode=create": {
+    oneLine: "Create account — primary path, email + password or Gmail OAuth.",
     ...SAME_AUTH,
     reqs: [
-      "Support email + password and Gmail OAuth.",
-      "Phone OTP is the default for SMS-first comms (operator preference).",
+      "Support email + password registration and Gmail OAuth.",
+      "Pre-fill the work email from the operator's invite when present.",
+      "Collect phone + address on the next step (downstream forms need them).",
       "Operator-context breadcrumb keeps the inviting company in view.",
     ],
   },
-  "/onboarding/auth?via=email": {
-    oneLine: "Email + password authentication — secondary path.",
+  "/onboarding/auth?mode=signin": {
+    oneLine: "Sign in — returning partner, minimal (email or Google only).",
     ...SAME_AUTH,
     reqs: [
-      "Support email + password registration.",
-      "Support Gmail OAuth as an alternative signup method.",
-      "Pre-fill email when invited by partner admin during onboarding.",
+      "Support email + password and Gmail OAuth sign-in.",
+      "Keep it minimal — no profile fields, just the two methods.",
+      "Offer a clear path to create an account for new partners.",
     ],
   },
   "/onboarding/business": {

@@ -4,37 +4,71 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
-import { PhoneInput } from "@/components/ui/PhoneInput";
-import { OtpInput } from "@/components/ui/OtpInput";
 import { TextField } from "@/components/ui/TextField";
 import { useInvite } from "@/lib/useInvite";
+import { mockGoogleProfile, type InviteContext } from "@/lib/mockInvite";
 
-type Phase = "enter" | "otp";
+type Mode = "create" | "signin";
 
 export function AuthScreen() {
   const sp = useSearchParams();
   const router = useRouter();
   const invite = useInvite();
-  const via = (sp.get("via") || "phone") as "phone" | "email" | "google";
+  const mode = (sp.get("mode") === "signin" ? "signin" : "create") as Mode;
+  const isCreate = mode === "create";
 
-  // existing-account branch: ?existing=1 routes the success straight to short-circuit
+  // existing-account branch: ?existing=1 short-circuits the success copy on P7.
   const existingFlag = sp.get("existing") === "1";
-  const next = existingFlag
-    ? "/onboarding/done?existing=1"
-    : "/onboarding/business";
 
-  const [phase, setPhase] = useState<Phase>("enter");
-  const [phoneValid, setPhoneValid] = useState(false);
-  // Pre-fill the phone field from the invited recipient (legacy default)
-  // and the email field from any operator-typed prefill on the invite.
-  const phoneDefault =
-    invite.invitedRecipient?.kind === "phone"
-      ? invite.invitedRecipient.value
-      : invite.prefill?.phone ?? "";
+  // Default the work-email field from any operator-typed prefill, then the
+  // emailed invite handle.
   const emailDefault =
-    invite.invitedRecipient?.kind === "email"
-      ? invite.invitedRecipient.value
-      : invite.prefill?.email ?? "";
+    invite.prefill?.email ??
+    (invite.invitedRecipient?.kind === "email" ? invite.invitedRecipient.value : "");
+
+  const [email, setEmail] = useState(isCreate ? emailDefault : "");
+  const [password, setPassword] = useState("");
+
+  const emailValid = /.+@.+\..+/.test(email.trim());
+  const passwordValid = password.length >= 8;
+  const canSubmit = emailValid && passwordValid;
+
+  // Forward the invite context (linked company, existing flag, prefill) into
+  // the details step via URL params, so useInvite() rehydrates it there. The
+  // chosen sign-up method contributes its own prefill (typed email, or the
+  // name + email Google handed back).
+  function nextHref(extra?: Partial<NonNullable<InviteContext["prefill"]>>) {
+    if (existingFlag) return "/onboarding/done?existing=1";
+    const p = new URLSearchParams();
+    if (invite.linkedCompany?.id) p.set("co", invite.linkedCompany.id);
+    const pf = { ...invite.prefill, ...extra };
+    if (pf.firstName) p.set("fn", pf.firstName);
+    if (pf.lastName) p.set("ln", pf.lastName);
+    if (pf.email) p.set("email", pf.email);
+    if (pf.phone) p.set("phone", pf.phone);
+    const qs = p.toString();
+    return `/onboarding/business${qs ? `?${qs}` : ""}`;
+  }
+
+  function submitEmail() {
+    if (isCreate) router.push(nextHref({ email: email.trim() }));
+    else router.push("/onboarding/done?existing=1");
+  }
+
+  function submitGoogle() {
+    if (isCreate) {
+      // Pretend OAuth finished and handed back the profile.
+      router.push(
+        nextHref({
+          firstName: mockGoogleProfile.firstName,
+          lastName: mockGoogleProfile.lastName,
+          email: mockGoogleProfile.email,
+        }),
+      );
+    } else {
+      router.push("/onboarding/done?existing=1");
+    }
+  }
 
   return (
     <OnboardingShell
@@ -42,154 +76,111 @@ export function AuthScreen() {
       journey={{ currentKey: "auth" }}
       center
     >
-      {/* Single-input-focus per pattern 02. On md+ the form sits in a
-          centered frosted card in the right pane (vertically centered via
-          the shell `center` prop next to the journey rail); on mobile it
-          stays a plain top-aligned form. The Send-code / resend CTA lives
-          inside the card so the whole task reads as one focal unit. */}
+      {/* Floating white card frame (kept from the partner-onboarding pattern
+          Armen signed off on). On md+ the form sits in a centered card in the
+          right pane; on mobile it stays a plain top-aligned form. */}
       <div className="mt-2 md:mt-0 md:mx-auto md:w-[440px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
-        {/* Operator-context breadcrumb — keeps the inviting company top-of-mind
-            after the user leaves P1 and is committing real credentials. */}
-        <OperatorContext
-          inviterFullName={invite.inviter.fullName}
-          inviterInitial={invite.inviter.firstName[0]}
-          operatorName={invite.operator.name}
-        />
-
-        {phase === "enter" && (
-          <>
-            <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
-              {via === "phone" && "What's your mobile number?"}
-              {via === "email" && "Sign in or create your account"}
-              {via === "google" && "Continue with Google"}
-            </h1>
-            <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-8 lg:text-[16px]">
-              {via === "phone" &&
-                "We'll text you a 6-digit code to verify. Standard message rates apply."}
-              {via === "email" &&
-                "Use the email your operator sent the invite to, or any address you check often."}
-              {via === "google" &&
-                "Sign in with your Google account in the next step. We never see your password."}
-            </p>
-
-            {via === "phone" && (
-              <PhoneInput
-                autoFocus
-                defaultValue={phoneDefault}
-                onChange={(_v, valid) => setPhoneValid(valid)}
-                helper="We'll never share your number. Reply STOP any time to opt out."
-              />
-            )}
-
-            {via === "email" && (
-              <div className="space-y-4">
-                <TextField
-                  label="Email"
-                  type="email"
-                  autoComplete="email"
-                  autoFocus
-                  placeholder="you@yourcompany.com"
-                  defaultValue={emailDefault}
-                />
-                <TextField
-                  label="Password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="•••••••••"
-                  helper="At least 8 characters, with one number."
-                />
-              </div>
-            )}
-
-            {/* Alt-path tertiary links — neutral text, symmetric across paths. */}
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-              {via !== "phone" && (
-                <button
-                  type="button"
-                  className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-                  onClick={() => router.replace("/onboarding/auth?via=phone")}
-                >
-                  Use phone instead →
-                </button>
-              )}
-              {via !== "google" && (
-                <button
-                  type="button"
-                  className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-                  onClick={() => router.replace("/onboarding/auth?via=google")}
-                >
-                  Use Google instead →
-                </button>
-              )}
-            </div>
-          </>
+        {/* Operator-context breadcrumb — only on create (sign-in is for
+            returning users, not necessarily inside an invite). */}
+        {isCreate && (
+          <OperatorContext
+            inviterFullName={invite.inviter.fullName}
+            inviterInitial={invite.inviter.firstName[0]}
+            operatorName={invite.operator.name}
+          />
         )}
 
-        {phase === "otp" && (
-          <>
-            <h1 className="t-h2 mb-2">Enter the code we sent</h1>
-            <p className="t-body mb-6 text-ink-subtitle">
-              We just texted a 6-digit code to your number. It expires in 10 minutes.
-            </p>
-            <OtpInput
-              onComplete={() => {
-                // In the prototype, any 6 digits passes
-                setTimeout(() => router.push(next), 250);
-              }}
-              helper={
-                <>
-                  Prototype: any 6 digits work — try{" "}
-                  <code className="rounded-xs bg-subtle px-1 py-0.5 font-mono text-[11.5px] text-ink-body">
-                    123456
-                  </code>
-                  .
-                </>
-              }
-            />
-            <div className="mt-5">
+        <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
+          {isCreate ? "Create your account" : "Sign in"}
+        </h1>
+        <p className="t-body mb-6 text-ink-subtitle md:text-[15px] md:mb-7 lg:text-[16px]">
+          {isCreate
+            ? "Set up your Tatch login — we'll confirm a few business details next."
+            : "Welcome back. Use the email or Google account you signed up with."}
+        </p>
+
+        <div className="space-y-4">
+          <TextField
+            label="Work email"
+            type="email"
+            autoComplete="email"
+            autoFocus
+            placeholder="you@yourcompany.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            helper={isCreate ? "Use your work email so teammates can find you." : undefined}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            autoComplete={isCreate ? "new-password" : "current-password"}
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            helper={isCreate ? "At least 8 characters, with one number." : undefined}
+          />
+          {!isCreate && (
+            <div className="-mt-1">
               <button
                 type="button"
                 className="text-[13px] font-medium text-ink-body hover:text-ink-title hover:underline"
-                onClick={() => setPhase("enter")}
+                onClick={() => alert("(prototype) — password reset link sent")}
               >
-                ← Change number
+                Forgot password?
               </button>
             </div>
-          </>
-        )}
+          )}
+        </div>
 
-        {/* CTA / resend — moved out of the shell footer into the card so
-            the form and its action are one focal unit. */}
-        <div className="mt-8">
-          {phase === "enter" ? (
-            <Button
-              fullWidth
-              size="lg"
-              disabled={via === "phone" ? !phoneValid : false}
-              onClick={() => {
-                if (via === "google") {
-                  // pretend OAuth finished
-                  router.push(next);
-                } else {
-                  setPhase("otp");
-                }
-              }}
-            >
-              {via === "phone" ? "Send code" : via === "email" ? "Continue" : "Continue with Google"}
-            </Button>
-          ) : (
-            <p className="t-caption text-center">
-              Didn&apos;t get it?{" "}
+        <div className="mt-6">
+          <Button fullWidth size="lg" disabled={!canSubmit} onClick={submitEmail}>
+            {isCreate ? "Create account" : "Sign in"}
+          </Button>
+        </div>
+
+        {/* Divider */}
+        <div className="my-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+          <span className="t-caption text-ink-disabled">or</span>
+          <span className="h-px flex-1 bg-border-subtle" aria-hidden="true" />
+        </div>
+
+        <Button
+          variant="secondary"
+          fullWidth
+          size="lg"
+          leadingIcon={<GoogleG />}
+          onClick={submitGoogle}
+        >
+          Continue with Google
+        </Button>
+
+        {/* Mode switch */}
+        <p className="mt-6 text-center text-[13px] text-ink-subtitle">
+          {isCreate ? (
+            <>
+              Already have an account?{" "}
               <button
                 type="button"
                 className="font-medium text-ink-body hover:text-ink-title hover:underline"
-                onClick={() => alert("(prototype) — code re-sent")}
+                onClick={() => router.replace("/onboarding/auth?mode=signin")}
               >
-                Resend in 60s
+                Sign in
               </button>
-            </p>
+            </>
+          ) : (
+            <>
+              New to Tatch?{" "}
+              <button
+                type="button"
+                className="font-medium text-ink-body hover:text-ink-title hover:underline"
+                onClick={() => router.replace("/onboarding/auth?mode=create")}
+              >
+                Create your account
+              </button>
+            </>
           )}
-        </div>
+        </p>
       </div>
     </OnboardingShell>
   );
@@ -218,5 +209,30 @@ function OperatorContext({
         <span className="text-ink-disabled"> · invited by {inviterFullName}</span>
       </p>
     </div>
+  );
+}
+
+/** Google "G" mark — official four-color logo, sized to sit inline in the
+ *  secondary button next to the label. */
+function GoogleG() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+      />
+      <path
+        fill="#34A853"
+        d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
+      />
+      <path
+        fill="#EA4335"
+        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+      />
+    </svg>
   );
 }

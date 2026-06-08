@@ -28,7 +28,7 @@ export function AlreadyUsedScreen() {
         </p>
 
         <div className="mt-7 flex w-full flex-col gap-3 sm:max-w-xs">
-          <Button fullWidth size="lg" onClick={() => goto("/onboarding/auth?via=phone")}>
+          <Button fullWidth size="lg" onClick={() => goto("/onboarding/auth?mode=signin")}>
             Sign in
           </Button>
           <Link
