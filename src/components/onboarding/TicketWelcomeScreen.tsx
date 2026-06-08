@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Mail, Phone } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -86,7 +86,7 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 fullWidth
                 size="lg"
                 leadingIcon={<Mail size={16} strokeWidth={1.75} />}
-                onClick={() => goto("/onboarding/auth?via=email")}
+                onClick={() => goto("/onboarding/auth?mode=create")}
               >
                 Email
               </Button>
@@ -95,7 +95,7 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 fullWidth
                 size="lg"
                 leadingIcon={<GoogleMark />}
-                onClick={() => goto("/onboarding/auth?via=google")}
+                onClick={() => goto("/onboarding/auth?mode=create")}
               >
                 Google
               </Button>
@@ -345,10 +345,10 @@ function TicketFront({
       <div className="absolute inset-x-6 bottom-[44px]">
         <div className="mb-3 border-t border-dashed border-white/8" />
         <TicketPrimaryCTA
-          icon={<Phone size={15} strokeWidth={1.85} />}
-          onClick={() => goto("/onboarding/auth?via=phone")}
+          icon={<ArrowRight size={15} strokeWidth={1.85} />}
+          onClick={() => goto("/onboarding/auth?mode=create")}
         >
-          Continue with phone
+          Get started
         </TicketPrimaryCTA>
       </div>
 

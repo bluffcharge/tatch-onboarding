@@ -28,6 +28,11 @@ export type InviteContext = {
   };
   /** the new partner's pre-filled handle from the invite — could be phone or email */
   invitedRecipient?: { kind: "phone" | "email"; value: string };
+  /** The partner's own company, as the operator entered it on the invite.
+   *  Pre-fills the business-name field on the create-account details step so
+   *  the partner confirms rather than re-types. (For the linked-company
+   *  branch this is superseded by `linkedCompany`.) */
+  partnerCompany?: string;
   /** is this person already a Tatch partner under a *different* operator? */
   isExistingPartner: boolean;
   /** Set when the operator linked this contact to an existing company on
@@ -59,8 +64,20 @@ export const defaultInvite: InviteContext = {
     name: "Summit Builders",
     teammateCount: 4,
   },
-  invitedRecipient: { kind: "phone", value: "+1 (555) 014-2207" },
+  // Email is the primary sign-up handle now (phone moved to a profile field
+  // on the details step, so we can text the app-download link there).
+  invitedRecipient: { kind: "email", value: "jordan@northwindroofing.com" },
+  partnerCompany: "Northwind Roofing",
   isExistingPartner: false,
+};
+
+/** Simulated Google profile returned by the "Continue with Google" path. In
+ *  the real flow this comes back from the OAuth response; here we hand-wire a
+ *  name + email so the details step can pre-fill first/last name. */
+export const mockGoogleProfile = {
+  firstName: "Jordan",
+  lastName: "Avery",
+  email: "jordan.avery@northwindroofing.com",
 };
 
 /** Mock catalog of "linkable" companies — companies already on Tatch

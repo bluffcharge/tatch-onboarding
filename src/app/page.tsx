@@ -64,8 +64,8 @@ const ALL_ROUTES: Route[] = [
   // `hidden` to false to bring it back into the gallery.
   { href: "/onboarding/ticket",          title: "P1 — Ticket variant",    subtitle: "Hang-tag take, ink + accent slip",        group: "entry",      intent: "mobile", hidden: true, animations: ["ticket-flip", "brand-ribbons"] },
   { href: "/join",                       title: "P0/B — Code entry",      subtitle: "No link, partner types the code",         group: "entry",      intent: "mobile"  },
-  { href: "/onboarding/auth?via=phone",  title: "P2 — Auth (phone)",      subtitle: "Phone OTP — primary path",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
-  { href: "/onboarding/auth?via=email",  title: "P2 — Auth (email)",      subtitle: "Secondary path",                          group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/auth?mode=create", title: "P2 — Create account",   subtitle: "Email or Google — primary path",          group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
+  { href: "/onboarding/auth?mode=signin", title: "P2 — Sign in",          subtitle: "Returning partner — minimal",             group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
   { href: "/onboarding/business",            title: "P3 — Business profile",  subtitle: "Name + address + contact",                group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
   { href: "/onboarding/business?co=northwind", title: "P3 — Join company",      subtitle: "Linked-company invite (skips create)",    group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },
   { href: "/onboarding/discovery",       title: "P4 — Discovery",         subtitle: "Technicians + services (typed array)",    group: "onboarding", intent: "mobile", animations: ["brand-ribbons"] },

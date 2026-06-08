@@ -5,7 +5,6 @@ import {
   Check,
   Inbox,
   LineChart,
-  Phone,
   UsersRound,
   Wallet,
   type LucideIcon,
@@ -59,21 +58,32 @@ export function WelcomeScreen({ invite }: Props) {
             Set up in about 90 seconds.
           </p>
 
-          {/* Single CTA — phone OTP is the path we want every partner
-              on, so the welcome screen commits to one button instead
-              of presenting alternatives. Mobile cap (~230px) keeps the
-              same CTA:card-stack width ratio as tablet (280:440 ≈ 0.64
-              against the 360px mobile stack). */}
+          {/* Single CTA into account creation — the auth screen presents the
+              actual methods (email or Google), so the welcome commits to one
+              button instead of presenting alternatives here. Mobile cap
+              (~230px) keeps the same CTA:card-stack width ratio as tablet
+              (280:440 ≈ 0.64 against the 360px mobile stack). */}
           <div className="mt-8 w-full max-w-[230px] md:max-w-[280px] lg:mt-10 lg:max-w-[320px]">
             <Button
               fullWidth
               size="lg"
-              leadingIcon={<Phone size={16} strokeWidth={1.75} />}
-              onClick={() => goto("/onboarding/auth?via=phone")}
+              onClick={() => goto("/onboarding/auth?mode=create")}
             >
-              Continue with phone
+              Get started
             </Button>
           </div>
+
+          {/* Quiet path for partners who already have an account. */}
+          <p className="mt-4 text-[13px] text-ink-subtitle">
+            Already have an account?{" "}
+            <button
+              type="button"
+              className="font-medium text-ink-body hover:text-ink-title hover:underline"
+              onClick={() => goto("/onboarding/auth?mode=signin")}
+            >
+              Sign in
+            </button>
+          </p>
 
           {/* Mobile + tablet (< lg): swipeable card stack of the marketing
               value props. The vertical FeatureCard list read as tappable

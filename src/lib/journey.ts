@@ -32,8 +32,8 @@ export type JourneyStep = {
 
 export const PARTNER_JOURNEY: JourneyStep[] = [
   { key: "welcome",   label: "Welcome",          desc: "Your invite",                 icon: Sparkles    },
-  { key: "auth",      label: "Sign in",          desc: "Verify your identity",        icon: ShieldCheck },
-  { key: "business",  label: "Business profile", desc: "Name, address, contact",      icon: Building2   },
+  { key: "auth",      label: "Create account",   desc: "Email or Google",             icon: ShieldCheck },
+  { key: "business",  label: "Your details",     desc: "Name, business, contact",     icon: Building2   },
   { key: "discovery", label: "About your team",  desc: "A few quick questions",       icon: ListChecks  },
   { key: "team",      label: "Invite teammates", desc: "Optional",                    icon: UserPlus    },
   { key: "done",      label: "You're connected", desc: "All set",                     icon: BadgeCheck  },
