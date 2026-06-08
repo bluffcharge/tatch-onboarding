@@ -1,7 +1,9 @@
 "use client";
 
 import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { BusinessProfileScreen } from "@/components/onboarding/BusinessProfileScreen";
+import { FinishAccountScreen } from "@/components/onboarding/FinishAccountScreen";
 import { JoinCompanyScreen } from "@/components/onboarding/JoinCompanyScreen";
 import { useInvite } from "@/lib/useInvite";
 
@@ -29,6 +31,7 @@ export default function BusinessProfilePage() {
 
 function BusinessProfilePageInner() {
   const invite = useInvite();
+  const sp = useSearchParams();
   if (invite.linkedCompany) {
     return (
       <JoinCompanyScreen
@@ -36,5 +39,7 @@ function BusinessProfilePageInner() {
       />
     );
   }
+  // `?v=tight` previews the confirmation-first variant of step 2.
+  if (sp.get("v") === "tight") return <FinishAccountScreen />;
   return <BusinessProfileScreen />;
 }

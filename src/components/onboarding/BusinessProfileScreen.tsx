@@ -55,7 +55,9 @@ export function BusinessProfileScreen() {
       center
       vAlign="top"
     >
-      <div className="mt-2 md:mx-auto md:mt-0 md:max-w-[520px]">
+      {/* Floating card frame on md+ (matches the create-account step Armen
+          signed off on); plain top-aligned form on mobile. */}
+      <div className="mt-2 md:mx-auto md:mt-0 md:w-full md:max-w-[520px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           A few details to finish.
         </h1>
