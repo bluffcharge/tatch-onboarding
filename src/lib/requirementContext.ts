@@ -36,20 +36,31 @@ const SAME_AUTH: Pick<RequirementContext, "flowRefs" | "storyRefs"> = {
 export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
   /* ============================ Operator signup ============================ */
   "/operator/signin": {
-    oneLine: "Entry — existing operator signs in, or toggles to sign-up.",
+    oneLine: "Entry — existing operator signs in (email, Google, or magic link).",
     flowRefs: [{ flow: OP_FLOW, step: "Flow 2: existing operator signs in → dashboard" }],
     storyRefs: ["US1 · Sign in"],
     reqs: [
-      "FR1: email + password, Remember me, Forgot password, Sign in, Google SSO, Sign up.",
-      "FR2: standalone — no sidebar, no step counter, only wordmark + centered form + footer.",
-      "FR3: Sign up → Create Account step (wizard) with a forward slide.",
-      "FR4: password show/hide toggle. AC1–AC3 covered.",
+      "Design call: email + password (+ Remember me, Forgot password) — the most-used path.",
+      "Continue with Google as the alternate; NO phone method on operator.",
+      "Magic-link option — 'Email me a sign-in link' → passwordless link-sent state.",
+      "Floating-card frame (partner-onboarding); separate from create-account.",
     ],
     links: [
+      { label: "Magic-link sent state ↗", href: "/operator/signin?magic=1" },
       { label: "Invalid-credentials state ↗", href: "/operator/signin?error=1" },
-      { label: "Armen's signup prototype ↗", href: ARMEN_PROTOTYPE },
-      { label: "Roadmap brand reference ↗", href: ROADMAP_BRAND },
+      { label: "Frame reference (partner onboarding) ↗", href: "https://tatch-onboarding.vercel.app/onboarding/auth" },
     ],
+  },
+  "/operator/signin?magic=1": {
+    oneLine: "Sign-in — magic link sent (passwordless).",
+    flowRefs: [{ flow: OP_FLOW, step: "Flow 2: passwordless sign-in" }],
+    storyRefs: ["US1 · Sign in"],
+    reqs: [
+      "Confirmation: 'Check your inbox' + the address the link was sent to.",
+      "No password required once the emailed link is clicked.",
+      "Back to sign in returns to the credential form.",
+    ],
+    links: [{ label: "Default sign-in ↗", href: "/operator/signin" }],
   },
   "/operator/signin?error=1": {
     oneLine: "Sign-in edge — credentials don't match an account.",
@@ -63,19 +74,45 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Default sign-in ↗", href: "/operator/signin" }],
   },
   "/operator/account": {
-    oneLine: "Step 1 — create the operator account (your details).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account" }],
+    oneLine: "Create account · step 1 of 2 — credentials only.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (1/2 — credentials)" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "FR1: first/last name, email, company, password, confirm password.",
-      "FR2: password rule shown — ≥ 8 chars with one special character.",
-      "FR3: Google SSO alternative · FR4: Sign-in link · FR6: back → sign-in.",
-      "NFR1/NFR2: client-side validation of password rule + email format.",
+      "Design call: split create-account into two steps. Step 1 = email + password, or Google.",
+      "Email nudges work-email (not strictly enforced) — used to smart-default company next.",
+      "Client-side validation: email format + password rule (≥ 8, one special).",
+      "Google → step 2 with name pre-filled; back → sign-in.",
     ],
     links: [
+      { label: "Step 2 — profile ↗", href: "/operator/account/profile" },
       { label: "Validation-error state ↗", href: "/operator/account?error=1" },
-      { label: "Armen's signup prototype ↗", href: ARMEN_PROTOTYPE },
     ],
+  },
+  "/operator/account/profile": {
+    oneLine: "Create account · step 2 of 2 — business profile (the important adds).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/2 — profile)" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "Design call: collect phone number + address — both were missing and downstream tables/forms need them.",
+      "Phone lets us text a link to download the app, so the operator lands on their phone, in-flow.",
+      "Pre-fills: email (from step 1), company name (smart-default from the email domain).",
+      "Google path pre-fills first/last name from the Google profile.",
+    ],
+    links: [
+      { label: "Via Google (name pre-filled) ↗", href: "/operator/account/profile?via=google" },
+      { label: "Step 1 — credentials ↗", href: "/operator/account" },
+    ],
+  },
+  "/operator/account/profile?via=google": {
+    oneLine: "Create account · step 2 — arrived via Google (name pre-filled).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/2 — Google)" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "First/last name pulled from Google; email is the Google address (editable).",
+      "Company can't be derived from a personal Google domain — left for the operator.",
+      "Still collects phone + address (the downstream-critical adds).",
+    ],
+    links: [{ label: "Email path ↗", href: "/operator/account/profile" }],
   },
   "/operator/account?error=1": {
     oneLine: "Step 1 edge — client-side validation errors surfaced.",

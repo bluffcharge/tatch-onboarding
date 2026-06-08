@@ -5,6 +5,16 @@ import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 
+/* The five wizard steps shown in the GET SET UP rail. (Create account is one
+   rail step even though it spans two screens — credentials then details.) */
+export const OPERATOR_STEPS = [
+  { n: 1, title: "Create account", sub: "Your details", href: "/operator/account" },
+  { n: 2, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
+  { n: 3, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
+  { n: 4, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
+  { n: 5, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
+] as const;
+
 /* Direction is stamped on the source side (back arrow / earlier sidebar
    steps set "back"; everything else defaults to "fwd"), then read + cleared
    on the destination's first paint. */
@@ -25,15 +35,6 @@ function useSlideDir(): "fwd" | "back" {
   return dir;
 }
 
-/* The five wizard steps shown in the GET SET UP rail + top-right counter. */
-export const OPERATOR_STEPS = [
-  { n: 1, title: "Create account", sub: "Your details", href: "/operator/account" },
-  { n: 2, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
-  { n: 3, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
-  { n: 4, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
-  { n: 5, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
-] as const;
-
 function TatchMark() {
   return (
     <span className="op-brand" aria-label="Tatch">
@@ -49,13 +50,11 @@ function TatchMark() {
 
 function WizardRail({ step, query }: { step: number; query: string }) {
   return (
-    <aside className="op-rail" aria-label="Setup progress">
+    <nav className="op-rail" aria-label="Setup progress">
       <p className="op-rail-eyebrow">Get set up</p>
       <ol className="op-steps">
         {OPERATOR_STEPS.map((s) => {
           const state = s.n < step ? "is-done" : s.n === step ? "is-active" : "";
-          // US6: completed + current steps are clickable links (data preserved
-          // via the threaded query); future steps stay inert.
           const clickable = s.n <= step && s.n !== 5;
           const dot = (
             <span className="op-step-dot" aria-hidden="true">
@@ -72,47 +71,49 @@ function WizardRail({ step, query }: { step: number; query: string }) {
             <li key={s.n} className={`op-step ${state}${clickable ? " is-link" : ""}`}>
               {clickable ? (
                 <Link href={`${s.href}${query}`} className="op-step-hit" onClick={markBackNav}>
-                  {dot}
-                  {text}
+                  {dot}{text}
                 </Link>
               ) : (
-                <div className="op-step-hit">
-                  {dot}
-                  {text}
-                </div>
+                <div className="op-step-hit">{dot}{text}</div>
               )}
             </li>
           );
         })}
       </ol>
-    </aside>
+    </nav>
   );
 }
 
 function Check14() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M5 12.5l4.2 4.2L19 7"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+function FootLinks() {
+  return (
+    <div className="op-foot">
+      <span className="op-foot-meta">tatch · onboarding</span>
+      <span className="op-foot-links">
+        <a href="#terms">Terms</a>
+        <a href="#privacy">Privacy</a>
+      </span>
+    </div>
   );
 }
 
 type Props = {
   /** 1–5 highlights that wizard step; 0 = no rail (sign-in / terminal). */
   step?: number;
-  /** Layout: form = rail + content; center = no rail, vertically centered. */
+  /** Layout: form = rail + floating card; center = centered card, no rail. */
   variant?: "form" | "center";
-  /** Top-right counter label override. Auto-derives for steps 1–5. */
+  /** Mobile step label override. Auto-derives "Step N of 5" for steps 1–5. */
   counter?: string;
   backHref?: string;
   onBack?: () => void;
-  /** Wider content column (plan / payment screens). */
+  /** Wider floating card (plan / payment screens). */
   wide?: boolean;
   /** Threaded wizard query (e.g. "?seats=3&billing=annual") for sidebar links. */
   query?: string;
@@ -133,8 +134,8 @@ export function OperatorShell({
   const counterLabel = counter ?? (meta ? `Step ${meta.n} of 5` : null);
   const dir = useSlideDir();
   const slide = `op-slide op-slide--${dir}`;
-  // Brand A/B: ?brand=prd re-skins to the PRD/partner system for comparison.
   const brandPrd = useSearchParams().get("brand") === "prd";
+  const isForm = variant === "form" && step >= 1 && step <= 5;
 
   const back =
     backHref || onBack ? (
@@ -150,35 +151,40 @@ export function OperatorShell({
     ) : null;
 
   return (
-    <div className={`op-app${brandPrd ? " brand-prd" : ""}`}>
-      <div className="op-shell">
-        <header className="op-header">
+    <div className={`op-app${brandPrd ? " brand-prd" : ""}${isForm ? "" : " is-center"}`}>
+      <span className="op-backdrop" aria-hidden="true" />
+
+      {/* Left side — wordmark + rail on the bare page (desktop); a slim top
+          bar carries the wordmark + step on mobile. */}
+      {isForm ? (
+        <aside className="op-side">
           <TatchMark />
-          {counterLabel && <span className="op-stepcount">{counterLabel}</span>}
+          <WizardRail step={step} query={query} />
+          <FootLinks />
+        </aside>
+      ) : (
+        <header className="op-topbar">
+          <TatchMark />
         </header>
+      )}
 
-        {variant === "center" ? (
-          <div className={`op-center ${slide}`}>{children}</div>
-        ) : (
-          <div className="op-body">
-            {step >= 1 && step <= 5 && <WizardRail step={step} query={query} />}
-            <div className="op-content">
-              <div className={`op-content-inner ${slide}${wide ? " is-wide" : ""}`}>
-                <span className="op-spine" aria-hidden="true" />
-                {back}
-                {children}
-              </div>
-            </div>
+      {/* Mobile-only top bar for wizard screens (rail is hidden). */}
+      {isForm && (
+        <header className="op-topbar op-topbar--wizard">
+          <TatchMark />
+          {counterLabel && <span className="op-mini-step">{counterLabel}</span>}
+        </header>
+      )}
+
+      {/* Right stage — the floating card. */}
+      <div className="op-stage">
+        <div className={`op-card${wide ? " is-wide" : ""}${isForm ? "" : " op-card--center"}`}>
+          <div className={`op-card-body ${slide}`}>
+            {back}
+            {children}
           </div>
-        )}
-
-        <footer className="op-footer">
-          <span className="op-foot-meta">tatch · onboarding</span>
-          <span className="op-foot-links">
-            <a href="#terms">Terms</a>
-            <a href="#privacy">Privacy</a>
-          </span>
-        </footer>
+        </div>
+        {!isForm && <FootLinks />}
       </div>
     </div>
   );

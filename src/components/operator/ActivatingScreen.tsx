@@ -17,9 +17,11 @@ export function ActivatingScreen() {
 
   return (
     <OperatorShell variant="center">
-      <span className="op-orb is-spin" aria-hidden="true" />
-      <h1 className="op-h1">Setting up your account…</h1>
-      <p className="op-sub">This will only take a moment.</p>
+      <div className="op-terminal">
+        <span className="op-orb is-spin" aria-hidden="true" />
+        <h1 className="op-h1">Setting up your account…</h1>
+        <p className="op-sub">This will only take a moment.</p>
+      </div>
     </OperatorShell>
   );
 }
