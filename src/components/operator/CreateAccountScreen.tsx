@@ -31,7 +31,7 @@ export function CreateAccountScreen() {
 
   const next = () => {
     setSubmitted(true);
-    if (valid) router.push(`/operator/account/profile?email=${encodeURIComponent(email)}`);
+    if (valid) router.push(`/operator/account/details?email=${encodeURIComponent(email)}`);
   };
 
   return (
@@ -86,7 +86,7 @@ export function CreateAccountScreen() {
       </button>
 
       <div className="op-or">or</div>
-      <GoogleButton onClick={() => router.push("/operator/account/profile?via=google")} />
+      <GoogleButton onClick={() => router.push("/operator/account/details?via=google")} />
 
       <p className="op-legal">
         By signing up you agree to our <a className="op-link" href="#privacy">Privacy Policy</a> and{" "}

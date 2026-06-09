@@ -42,25 +42,13 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     reqs: [
       "Design call: email + password (+ Remember me, Forgot password) — the most-used path.",
       "Continue with Google as the alternate; NO phone method on operator.",
-      "Magic-link option — 'Email me a sign-in link' → passwordless link-sent state.",
+      "Magic-link option is PARKED for now (flag in SignInScreen) — bring back later.",
       "Floating-card frame (partner-onboarding); separate from create-account.",
     ],
     links: [
-      { label: "Magic-link sent state ↗", href: "/operator/signin?magic=1" },
       { label: "Invalid-credentials state ↗", href: "/operator/signin?error=1" },
       { label: "Frame reference (partner onboarding) ↗", href: "https://tatch-onboarding.vercel.app/onboarding/auth" },
     ],
-  },
-  "/operator/signin?magic=1": {
-    oneLine: "Sign-in — magic link sent (passwordless).",
-    flowRefs: [{ flow: OP_FLOW, step: "Flow 2: passwordless sign-in" }],
-    storyRefs: ["US1 · Sign in"],
-    reqs: [
-      "Confirmation: 'Check your inbox' + the address the link was sent to.",
-      "No password required once the emailed link is clicked.",
-      "Back to sign in returns to the credential form.",
-    ],
-    links: [{ label: "Default sign-in ↗", href: "/operator/signin" }],
   },
   "/operator/signin?error=1": {
     oneLine: "Sign-in edge — credentials don't match an account.",
@@ -74,45 +62,56 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Default sign-in ↗", href: "/operator/signin" }],
   },
   "/operator/account": {
-    oneLine: "Create account · step 1 of 2 — credentials only.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (1/2 — credentials)" }],
+    oneLine: "Create account · step 1 of 3 — credentials only.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (1/3 — credentials)" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "Design call: split create-account into two steps. Step 1 = email + password, or Google.",
-      "Email nudges work-email (not strictly enforced) — used to smart-default company next.",
+      "Design call: split account setup across three screens. 1 = email + password, or Google.",
+      "Email nudges work-email (not strictly enforced) — used to smart-default company later.",
       "Client-side validation: email format + password rule (≥ 8, one special).",
-      "Google → step 2 with name pre-filled; back → sign-in.",
+      "Google → 'Your details' with name pre-filled; back → sign-in.",
     ],
     links: [
-      { label: "Step 2 — profile ↗", href: "/operator/account/profile" },
+      { label: "Step 2 — your details ↗", href: "/operator/account/details" },
       { label: "Validation-error state ↗", href: "/operator/account?error=1" },
     ],
   },
-  "/operator/account/profile": {
-    oneLine: "Create account · step 2 of 2 — business profile (the important adds).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/2 — profile)" }],
+  "/operator/account/details": {
+    oneLine: "Create account · step 2 of 3 — your details (the person).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/3 — your details)" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "Design call: collect phone number + address — both were missing and downstream tables/forms need them.",
-      "Phone lets us text a link to download the app, so the operator lands on their phone, in-flow.",
-      "Pre-fills: email (from step 1), company name (smart-default from the email domain).",
-      "Google path pre-fills first/last name from the Google profile.",
+      "Design call: one step for USER details — name, address, email, phone.",
+      "Phone enables texting a link to download the app, so the operator lands on their phone.",
+      "Email pre-fills from step 1; Google path pre-fills first/last name.",
+      "Business info (company, business address) is a separate step that follows.",
     ],
     links: [
-      { label: "Via Google (name pre-filled) ↗", href: "/operator/account/profile?via=google" },
-      { label: "Step 1 — credentials ↗", href: "/operator/account" },
+      { label: "Via Google (name pre-filled) ↗", href: "/operator/account/details?via=google" },
+      { label: "Next — your business ↗", href: "/operator/account/business" },
     ],
   },
-  "/operator/account/profile?via=google": {
-    oneLine: "Create account · step 2 — arrived via Google (name pre-filled).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/2 — Google)" }],
+  "/operator/account/details?via=google": {
+    oneLine: "Create account · your details — arrived via Google (name pre-filled).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (2/3 — Google)" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
       "First/last name pulled from Google; email is the Google address (editable).",
-      "Company can't be derived from a personal Google domain — left for the operator.",
       "Still collects phone + address (the downstream-critical adds).",
     ],
-    links: [{ label: "Email path ↗", href: "/operator/account/profile" }],
+    links: [{ label: "Email path ↗", href: "/operator/account/details" }],
+  },
+  "/operator/account/business": {
+    oneLine: "Create account · step 3 of 3 — your business (the company).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 5: Create account (3/3 — your business)" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "Design call: a separate step for the business — distinct from user details.",
+      "Company name smart-defaults from the work-email domain (acme.com → Acme).",
+      "Business address captured here; downstream tables/forms depend on it.",
+      "Continue advances to Choose plan.",
+    ],
+    links: [{ label: "Back — your details ↗", href: "/operator/account/details" }],
   },
   "/operator/account?error=1": {
     oneLine: "Step 1 edge — client-side validation errors surfaced.",

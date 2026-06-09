@@ -78,12 +78,12 @@ type Route = {
 // "Tatch Creative Roadmap" brand (Urbanist, ink-on-white, black CTAs).
 // Variant rows (annual plan, ACH payment) are the canvas "view selectors".
 const ALL_ROUTES: Route[] = [
-  { href: "/operator/signin",                  title: "Sign in",                subtitle: "Email · Google · magic link",             group: "account", intent: "desktop" },
-  { href: "/operator/signin?magic=1",          title: "Sign in — magic link",   subtitle: "Passwordless link-sent state",            group: "account", intent: "desktop" },
+  { href: "/operator/signin",                  title: "Sign in",                subtitle: "Email · password · Google",               group: "account", intent: "desktop" },
   { href: "/operator/signin?error=1",          title: "Sign in — error",        subtitle: "Invalid credentials state",               group: "account", intent: "desktop" },
-  { href: "/operator/account",                 title: "Create account · 1 of 2", subtitle: "Step 1 · email + password / Google",      group: "account", intent: "desktop" },
-  { href: "/operator/account/profile",         title: "Create account · 2 of 2", subtitle: "Step 1 · profile + phone + address",      group: "account", intent: "desktop" },
-  { href: "/operator/account/profile?via=google", title: "Create account · via Google", subtitle: "Name pre-filled from Google",       group: "account", intent: "desktop" },
+  { href: "/operator/account",                 title: "Create account · 1 of 3", subtitle: "Step 1 · email + password / Google",      group: "account", intent: "desktop" },
+  { href: "/operator/account/details",         title: "Your details · 2 of 3",  subtitle: "Step 1 · name · email · phone · address", group: "account", intent: "desktop" },
+  { href: "/operator/account/details?via=google", title: "Your details · via Google", subtitle: "Name pre-filled from Google",         group: "account", intent: "desktop" },
+  { href: "/operator/account/business",        title: "Your business · 3 of 3", subtitle: "Step 1 · company + business address",      group: "account", intent: "desktop" },
   { href: "/operator/account?error=1",         title: "Create account — errors", subtitle: "Step 1 · client-side validation",        group: "account", intent: "desktop" },
   { href: "/operator/plan",                    title: "Choose plan — monthly",  subtitle: "Step 2 · Tatch Connect",                  group: "plan",    intent: "desktop" },
   { href: "/operator/plan?billing=annual",     title: "Choose plan — annual",   subtitle: "Step 2 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },

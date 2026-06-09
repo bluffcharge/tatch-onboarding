@@ -5,19 +5,9 @@ import { useState } from "react";
 import { OperatorShell } from "./OperatorShell";
 import { PhoneField, AddressField } from "./inputs";
 
-const COMMON_DOMAINS = ["gmail", "outlook", "yahoo", "hotmail", "icloud", "proton", "me"];
-
-/** Smart-default the company name from a work-email domain (acme.com → Acme). */
-function companyFromEmail(email: string): string {
-  const root = (email.split("@")[1] || "").split(".")[0] || "";
-  if (!root || COMMON_DOMAINS.includes(root.toLowerCase())) return "";
-  return root.charAt(0).toUpperCase() + root.slice(1);
-}
-
-/* Step 2 of the create-account flow — profile + the downstream-critical adds
-   (phone, address). Email/company pre-fill from step 1; name pre-fills when
-   the operator came in via Google. */
-export function CreateAccountProfileScreen() {
+/* Create account · step 2 — YOUR details (the person setting up the account):
+   name, email, phone, address. Business info is collected on the next step. */
+export function CreateAccountDetailsScreen() {
   const sp = useSearchParams();
   const router = useRouter();
   const viaGoogle = sp.get("via") === "google";
@@ -26,17 +16,18 @@ export function CreateAccountProfileScreen() {
   const [first, setFirst] = useState(viaGoogle ? "Jane" : "");
   const [last, setLast] = useState(viaGoogle ? "Doe" : "");
   const [email, setEmail] = useState(seedEmail);
-  const [company, setCompany] = useState(companyFromEmail(seedEmail));
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
+  const next = () => router.push(`/operator/account/business?email=${encodeURIComponent(email)}`);
+
   return (
     <OperatorShell step={1} backHref="/operator/account">
-      <h1 className="op-h1">A few business details.</h1>
+      <h1 className="op-h1">Your details.</h1>
       <p className="op-sub" style={{ marginBottom: 28 }}>
         {viaGoogle
           ? "We pulled what we could from Google — fill in the rest."
-          : "We'll use these to set up your workspace and reach you."}
+          : "How we'll reach you and set up your account."}
       </p>
 
       <div className="op-row">
@@ -51,13 +42,8 @@ export function CreateAccountProfileScreen() {
       </div>
 
       <label className="op-field">
-        <span className="op-field-label">Work email</span>
+        <span className="op-field-label">Email</span>
         <input className="op-input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-
-      <label className="op-field">
-        <span className="op-field-label">Company name</span>
-        <input className="op-input" placeholder="Acme Roofing" autoComplete="organization" value={company} onChange={(e) => setCompany(e.target.value)} />
       </label>
 
       <PhoneField
@@ -69,10 +55,11 @@ export function CreateAccountProfileScreen() {
       <AddressField
         value={address}
         onChange={setAddress}
-        helper="Your primary business location."
+        label="Address"
+        helper="Where we can reach you."
       />
 
-      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} onClick={() => router.push("/operator/plan")}>
+      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} onClick={next}>
         Continue
       </button>
     </OperatorShell>

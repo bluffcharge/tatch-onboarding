@@ -7,6 +7,8 @@ import { OperatorShell } from "./OperatorShell";
 import { GoogleButton } from "./bits";
 
 const DASHBOARD = "https://tatch-half-mvp.vercel.app";
+// Magic-link sign-in is parked for now — flip to true to bring it back.
+const SHOW_MAGIC_LINK = false;
 
 export function SignInScreen() {
   const router = useRouter();
@@ -26,7 +28,7 @@ export function SignInScreen() {
     window.top!.location.href = DASHBOARD;
   };
 
-  if (magicSent) {
+  if (SHOW_MAGIC_LINK && magicSent) {
     return (
       <OperatorShell variant="center">
         <div className="op-terminal">
@@ -114,9 +116,11 @@ export function SignInScreen() {
       <div className="op-or">or</div>
       <GoogleButton onClick={() => { window.top!.location.href = DASHBOARD; }} />
 
-      <button className="op-btn op-btn--secondary" style={{ marginTop: 10 }} onClick={() => setMagicSent(true)}>
-        <Mail size={16} /> Email me a sign-in link
-      </button>
+      {SHOW_MAGIC_LINK && (
+        <button className="op-btn op-btn--secondary" style={{ marginTop: 10 }} onClick={() => setMagicSent(true)}>
+          <Mail size={16} /> Email me a sign-in link
+        </button>
+      )}
 
       <p className="op-meta-line">
         Don&apos;t have an account?{" "}
