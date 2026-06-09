@@ -201,14 +201,14 @@
     max-width: 1280px;
     min-height: min(680px, calc(100dvh - 80px));
     max-height: calc(100dvh - 80px);
-    padding: 30px 36px 40px;
+    padding: 16px 36px 28px;
     display: flex; flex-direction: column;
   }
   .op-card-head {
     flex: 0 0 auto;
-    padding-bottom: 18px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--op-line);
-    margin-bottom: 44px;
+    margin-bottom: 30px;
   }
   .op-card-step { display: inline-flex; }
   /* Default form column = the 440px auth measure (same as sign-in).
@@ -222,7 +222,7 @@
 
 @media (min-width: 1280px) {
   .op-side { flex-basis: 360px; padding: 56px 44px; }
-  .op-card { padding: 34px 48px 48px; }
+  .op-card { padding: 18px 48px 36px; }
   .op-h1 { font-size: 40px; }
 }
 
