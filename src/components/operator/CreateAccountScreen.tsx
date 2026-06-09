@@ -104,12 +104,6 @@ export function CreateAccountScreen() {
         By signing up you agree to our <a className="op-link" href="#privacy">Privacy Policy</a> and{" "}
         <a className="op-link" href="#terms">Terms of Service</a>.
       </p>
-      <p className="op-meta-line" style={{ marginTop: 12 }}>
-        Already have an account?{" "}
-        <button className="op-link" onClick={() => router.push("/operator/signin")} style={{ background: "none", border: 0, cursor: "pointer" }}>
-          Sign in
-        </button>
-      </p>
     </OperatorShell>
   );
 }
