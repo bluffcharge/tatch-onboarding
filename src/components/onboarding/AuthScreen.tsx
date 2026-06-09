@@ -156,32 +156,21 @@ export function AuthScreen() {
           Continue with Google
         </Button>
 
-        {/* Mode switch */}
-        <p className="mt-6 text-center text-[13px] text-ink-subtitle">
-          {isCreate ? (
-            <>
-              Already have an account?{" "}
-              <button
-                type="button"
-                className="font-medium text-ink-body hover:text-ink-title hover:underline"
-                onClick={() => router.replace("/onboarding/auth?mode=signin")}
-              >
-                Sign in
-              </button>
-            </>
-          ) : (
-            <>
-              New to Tatch?{" "}
-              <button
-                type="button"
-                className="font-medium text-ink-body hover:text-ink-title hover:underline"
-                onClick={() => router.replace("/onboarding/auth?mode=create")}
-              >
-                Create your account
-              </button>
-            </>
-          )}
-        </p>
+        {/* Mode switch — only on sign-in. The create path is reached from
+            the Welcome screen (which already offers both "Get started" and
+            "Sign in"), so a sign-in link here would just be redundant. */}
+        {!isCreate && (
+          <p className="mt-6 text-center text-[13px] text-ink-subtitle">
+            New to Tatch?{" "}
+            <button
+              type="button"
+              className="font-medium text-ink-body hover:text-ink-title hover:underline"
+              onClick={() => router.replace("/onboarding/auth?mode=create")}
+            >
+              Create your account
+            </button>
+          </p>
+        )}
       </div>
     </OnboardingShell>
   );
