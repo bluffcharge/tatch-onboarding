@@ -111,6 +111,7 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     storyRefs: ["US2 · Create account"],
     reqs: [
       "Collects first/last name, phone, your address — credentials already captured on step 1.",
+      "Login email shown read-only (pulled from Google or the verified step-1 address).",
       "Phone enables texting an app-download link, so the operator lands on their phone.",
       "Auto-fills from Google where possible (?via=google).",
     ],

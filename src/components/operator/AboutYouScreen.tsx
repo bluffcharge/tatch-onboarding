@@ -12,7 +12,7 @@ export function AboutYouScreen() {
   const router = useRouter();
   const sp = useSearchParams();
   const viaGoogle = sp.get("via") === "google";
-  const email = sp.get("email") || (viaGoogle ? "jane.doe@gmail.com" : "");
+  const email = sp.get("email") || (viaGoogle ? "jane.doe@gmail.com" : "jane@acmeroofing.com");
 
   const [first, setFirst] = useState(viaGoogle ? "Jane" : "");
   const [last, setLast] = useState(viaGoogle ? "Doe" : "");
@@ -41,6 +41,14 @@ export function AboutYouScreen() {
           <input className="op-input" placeholder="Doe" autoComplete="family-name" value={last} onChange={(e) => setLast(e.target.value)} />
         </label>
       </div>
+
+      <label className="op-field">
+        <span className="op-field-label">Email</span>
+        <input className="op-input is-readonly" value={email} readOnly tabIndex={-1} />
+        <span className="op-field-hint">
+          {viaGoogle ? "Pulled from your Google account — this is your login email." : "Verified — this is your login email."}
+        </span>
+      </label>
 
       <PhoneField
         value={phone}

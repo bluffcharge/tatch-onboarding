@@ -68,7 +68,7 @@ export function InviteTeamScreen() {
   const query = buildQuery({ branches: seed.branches, seats: planSeats, billing: seed.billing });
 
   return (
-    <OperatorShell step={6} backHref={`/operator/payment${query}`} query={query}>
+    <OperatorShell step={6} backHref={`/operator/payment${query}`} query={query} roomy>
       <h1 className="op-h1">Invite your team.</h1>
       <p className="op-sub" style={{ marginBottom: 26 }}>
         Add anyone who&apos;ll be managing referrals or operating this account. They&apos;ll get an email

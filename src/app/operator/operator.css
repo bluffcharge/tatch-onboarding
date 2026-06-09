@@ -211,7 +211,11 @@
     margin-bottom: 44px;
   }
   .op-card-step { display: inline-flex; }
-  .op-card-body { width: 100%; max-width: 600px; margin: 0 auto; }
+  /* Default form column = the 440px auth measure (same as sign-in).
+     is-roomy (invite team: input + role toggle + trash per row) gets 600;
+     is-wide (plan / payment grids) gets 860. */
+  .op-card-body { width: 100%; max-width: 440px; margin: 0 auto; }
+  .op-card.is-roomy .op-card-body { max-width: 600px; }
   .op-card.is-wide .op-card-body { max-width: 860px; }
   /* Center screens (sign-in / terminal): content floats mid-canvas at an
      auth-form measure — single-column fields past ~440px read as ridiculous. */
@@ -227,7 +231,8 @@
 @media (min-width: 1700px) {
   .op-side { flex-basis: 420px; padding: 76px 56px; }
   .op-card { max-width: 1360px; }
-  .op-card-body { max-width: 640px; }
+  .op-card-body { max-width: 480px; }
+  .op-card.is-roomy .op-card-body { max-width: 640px; }
   .op-card.is-wide .op-card-body { max-width: 920px; }
   .op-h1 { font-size: 46px; }
 }
@@ -374,6 +379,9 @@
 .op-field-hint { font-size: 12.5px; color: var(--op-faint); margin-top: 7px; }
 .op-input.is-error { border-color: var(--op-error); }
 .op-input.is-error:focus { box-shadow: 0 0 0 3px var(--op-error-soft); }
+/* Read-only identity fields (login email on About you) — visibly inert. */
+.op-input.is-readonly { background: var(--op-soft2); color: var(--op-muted); cursor: default; }
+.op-input.is-readonly:focus { border-color: var(--op-dash); box-shadow: none; }
 .op-field-error { display: block; font-size: 12.5px; color: var(--op-error); margin-top: 7px; }
 .op-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
