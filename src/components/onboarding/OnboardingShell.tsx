@@ -160,12 +160,12 @@ export function OnboardingShell({
                 ? // Rail screens keep the capped column + padding and fill
                   // the right pane at md+. vAlign picks the anchor: "center"
                   // dead-centers (single-input cards, pattern 02); "top"
-                  // anchors in the upper third (~12vh) so conversational
-                  // forms (pattern 03) don't float low on tall viewports.
+                  // anchors near the top (~6vh) so conversational forms
+                  // (pattern 03) sit high rather than mid-canvas.
                   // Mobile stays top-aligned either way.
                   `mx-auto flex w-full flex-col ${widthCls} ${xPadCls} flex-1 pb-6 pt-2 ${
                     vAlign === "top"
-                      ? "md:justify-start md:pt-[12vh] md:pb-10"
+                      ? "md:justify-start md:pt-[6vh] md:pb-10"
                       : "md:justify-center md:py-10"
                   }`
                 : // No rail: strip the column cap + padding so the centered
