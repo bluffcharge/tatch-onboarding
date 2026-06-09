@@ -38,7 +38,7 @@ export function ChoosePlanScreen() {
   const query = buildQuery({ branches, seats, billing });
 
   return (
-    <OperatorShell step={2} backHref={`/operator/account`} query={query} wide>
+    <OperatorShell step={3} backHref={`/operator/account/business`} query={query} wide>
       <h1 className="op-h1">Tatch Connect.</h1>
       <p className="op-sub" style={{ marginBottom: 22 }}>
         Everything you need to launch and manage your referral partner program.

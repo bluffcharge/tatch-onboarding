@@ -5,15 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 
-/* The five wizard steps shown in the GET SET UP rail. (Create account is one
-   rail step even though it spans two screens — credentials then details.) */
+/* The six wizard steps shown in the GET SET UP rail (matches the PM
+   prototype: About you + Your business are distinct steps). */
 export const OPERATOR_STEPS = [
-  { n: 1, title: "Create account", sub: "Your details", href: "/operator/account" },
-  { n: 2, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
-  { n: 3, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
-  { n: 4, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
-  { n: 5, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
+  { n: 1, title: "About you", sub: "Name, email, phone", href: "/operator/account" },
+  { n: 2, title: "Your business", sub: "Company details", href: "/operator/account/business" },
+  { n: 3, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
+  { n: 4, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
+  { n: 5, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
+  { n: 6, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
 ] as const;
+const LAST_STEP = OPERATOR_STEPS.length;
 
 /* Direction is stamped on the source side (back arrow / earlier sidebar
    steps set "back"; everything else defaults to "fwd"), then read + cleared
@@ -55,7 +57,7 @@ function WizardRail({ step, query }: { step: number; query: string }) {
       <ol className="op-steps">
         {OPERATOR_STEPS.map((s) => {
           const state = s.n < step ? "is-done" : s.n === step ? "is-active" : "";
-          const clickable = s.n <= step && s.n !== 5;
+          const clickable = s.n <= step && s.n !== LAST_STEP;
           const dot = (
             <span className="op-step-dot" aria-hidden="true">
               {s.n < step ? <Check14 /> : s.n}
@@ -131,11 +133,11 @@ export function OperatorShell({
   children,
 }: Props) {
   const meta = OPERATOR_STEPS.find((s) => s.n === step);
-  const counterLabel = counter ?? (meta ? `Step ${meta.n} of 5` : null);
+  const counterLabel = counter ?? (meta ? `Step ${meta.n} of ${LAST_STEP}` : null);
   const dir = useSlideDir();
   const slide = `op-slide op-slide--${dir}`;
   const brandPrd = useSearchParams().get("brand") === "prd";
-  const isForm = variant === "form" && step >= 1 && step <= 5;
+  const isForm = variant === "form" && step >= 1 && step <= LAST_STEP;
 
   const back =
     backHref || onBack ? (

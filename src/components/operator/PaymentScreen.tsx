@@ -18,7 +18,7 @@ export function PaymentScreen() {
   const seatLabel = `${p.billedSeats} user${p.billedSeats === 1 ? "" : "s"}`;
 
   return (
-    <OperatorShell step={4} backHref={`/operator/team${query}`} query={query} wide>
+    <OperatorShell step={5} backHref={`/operator/team${query}`} query={query} wide>
       <h1 className="op-h1">Payment information.</h1>
       <p className="op-sub" style={{ marginBottom: 24 }}>
         Your card will be charged after your trial ends.
