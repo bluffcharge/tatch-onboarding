@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
 import { GoogleButton } from "./bits";
+import { useTestMode } from "@/lib/testMode";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SPECIAL_RE = /[^A-Za-z0-9]/;
@@ -32,9 +33,15 @@ export function CreateAccountScreen() {
   const valid = !emailErr && !!email && !pwErr && !confirmErr && !!password && !!confirm;
   const showErr = (msg: string) => submitted && !!msg;
 
+  const testMode = useTestMode();
+
   // Email logins verify the address next; Google arrivals skip straight to
   // the profile step (the address is already verified).
   const next = () => {
+    if (testMode) {
+      router.push(`/operator/account/verify${email ? `?email=${encodeURIComponent(email)}` : ""}`);
+      return;
+    }
     setSubmitted(true);
     if (valid) router.push(`/operator/account/verify?email=${encodeURIComponent(email)}`);
   };

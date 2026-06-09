@@ -1,20 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LayoutGrid, Moon, Sun } from "lucide-react";
+import { FlaskConical, LayoutGrid, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { setTestMode, useTestMode } from "@/lib/testMode";
 
 /**
  * Floating prototype controls — theme toggle + back to route gallery.
  * Visible on every page for reviewers. Hidden when the page is rendered
  * inside the gallery's iframe (parent owns the controls there) or when
- * ?embed=1 is on the URL.
+ * ?embed=1 is on the URL. On /operator/* a flask toggles test mode:
+ * every Continue works without validation so the sequence can be
+ * click-tested with empty forms.
  */
 export function DevPalette() {
   const { theme, toggle } = useTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const [hidden, setHidden] = useState(true);
+  const pathname = usePathname();
+  const testMode = useTestMode();
+  const showFlask = pathname?.startsWith("/operator");
 
   useEffect(() => {
     const inIframe = typeof window !== "undefined" && window.self !== window.top;
@@ -39,6 +46,23 @@ export function DevPalette() {
         >
           <LayoutGrid size={13} strokeWidth={1.75} />
         </Link>
+        {showFlask && (
+          <button
+            type="button"
+            onClick={() => setTestMode(!testMode)}
+            aria-label={testMode ? "Turn off test mode" : "Turn on test mode (skip validation)"}
+            aria-pressed={testMode}
+            title={testMode ? "Test mode ON — every Continue skips validation" : "Test mode: click through without filling forms"}
+            className={[
+              "inline-flex h-7 w-7 items-center justify-center rounded-pill",
+              testMode
+                ? "bg-[#7C5CFC]/10 text-[#7C5CFC]"
+                : "text-ink-caption hover:bg-subtle hover:text-ink-body",
+            ].join(" ")}
+          >
+            <FlaskConical size={13} strokeWidth={1.75} />
+          </button>
+        )}
         <button
           type="button"
           onClick={toggle}

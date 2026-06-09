@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Users, Plus, Trash2, TriangleAlert, Check } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
 import { SEAT_FEE, buildQuery, money, readWizard } from "./wizardParams";
+import { useTestMode } from "@/lib/testMode";
 
 type Role = "admin" | "manager" | "bdm" | "member";
 type Invite = { id: number; value: string; role: Role };
@@ -39,10 +40,12 @@ export function InviteTeamScreen() {
 
   const filled = useMemo(() => rows.filter((r) => r.value.trim().length > 0).length, [rows]);
   const totalUsers = 1 + filled; // including you
+  const testMode = useTestMode();
   const overage = totalUsers > planSeats;
   const billedSeats = overage && confirmed ? totalUsers : planSeats;
   const extra = Math.max(0, totalUsers - planSeats);
-  const blocked = overage && !confirmed; // FR7: Continue disabled until resolved
+  const blocked = overage && !confirmed; // FR7: warning state until resolved
+  const gated = blocked && !testMode; // test mode shows the warning but doesn't stop the click-through
 
   const setRow = (id: number, patch: Partial<Invite>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -70,7 +73,7 @@ export function InviteTeamScreen() {
 
   // Post-payment step: finishing (or skipping) goes straight to activation.
   const proceed = () => {
-    if (blocked) return;
+    if (gated) return;
     router.push(`/operator/activating${buildQuery({ invites: filled })}`);
   };
   const skip = () => router.push("/operator/activating");
@@ -195,7 +198,7 @@ export function InviteTeamScreen() {
         <Plus size={16} /> Add another
       </button>
 
-      <button className="op-btn op-btn--primary" disabled={blocked} onClick={proceed}>
+      <button className="op-btn op-btn--primary" disabled={gated} onClick={proceed}>
         Send invites &amp; finish
       </button>
 

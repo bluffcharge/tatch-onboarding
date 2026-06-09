@@ -5,6 +5,7 @@ import { useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
 import { CodeInput } from "./inputs";
+import { useTestMode } from "@/lib/testMode";
 
 /* Step 1, part two — verify the email address before it becomes the login.
    Still "Step 1 of 7" in the rail: proving the address is part of creating
@@ -20,10 +21,12 @@ export function VerifyEmailScreen() {
   const [error, setError] = useState(demoError);
   const [resent, setResent] = useState(false);
 
+  const testMode = useTestMode();
   const complete = code.length === 6;
+  const ready = testMode || (complete && !error);
 
   const verify = () => {
-    if (!complete || error) return;
+    if (!ready) return;
     router.push(`/operator/account/about?email=${encodeURIComponent(email)}`);
   };
 
@@ -57,7 +60,7 @@ export function VerifyEmailScreen() {
         <span className="op-field-hint">Prototype: any 6-digit code works.</span>
       </div>
 
-      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} disabled={!complete || error} onClick={verify}>
+      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} disabled={!ready} onClick={verify}>
         Verify &amp; continue
       </button>
 
