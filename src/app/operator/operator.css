@@ -213,8 +213,9 @@
   .op-card-step { display: inline-flex; }
   .op-card-body { width: 100%; max-width: 600px; margin: 0 auto; }
   .op-card.is-wide .op-card-body { max-width: 860px; }
-  /* Center screens (sign-in / terminal): content floats mid-canvas. */
-  .op-card--center .op-card-body { margin: auto; padding: 38px 0; }
+  /* Center screens (sign-in / terminal): content floats mid-canvas at an
+     auth-form measure — single-column fields past ~440px read as ridiculous. */
+  .op-card--center .op-card-body { margin: auto; padding: 38px 0; max-width: 440px; }
 }
 
 @media (min-width: 1280px) {
