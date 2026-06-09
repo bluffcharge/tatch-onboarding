@@ -457,6 +457,8 @@
 }
 .op-btn--secondary:hover { background: #fff; }
 .op-btn--inline { width: auto; height: 44px; padding: 0 22px; }
+/* Hero CTA on wide columns — full-bleed buttons read absurd at 860px. */
+.op-btn--centered { display: flex; width: min(100%, 360px); margin-left: auto; margin-right: auto; }
 
 .op-or {
   display: flex; align-items: center; gap: 14px;
