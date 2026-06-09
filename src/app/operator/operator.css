@@ -657,13 +657,17 @@
 .op-invite-row > div.op-field { grid-area: role; }
 .op-invite-row > .op-row-trash { grid-area: trash; }
 /* Four role tabs can't sit beside the input on small screens — the role
-   selector drops to its own line under the input. */
+   selector drops to its own line under the input. Stacked, the input+role
+   pair needs proximity grouping: tight inside the pair, generous between
+   pairs, or the role reads as ambiguous between neighbors. */
 @media (max-width: 819px) {
+  .op-invites { gap: 30px; }
   .op-invite-row {
     grid-template-columns: 1fr auto;
     grid-template-areas:
       "input trash"
       "role  role";
+    gap: 10px 12px;
   }
 }
 .op-row-trash {
