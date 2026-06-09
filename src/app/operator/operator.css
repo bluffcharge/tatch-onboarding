@@ -212,10 +212,8 @@
   }
   .op-card-step { display: inline-flex; }
   /* Default form column = the 440px auth measure (same as sign-in).
-     is-roomy (invite team: input + role toggle + trash per row) gets 600;
-     is-wide (plan / payment grids) gets 860. */
+     is-wide (plan / payment grids, invite team's 4-role rows) gets 860. */
   .op-card-body { width: 100%; max-width: 440px; margin: 0 auto; }
-  .op-card.is-roomy .op-card-body { max-width: 600px; }
   .op-card.is-wide .op-card-body { max-width: 860px; }
   /* Center screens (sign-in / terminal): content floats mid-canvas at an
      auth-form measure — single-column fields past ~440px read as ridiculous. */
@@ -232,7 +230,6 @@
   .op-side { flex-basis: 420px; padding: 76px 56px; }
   .op-card { max-width: 1360px; }
   .op-card-body { max-width: 480px; }
-  .op-card.is-roomy .op-card-body { max-width: 640px; }
   .op-card.is-wide .op-card-body { max-width: 920px; }
   .op-h1 { font-size: 46px; }
 }
@@ -649,7 +646,26 @@
 .op-invitee-x:hover { background: var(--op-soft); color: var(--op-ink); }
 
 .op-invites { display: flex; flex-direction: column; gap: 14px; }
-.op-invite-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: end; }
+.op-invite-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: "input role trash";
+  gap: 12px;
+  align-items: end;
+}
+.op-invite-row > label.op-field { grid-area: input; }
+.op-invite-row > div.op-field { grid-area: role; }
+.op-invite-row > .op-row-trash { grid-area: trash; }
+/* Four role tabs can't sit beside the input on small screens — the role
+   selector drops to its own line under the input. */
+@media (max-width: 819px) {
+  .op-invite-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "input trash"
+      "role  role";
+  }
+}
 .op-row-trash {
   height: 46px; width: 40px;
   display: grid; place-items: center;

@@ -117,10 +117,8 @@ type Props = {
   counter?: string;
   backHref?: string;
   onBack?: () => void;
-  /** Wider content column (plan / payment grids). */
+  /** Wider content column (plan / payment grids, invite rows). */
   wide?: boolean;
-  /** Mid-width content column (invite team's input + role + trash rows). */
-  roomy?: boolean;
   /** Threaded wizard query (e.g. "?seats=3&billing=annual") for sidebar links. */
   query?: string;
   children: ReactNode;
@@ -133,7 +131,6 @@ export function OperatorShell({
   backHref,
   onBack,
   wide,
-  roomy,
   query = "",
   children,
 }: Props) {
@@ -187,7 +184,7 @@ export function OperatorShell({
           head (back + step counter over a hairline) takes the full width
           while the form content centers at a readable measure below it. */}
       <div className="op-stage">
-        <div className={`op-card${wide ? " is-wide" : ""}${roomy ? " is-roomy" : ""}${isForm ? "" : " op-card--center"}`}>
+        <div className={`op-card${wide ? " is-wide" : ""}${isForm ? "" : " op-card--center"}`}>
           {isForm && (
             <div className="op-card-head">
               {back ?? <span />}

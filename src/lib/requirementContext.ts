@@ -199,7 +199,7 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     reqs: [
       "Redesign 2026-06-09: moved AFTER payment so inviting never gates checkout.",
       "FR1: license badge = selected seats ('1 for you, 2 for teammates') + meter.",
-      "FR2/FR3: per-row phone/email + Admin/Member; Add another / trash (min 1).",
+      "FR2/FR3: per-row phone/email + Admin / Manager / BDM / Member; Add another / trash (min 1).",
       "FR8: Skip is equal-weight — teammates can be set up later from settings.",
     ],
     links: [

@@ -6,12 +6,22 @@ import { Users, Plus, Trash2, TriangleAlert, Check } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
 import { SEAT_FEE, buildQuery, money, readWizard } from "./wizardParams";
 
-type Invite = { id: number; value: string; role: "member" | "admin" };
+type Role = "admin" | "manager" | "bdm" | "member";
+type Invite = { id: number; value: string; role: Role };
+
+const ROLES: { key: Role; label: string }[] = [
+  { key: "admin", label: "Admin" },
+  { key: "manager", label: "Manager" },
+  { key: "bdm", label: "BDM" },
+  { key: "member", label: "Member" },
+];
 
 const SAMPLE = ["maria@acmeroofing.com", "devon@acmeroofing.com", "priya@acmeroofing.com", "sam@acmeroofing.com", "lee@acmeroofing.com"];
+/* Seeded rows walk the role ladder so deep-linked demos show the selector range. */
+const SAMPLE_ROLES: Role[] = ["admin", "manager", "bdm", "member", "member"];
 
 let _id = 100;
-const newRow = (value = "", role: "member" | "admin" = "member"): Invite => ({ id: _id++, value, role });
+const newRow = (value = "", role: Role = "member"): Invite => ({ id: _id++, value, role });
 
 export function InviteTeamScreen() {
   const router = useRouter();
@@ -22,7 +32,7 @@ export function InviteTeamScreen() {
   // Seed pre-filled invite rows from ?invites=N (deep-link into the overage state).
   const [rows, setRows] = useState<Invite[]>(() => {
     const n = Math.min(seed.invites, SAMPLE.length);
-    if (n > 0) return Array.from({ length: n }, (_, i) => newRow(SAMPLE[i], i === 0 ? "admin" : "member"));
+    if (n > 0) return Array.from({ length: n }, (_, i) => newRow(SAMPLE[i], SAMPLE_ROLES[i]));
     return [newRow()];
   });
   const [confirmed, setConfirmed] = useState(false);
@@ -68,7 +78,7 @@ export function InviteTeamScreen() {
   const query = buildQuery({ branches: seed.branches, seats: planSeats, billing: seed.billing });
 
   return (
-    <OperatorShell step={6} backHref={`/operator/payment${query}`} query={query} roomy>
+    <OperatorShell step={6} backHref={`/operator/payment${query}`} query={query} wide>
       <h1 className="op-h1">Invite your team.</h1>
       <p className="op-sub" style={{ marginBottom: 26 }}>
         Add anyone who&apos;ll be managing referrals or operating this account. They&apos;ll get an email
@@ -157,8 +167,15 @@ export function InviteTeamScreen() {
             <div className="op-field" style={{ marginBottom: 0 }}>
               <span className="op-field-label">Role</span>
               <div className="op-seg">
-                <button className={`op-seg-opt${r.role === "member" ? " is-active" : ""}`} onClick={() => setRow(r.id, { role: "member" })}>Member</button>
-                <button className={`op-seg-opt${r.role === "admin" ? " is-active" : ""}`} onClick={() => setRow(r.id, { role: "admin" })}>Admin</button>
+                {ROLES.map((role) => (
+                  <button
+                    key={role.key}
+                    className={`op-seg-opt${r.role === role.key ? " is-active" : ""}`}
+                    onClick={() => setRow(r.id, { role: role.key })}
+                  >
+                    {role.label}
+                  </button>
+                ))}
               </div>
             </div>
             <button
