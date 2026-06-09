@@ -178,11 +178,19 @@ export function OperatorShell({
         </header>
       )}
 
-      {/* Right stage — the floating card. */}
+      {/* Right stage — the floating card. Wizard cards fill the stage; the
+          head (back + step counter over a hairline) takes the full width
+          while the form content centers at a readable measure below it. */}
       <div className="op-stage">
         <div className={`op-card${wide ? " is-wide" : ""}${isForm ? "" : " op-card--center"}`}>
+          {isForm && (
+            <div className="op-card-head">
+              {back ?? <span />}
+              {counterLabel && <span className="op-mini-step op-card-step">{counterLabel}</span>}
+            </div>
+          )}
           <div className={`op-card-body ${slide}`}>
-            {back}
+            {!isForm && back}
             {children}
           </div>
         </div>
