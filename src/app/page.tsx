@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  FileDown,
   Laptop,
   Maximize2,
   Minimize2,
@@ -32,6 +33,22 @@ import {
   type AnimationKey,
 } from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
+import { SCREEN_SOURCES } from "@/lib/screenSources";
+
+/** Download the viewed screen's component source as a .jsx file. */
+function downloadScreenJsx(href: string) {
+  const entry = SCREEN_SOURCES[href.split("?")[0]];
+  if (!entry) return;
+  const blob = new Blob([entry.code], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = entry.file;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 type Group = "account" | "plan" | "payment" | "finish" | "brand";
 type RouteIntent = "mobile" | "desktop";
@@ -276,6 +293,7 @@ export default function Home() {
           expanded={expanded}
           onToggleExpanded={toggleExpanded}
           animations={active.animations}
+          activeHref={active.href}
         />
         {!expanded && (
           <CommentsRail
@@ -437,15 +455,18 @@ function Stage({
   expanded,
   onToggleExpanded,
   animations,
+  activeHref,
 }: {
   iframeSrc: string;
   spec: ViewportSpec;
   expanded: boolean;
   onToggleExpanded: () => void;
   animations?: AnimationKey[];
+  activeHref: string;
 }) {
   const ExpandIcon = expanded ? Minimize2 : Maximize2;
   const expandLabel = expanded ? "Exit expanded view" : "Expand canvas (Esc to exit)";
+  const hasSource = !!SCREEN_SOURCES[activeHref.split("?")[0]];
   return (
     <main className="flex flex-1 flex-col overflow-hidden">
       {/* Canvas toolbar — `py-2.5` + `h-8` lands the bar at 52px so its
@@ -457,6 +478,17 @@ function Stage({
           single lockup. */}
       <div className="flex items-center justify-end gap-1.5 border-b border-border-subtle px-4 py-2.5">
         <SourceCodeMenu animations={animations} />
+        {hasSource && (
+          <button
+            type="button"
+            onClick={() => downloadScreenJsx(activeHref)}
+            className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-border bg-card px-2.5 text-[12px] font-medium text-ink-body hover:bg-subtle"
+            title="Download this screen's source as a .jsx file"
+          >
+            <FileDown size={12} strokeWidth={1.75} />
+            .jsx
+          </button>
+        )}
         <button
           type="button"
           onClick={onToggleExpanded}
