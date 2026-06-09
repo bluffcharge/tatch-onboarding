@@ -53,6 +53,10 @@ export function SignInScreen() {
         Enter your credentials to access your account.
       </p>
 
+      <GoogleButton onClick={() => { window.top!.location.href = DASHBOARD; }} />
+
+      <div className="op-or">or continue with email</div>
+
       {error && (
         <div className="op-banner op-banner--error" style={{ marginBottom: 18 }}>
           <span className="op-banner-icon"><TriangleAlert size={16} /></span>
@@ -112,9 +116,6 @@ export function SignInScreen() {
       )}
 
       <button className="op-btn op-btn--primary" onClick={signIn}>Sign in</button>
-
-      <div className="op-or">or</div>
-      <GoogleButton onClick={() => { window.top!.location.href = DASHBOARD; }} />
 
       {SHOW_MAGIC_LINK && (
         <button className="op-btn op-btn--secondary" style={{ marginTop: 10 }} onClick={() => setMagicSent(true)}>

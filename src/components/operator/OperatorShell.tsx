@@ -5,15 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 
-/* The six wizard steps shown in the GET SET UP rail (matches the PM
-   prototype: About you + Your business are distinct steps). */
+/* The wizard steps shown in the GET SET UP rail. Redesign 2026-06-09:
+   credentials are their own first step (Google up top), profile + business
+   follow, and Invite team moves post-payment so it never gates checkout. */
 export const OPERATOR_STEPS = [
-  { n: 1, title: "About you", sub: "Name, email, phone", href: "/operator/account" },
-  { n: 2, title: "Your business", sub: "Company details", href: "/operator/account/business" },
-  { n: 3, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
-  { n: 4, title: "Invite team", sub: "Add your operators", href: "/operator/team" },
+  { n: 1, title: "Create login", sub: "Email or Google", href: "/operator/account" },
+  { n: 2, title: "About you", sub: "Name, phone, address", href: "/operator/account/about" },
+  { n: 3, title: "Your business", sub: "Company details", href: "/operator/account/business" },
+  { n: 4, title: "Choose plan", sub: "Tatch Connect", href: "/operator/plan" },
   { n: 5, title: "Payment", sub: "Confirm & pay", href: "/operator/payment" },
-  { n: 6, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
+  { n: 6, title: "Invite team", sub: "Optional — add operators", href: "/operator/team" },
+  { n: 7, title: "You're all set", sub: "Start using Tatch", href: "/operator/done" },
 ] as const;
 const LAST_STEP = OPERATOR_STEPS.length;
 

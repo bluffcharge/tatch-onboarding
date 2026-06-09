@@ -58,17 +58,17 @@ export function InviteTeamScreen() {
     });
   };
 
+  // Post-payment step: finishing (or skipping) goes straight to activation.
   const proceed = () => {
     if (blocked) return;
-    router.push(`/operator/payment${buildQuery({ branches: seed.branches, seats: planSeats, billing: seed.billing, invites: filled })}`);
+    router.push(`/operator/activating${buildQuery({ invites: filled })}`);
   };
-  const skip = () =>
-    router.push(`/operator/payment${buildQuery({ branches: seed.branches, seats: planSeats, billing: seed.billing, invites: 0 })}`);
+  const skip = () => router.push("/operator/activating");
 
   const query = buildQuery({ branches: seed.branches, seats: planSeats, billing: seed.billing });
 
   return (
-    <OperatorShell step={4} backHref={`/operator/plan${query}`} query={query}>
+    <OperatorShell step={6} backHref={`/operator/payment${query}`} query={query}>
       <h1 className="op-h1">Invite your team.</h1>
       <p className="op-sub" style={{ marginBottom: 26 }}>
         Add anyone who&apos;ll be managing referrals or operating this account. They&apos;ll get an email
@@ -179,7 +179,7 @@ export function InviteTeamScreen() {
       </button>
 
       <button className="op-btn op-btn--primary" disabled={blocked} onClick={proceed}>
-        Continue to payment
+        Send invites &amp; finish
       </button>
 
       <button className="op-tertiary" onClick={skip}>

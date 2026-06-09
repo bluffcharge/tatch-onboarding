@@ -62,46 +62,59 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Default sign-in ↗", href: "/operator/signin" }],
   },
   "/operator/account": {
-    oneLine: "Step 1 of 6 — About you (the primary account owner).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 6: About you" }],
+    oneLine: "Step 1 of 7 — Create login (Google first, or email + password).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 7: Create login" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "Matches the PM prototype: About you + Your business are distinct wizard steps.",
-      "Collects name, email, phone, your address, password + confirm (credentials live here).",
-      "Phone enables texting an app-download link, so the operator lands on their phone.",
-      "Google path pre-fills name + email and drops the password fields.",
+      "Redesign 2026-06-09: credentials are their own step — no profile fields mixed in.",
+      "Google sits ABOVE the email path so the one-click option is seen before any typing.",
+      "Email path: email + password + confirm; Google path skips passwords entirely.",
       "Client-side validation: email format + password rule (≥ 8, one special) + confirm match.",
     ],
     links: [
-      { label: "Via Google (name pre-filled) ↗", href: "/operator/account?via=google" },
-      { label: "Next — your business ↗", href: "/operator/account/business" },
+      { label: "Next — About you ↗", href: "/operator/account/about" },
+      { label: "Google path (lands on About you) ↗", href: "/operator/account/about?via=google" },
       { label: "Validation-error state ↗", href: "/operator/account?error=1" },
     ],
   },
-  "/operator/account?via=google": {
-    oneLine: "Step 1 — About you, arrived via Google (name + email pre-filled).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 6: About you (Google)" }],
+  "/operator/account/about": {
+    oneLine: "Step 2 of 7 — About you (the primary account owner's profile).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 7: About you" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "First/last name + email pulled from Google; password fields drop (Google handles auth).",
+      "Collects first/last name, phone, your address — credentials already captured on step 1.",
+      "Phone enables texting an app-download link, so the operator lands on their phone.",
+      "Auto-fills from Google where possible (?via=google).",
+    ],
+    links: [
+      { label: "Via Google (name pre-filled) ↗", href: "/operator/account/about?via=google" },
+      { label: "Next — your business ↗", href: "/operator/account/business" },
+    ],
+  },
+  "/operator/account/about?via=google": {
+    oneLine: "Step 2 — About you, arrived via Google (name pre-filled).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 7: About you (Google)" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "First/last name pulled from Google; no password existed on step 1 (Google handles auth).",
       "Still collects phone + your address.",
     ],
-    links: [{ label: "Email path ↗", href: "/operator/account" }],
+    links: [{ label: "Email path ↗", href: "/operator/account/about" }],
   },
   "/operator/account/business": {
-    oneLine: "Step 2 of 6 — Your business (the company).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 2 of 6: Your business" }],
+    oneLine: "Step 3 of 7 — Your business (the company).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 7: Your business" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
-      "PM prototype: a distinct step for the business — business name, business phone, business address.",
-      "Distinct from the owner's phone/address captured on step 1 (two phones, two addresses).",
+      "A distinct step for the business — business name, business phone, business address.",
+      "Distinct from the owner's phone/address captured on step 2 (two phones, two addresses).",
       "Business name smart-defaults from the work-email domain (acme.com → Acme).",
       "Continue advances to Choose plan.",
     ],
-    links: [{ label: "Back — About you ↗", href: "/operator/account" }],
+    links: [{ label: "Back — About you ↗", href: "/operator/account/about" }],
   },
   "/operator/account?error=1": {
-    oneLine: "Step 1 edge — About you client-side validation errors.",
+    oneLine: "Step 1 edge — Create login client-side validation errors.",
     flowRefs: [{ flow: OP_FLOW, step: "Step 1: invalid submission" }],
     storyRefs: ["US2 · Create account"],
     reqs: [
@@ -109,18 +122,18 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "NFR2: email format validated client-side.",
       "Confirm-password mismatch flagged; advance blocked until all valid.",
     ],
-    links: [{ label: "Default create-account ↗", href: "/operator/account" }],
+    links: [{ label: "Default create-login ↗", href: "/operator/account" }],
   },
   "/operator/plan": {
-    oneLine: "Step 3 — configure the Tatch Connect plan (Monthly).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 6: Choose plan" }],
+    oneLine: "Step 4 — configure the Tatch Connect plan (Monthly).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 7: Choose plan" }],
     storyRefs: ["US3 · Configure plan"],
     reqs: [
       "FR1: single product, 16-feature list · FR2: monthly/annual, Save 10%.",
       "FR3/FR4: branch + seat steppers, min 1 · $223/branch, $45/user.",
       "FR5: usage fee — $10/lead or 10% of reward, whichever greater; portal free.",
       "FR7/AC1: monthly = (223 × branches) + (45 × seats); recomputes live.",
-      "AC4: selected seat count carries forward to Invite Team.",
+      "AC4: selected seat count carries forward to Payment + Invite Team.",
     ],
     links: [
       { label: "Armen's plan screen ↗", href: ARMEN_PROTOTYPE },
@@ -129,8 +142,8 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     ],
   },
   "/operator/plan?billing=annual": {
-    oneLine: "Step 2 variant — Annual billing (10% off the annual sum).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 6: Choose plan (annual)" }],
+    oneLine: "Step 4 variant — Annual billing (10% off the annual sum).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 7: Choose plan (annual)" }],
     storyRefs: ["US3 · Configure plan"],
     reqs: [
       "FR6/AC2: summary shows discounted /mo + 'billed annually at $X'.",
@@ -140,8 +153,8 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Monthly billing ↗", href: "/operator/plan" }],
   },
   "/operator/plan?branches=3&seats=8": {
-    oneLine: "Step 2 variant — a scaled account (3 branches, 8 seats).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 3 of 6: Choose plan (scaled)" }],
+    oneLine: "Step 4 variant — a scaled account (3 branches, 8 seats).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 7: Choose plan (scaled)" }],
     storyRefs: ["US3 · Configure plan"],
     reqs: [
       "FR7: 223 × 3 + 45 × 8 = $1,029/mo estimate, live.",
@@ -151,14 +164,14 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Default (1 branch / 1 seat) ↗", href: "/operator/plan" }],
   },
   "/operator/team?seats=3": {
-    oneLine: "Step 4 — invite operators; license badge reflects 3 seats.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 4 of 6: Invite team" }],
+    oneLine: "Step 6 — post-payment invite step; license badge reflects 3 seats.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 6 of 7: Invite team (post-payment)" }],
     storyRefs: ["US4 · Invite team"],
     reqs: [
+      "Redesign 2026-06-09: moved AFTER payment so inviting never gates checkout.",
       "FR1: license badge = selected seats ('1 for you, 2 for teammates') + meter.",
       "FR2/FR3: per-row phone/email + Admin/Member; Add another / trash (min 1).",
-      "FR6: under-filling seats still bills the selected count.",
-      "FR8: Skip is equal-weight — never blocks activation.",
+      "FR8: Skip is equal-weight — teammates can be set up later from settings.",
     ],
     links: [
       { label: "Over-seat warning state ↗", href: "/operator/team?seats=3&invites=4" },
@@ -166,27 +179,26 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     ],
   },
   "/operator/team?seats=3&invites=4": {
-    oneLine: "Step 3 edge — invites exceed seats → dynamic license upgrade.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 3: seat overage (US4 AC1)" }],
+    oneLine: "Step 6 edge — invites exceed seats → dynamic license upgrade.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 6: seat overage (US4 AC1)" }],
     storyRefs: ["US4 · Invite team"],
     reqs: [
-      "FR4/AC1: 3 seats + 4 invites (5 users) → warning at $225/mo, Continue disabled.",
-      "FR5/AC2: Confirm upgrade → green banner, badge → 5 seats, Continue enabled.",
+      "FR4/AC1: 3 seats + 4 invites (5 users) → warning at $225/mo, finish disabled.",
+      "FR5/AC2: Confirm upgrade → green banner, badge → 5 seats, finish enabled.",
       "FR9/AC5: Remove extras trims invites back to fit, warning clears.",
-      "FR7: Continue stays disabled while an upgrade is unconfirmed.",
+      "FR7: finishing stays disabled while an upgrade is unconfirmed.",
     ],
     links: [{ label: "Default (within seats) ↗", href: "/operator/team?seats=3" }],
   },
   "/operator/payment?branches=2&seats=4&billing=annual": {
     oneLine: "Step 5 — payment + order summary reflecting the live config.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 5 of 6: Payment" }],
+    flowRefs: [{ flow: OP_FLOW, step: "Step 5 of 7: Payment" }],
     storyRefs: ["US5 · Payment"],
     reqs: [
       "FR1: card number / expiry / CVC / country / ZIP · FR2: Card/ACH toggle.",
       "FR3/AC1: summary = platform×branches + seat×billedSeats, −10% annual, total.",
       "AC1 example: 2 branches, 4 seats, annual → $446 + $180, −10%, $563/mo, $6,7xx/yr.",
-      "FR4: upgraded seats note ('Includes N extra seats from invites').",
-      "FR5/FR6: security line; Confirm & subscribe → activation.",
+      "FR5/FR6: security line; Confirm & subscribe → Invite team (post-payment).",
     ],
     links: [
       { label: "ACH variant ↗", href: "/operator/payment?method=ach" },
@@ -194,8 +206,8 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     ],
   },
   "/operator/payment?method=ach": {
-    oneLine: "Step 4 variant — ACH bank transfer (non-functional in v1 per PRD).",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 5 of 6: Payment (ACH)" }],
+    oneLine: "Step 5 variant — ACH bank transfer (non-functional in v1 per PRD).",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 5 of 7: Payment (ACH)" }],
     storyRefs: ["US5 · Payment"],
     reqs: [
       "FR2: ACH toggle present; PRD defers ACH implementation to v2.",
@@ -206,7 +218,7 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
   },
   "/operator/activating": {
     oneLine: "Transition — provisioning the Tatch Connect account.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 5 → 6 (transition)" }],
+    flowRefs: [{ flow: OP_FLOW, step: "Step 6 → 7 (transition)" }],
     storyRefs: ["US7 · Activation"],
     reqs: [
       "FR1: gradient orb + 'Setting up your account…' for ~2–3s, then success.",
@@ -216,8 +228,8 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     links: [{ label: "Armen's success screen ↗", href: ARMEN_PROTOTYPE }],
   },
   "/operator/done?invites=3": {
-    oneLine: "Step 6 — account ready; success reports the invite count.",
-    flowRefs: [{ flow: OP_FLOW, step: "Step 6 of 6: You're all set" }],
+    oneLine: "Step 7 — account ready; success reports the invite count.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 7 of 7: You're all set" }],
     storyRefs: ["US7 · Activation"],
     reqs: [
       "FR2/AC1: gradient check, 'You're all set.', + 'N teammates have been invited'.",

@@ -38,7 +38,7 @@ export function ChoosePlanScreen() {
   const query = buildQuery({ branches, seats, billing });
 
   return (
-    <OperatorShell step={3} backHref={`/operator/account/business`} query={query} wide>
+    <OperatorShell step={4} backHref={`/operator/account/business`} query={query} wide>
       <h1 className="op-h1">Tatch Connect.</h1>
       <p className="op-sub" style={{ marginBottom: 22 }}>
         Everything you need to launch and manage your referral partner program.
@@ -123,7 +123,7 @@ export function ChoosePlanScreen() {
         </div>
         <button
           className="op-btn op-btn--primary op-btn--inline"
-          onClick={() => router.push(`/operator/team${buildQuery({ branches, seats, billing })}`)}
+          onClick={() => router.push(`/operator/payment${buildQuery({ branches, seats, billing })}`)}
         >
           Continue <ArrowRight size={17} />
         </button>

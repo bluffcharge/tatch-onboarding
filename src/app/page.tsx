@@ -78,29 +78,30 @@ type Route = {
 // "Tatch Creative Roadmap" brand (Urbanist, ink-on-white, black CTAs).
 // Variant rows (annual plan, ACH payment) are the canvas "view selectors".
 const ALL_ROUTES: Route[] = [
-  { href: "/operator/signin",                  title: "Sign in",                subtitle: "Email · password · Google",               group: "account", intent: "desktop" },
+  { href: "/operator/signin",                  title: "Sign in",                subtitle: "Google up top · email below",             group: "account", intent: "desktop" },
   { href: "/operator/signin?error=1",          title: "Sign in — error",        subtitle: "Invalid credentials state",               group: "account", intent: "desktop" },
-  { href: "/operator/account",                 title: "About you · 1 of 6",     subtitle: "Step 1 · name · email · phone · address · password", group: "account", intent: "desktop" },
-  { href: "/operator/account?via=google",      title: "About you · via Google", subtitle: "Step 1 · name pre-filled, no password",   group: "account", intent: "desktop" },
-  { href: "/operator/account/business",        title: "Your business · 2 of 6", subtitle: "Step 2 · business name · phone · address", group: "account", intent: "desktop" },
-  { href: "/operator/account?error=1",         title: "About you — errors",     subtitle: "Step 1 · client-side validation",         group: "account", intent: "desktop" },
-  { href: "/operator/plan",                    title: "Choose plan — monthly",  subtitle: "Step 3 · Tatch Connect",                  group: "plan",    intent: "desktop" },
-  { href: "/operator/plan?billing=annual",     title: "Choose plan — annual",   subtitle: "Step 3 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
-  { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled",   subtitle: "Step 3 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
-  { href: "/operator/team?seats=3",            title: "Invite team",            subtitle: "Step 4 · seats + roles",                  group: "plan",    intent: "desktop" },
-  { href: "/operator/team?seats=3&invites=4",  title: "Invite team — overage",  subtitle: "Step 4 · over-seat warning",              group: "plan",    intent: "desktop" },
+  { href: "/operator/account",                 title: "Create login · 1 of 7",  subtitle: "Step 1 · Google first, or email + password", group: "account", intent: "desktop" },
+  { href: "/operator/account?error=1",         title: "Create login — errors",  subtitle: "Step 1 · client-side validation",         group: "account", intent: "desktop" },
+  { href: "/operator/account/about",           title: "About you · 2 of 7",     subtitle: "Step 2 · name · phone · address",          group: "account", intent: "desktop" },
+  { href: "/operator/account/about?via=google", title: "About you · via Google", subtitle: "Step 2 · name pre-filled from Google",   group: "account", intent: "desktop" },
+  { href: "/operator/account/business",        title: "Your business · 3 of 7", subtitle: "Step 3 · business name · phone · address", group: "account", intent: "desktop" },
+  { href: "/operator/plan",                    title: "Choose plan — monthly",  subtitle: "Step 4 · Tatch Connect",                  group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?billing=annual",     title: "Choose plan — annual",   subtitle: "Step 4 · billed yearly (−10%)",           group: "plan",    intent: "desktop" },
+  { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled",   subtitle: "Step 4 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
   { href: "/operator/payment?branches=2&seats=4&billing=annual", title: "Payment — card", subtitle: "Step 5 · dynamic order summary",   group: "payment", intent: "desktop" },
   { href: "/operator/payment?method=ach",      title: "Payment — ACH",          subtitle: "Step 5 · bank transfer variant",          group: "payment", intent: "desktop" },
+  { href: "/operator/team?seats=3",            title: "Invite team",            subtitle: "Step 6 · post-payment · skippable",       group: "payment", intent: "desktop" },
+  { href: "/operator/team?seats=3&invites=4",  title: "Invite team — overage",  subtitle: "Step 6 · over-seat warning",              group: "payment", intent: "desktop" },
   { href: "/operator/activating",              title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
-  { href: "/operator/done?invites=3",          title: "You're all set",         subtitle: "Step 6 · account ready",                  group: "finish",  intent: "desktop" },
+  { href: "/operator/done?invites=3",          title: "You're all set",         subtitle: "Step 7 · account ready",                  group: "finish",  intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
 
 const GROUP_LABEL: Record<Group, string> = {
   account: "Account",
-  plan:    "Plan & team",
-  payment: "Payment",
+  plan:    "Plan",
+  payment: "Payment & team",
   finish:  "Finish",
 };
 

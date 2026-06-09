@@ -15,6 +15,7 @@ const dir = join(root, "src/components/operator");
 const MAP = {
   "/operator/signin": "SignInScreen.tsx",
   "/operator/account": "CreateAccountScreen.tsx",
+  "/operator/account/about": "AboutYouScreen.tsx",
   "/operator/account/business": "CreateAccountBusinessScreen.tsx",
   "/operator/plan": "ChoosePlanScreen.tsx",
   "/operator/team": "InviteTeamScreen.tsx",
