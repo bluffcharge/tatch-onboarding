@@ -8,6 +8,7 @@ import { TextField } from "@/components/ui/TextField";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { AddressAutocomplete, type StructuredAddress } from "@/components/ui/AddressAutocomplete";
 import { OnboardingShell } from "./OnboardingShell";
+import { CardBack } from "./CardBack";
 import { useInvite } from "@/lib/useInvite";
 
 /**
@@ -46,12 +47,12 @@ export function FinishAccountScreen() {
   return (
     <OnboardingShell
       step={{ current: 1, total: 3 }}
-      backHref="/onboarding/auth"
       journey={{ currentKey: "business" }}
       center
       vAlign="top"
     >
       <div className="mt-2 md:mt-0 md:mx-auto md:w-full md:max-w-[440px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
+        <CardBack href="/onboarding/auth" />
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           Last step.
         </h1>

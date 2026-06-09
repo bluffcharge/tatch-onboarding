@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { OnboardingShell } from "./OnboardingShell";
+import { CardBack } from "./CardBack";
 import { TextField } from "@/components/ui/TextField";
 import { useInvite } from "@/lib/useInvite";
 import { mockGoogleProfile, type InviteContext } from "@/lib/mockInvite";
@@ -72,7 +73,6 @@ export function AuthScreen() {
 
   return (
     <OnboardingShell
-      backHref="/j/abc123"
       journey={{ currentKey: "auth" }}
       center
     >
@@ -80,6 +80,7 @@ export function AuthScreen() {
           Armen signed off on). On md+ the form sits in a centered card in the
           right pane; on mobile it stays a plain top-aligned form. */}
       <div className="mt-2 md:mt-0 md:mx-auto md:w-[440px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
+        <CardBack href="/j/abc123" />
         {/* Operator-context breadcrumb — only on create (sign-in is for
             returning users, not necessarily inside an invite). */}
         {isCreate && (
