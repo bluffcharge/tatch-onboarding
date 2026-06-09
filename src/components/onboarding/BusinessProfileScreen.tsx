@@ -7,6 +7,7 @@ import { TextField } from "@/components/ui/TextField";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { AddressAutocomplete, type StructuredAddress } from "@/components/ui/AddressAutocomplete";
 import { OnboardingShell } from "./OnboardingShell";
+import { CardBack } from "./CardBack";
 import { useInvite } from "@/lib/useInvite";
 
 export function BusinessProfileScreen() {
@@ -50,7 +51,6 @@ export function BusinessProfileScreen() {
   return (
     <OnboardingShell
       step={{ current: 1, total: 3 }}
-      backHref="/onboarding/auth"
       journey={{ currentKey: "business" }}
       center
       vAlign="top"
@@ -58,6 +58,7 @@ export function BusinessProfileScreen() {
       {/* Floating card frame on md+ (matches the create-account step Armen
           signed off on); plain top-aligned form on mobile. */}
       <div className="mt-2 md:mx-auto md:mt-0 md:w-full md:max-w-[520px] md:rounded-3xl md:border md:border-border md:bg-card md:p-8 md:shadow-lg">
+        <CardBack href="/onboarding/auth" />
         <h1 className="t-h2 mb-2 md:text-[28px] md:leading-tight lg:text-[32px]">
           A few details to finish.
         </h1>
