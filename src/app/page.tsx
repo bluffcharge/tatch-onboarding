@@ -82,6 +82,8 @@ const ALL_ROUTES: Route[] = [
   { href: "/operator/signin?error=1",          title: "Sign in — error",        subtitle: "Invalid credentials state",               group: "account", intent: "desktop" },
   { href: "/operator/account",                 title: "Create login · 1 of 7",  subtitle: "Step 1 · Google first, or email + password", group: "account", intent: "desktop" },
   { href: "/operator/account?error=1",         title: "Create login — errors",  subtitle: "Step 1 · client-side validation",         group: "account", intent: "desktop" },
+  { href: "/operator/account/verify?email=jane%40acmeroofing.com", title: "Verify email", subtitle: "Step 1 · 6-digit code · resend",  group: "account", intent: "desktop" },
+  { href: "/operator/account/verify?email=jane%40acmeroofing.com&error=1", title: "Verify email — wrong code", subtitle: "Step 1 · mismatch state", group: "account", intent: "desktop" },
   { href: "/operator/account/about",           title: "About you · 2 of 7",     subtitle: "Step 2 · name · phone · address",          group: "account", intent: "desktop" },
   { href: "/operator/account/about?via=google", title: "About you · via Google", subtitle: "Step 2 · name pre-filled from Google",   group: "account", intent: "desktop" },
   { href: "/operator/account/business",        title: "Your business · 3 of 7", subtitle: "Step 3 · business name · phone · address", group: "account", intent: "desktop" },

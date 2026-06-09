@@ -32,9 +32,11 @@ export function CreateAccountScreen() {
   const valid = !emailErr && !!email && !pwErr && !confirmErr && !!password && !!confirm;
   const showErr = (msg: string) => submitted && !!msg;
 
+  // Email logins verify the address next; Google arrivals skip straight to
+  // the profile step (the address is already verified).
   const next = () => {
     setSubmitted(true);
-    if (valid) router.push(`/operator/account/about?email=${encodeURIComponent(email)}`);
+    if (valid) router.push(`/operator/account/verify?email=${encodeURIComponent(email)}`);
   };
 
   return (

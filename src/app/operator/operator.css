@@ -377,6 +377,28 @@
 .op-field-error { display: block; font-size: 12.5px; color: var(--op-error); margin-top: 7px; }
 .op-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+/* Verification-code boxes (verify email) */
+.op-otp { display: flex; gap: 10px; }
+.op-otp input {
+  width: 52px; height: 56px;
+  padding: 0;
+  text-align: center;
+  font-family: var(--op-font);
+  font-size: 22px; font-weight: 700;
+  color: var(--op-ink);
+  background: var(--op-bg);
+  border: 1px solid var(--op-dash);
+  border-radius: var(--op-r-input);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.op-otp input:focus {
+  outline: none;
+  border-color: var(--op-accent);
+  box-shadow: 0 0 0 3px var(--op-accent-soft);
+}
+.op-otp input.is-error { border-color: var(--op-error); }
+.op-otp input.is-error:focus { box-shadow: 0 0 0 3px var(--op-error-soft); }
+
 /* Address autocomplete dropdown — anchored to the input, opens upward
    (address is the last field, so a drop-down clips against the card edge). */
 .op-suggest {

@@ -68,14 +68,42 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     reqs: [
       "Redesign 2026-06-09: credentials are their own step — no profile fields mixed in.",
       "Google sits ABOVE the email path so the one-click option is seen before any typing.",
-      "Email path: email + password + confirm; Google path skips passwords entirely.",
+      "Email path: email + password + confirm, then a 6-digit email verification.",
+      "Google path skips passwords AND verification (Google already verified the address).",
       "Client-side validation: email format + password rule (≥ 8, one special) + confirm match.",
     ],
     links: [
-      { label: "Next — About you ↗", href: "/operator/account/about" },
+      { label: "Next — verify email ↗", href: "/operator/account/verify?email=jane%40acmeroofing.com" },
       { label: "Google path (lands on About you) ↗", href: "/operator/account/about?via=google" },
       { label: "Validation-error state ↗", href: "/operator/account?error=1" },
     ],
+  },
+  "/operator/account/verify?email=jane%40acmeroofing.com": {
+    oneLine: "Step 1, part two — prove the email with a 6-digit code.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1 of 7: Create login (verify email)" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "Code sent to the entered address; 6 cells auto-advance, accept paste, backspace steps back.",
+      "Verify & continue stays disabled until all 6 digits are in.",
+      "Resend swaps to a confirmation line (one resend per visit in the prototype).",
+      "Still 'Step 1 of 7' — verification is part of creating the login, not a rail step.",
+      "Google arrivals never see this screen.",
+    ],
+    links: [
+      { label: "Wrong-code state ↗", href: "/operator/account/verify?email=jane%40acmeroofing.com&error=1" },
+      { label: "Next — About you ↗", href: "/operator/account/about" },
+    ],
+  },
+  "/operator/account/verify?email=jane%40acmeroofing.com&error=1": {
+    oneLine: "Verify-email edge — the entered code doesn't match.",
+    flowRefs: [{ flow: OP_FLOW, step: "Step 1: failed verification" }],
+    storyRefs: ["US2 · Create account"],
+    reqs: [
+      "Error banner + error-styled cells; typing any digit clears the error.",
+      "Continue blocked while the error stands; resend clears the code and the error.",
+      "Expiry framed in copy (10 minutes) — matches the PRD's open question on verification.",
+    ],
+    links: [{ label: "Default verify screen ↗", href: "/operator/account/verify?email=jane%40acmeroofing.com" }],
   },
   "/operator/account/about": {
     oneLine: "Step 2 of 7 — About you (the primary account owner's profile).",

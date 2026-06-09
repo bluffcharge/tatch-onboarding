@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type ClipboardEvent, type KeyboardEvent } from "react";
 import { MapPin } from "lucide-react";
 
 /* Roadmap-styled phone + address inputs for the create-account profile step.
@@ -104,5 +104,70 @@ export function AddressField({
       </span>
       {helper && <span className="op-field-hint">{helper}</span>}
     </label>
+  );
+}
+
+/** Roadmap-styled 6-cell verification-code input. Interaction model ported
+    from the DIS onboarding OtpInput (auto-advance, paste, backspace-steps-
+    back) but controlled by a single string and dressed in operator tokens. */
+export function CodeInput({
+  value,
+  onChange,
+  length = 6,
+  hasError = false,
+}: {
+  value: string;
+  onChange: (code: string) => void;
+  length?: number;
+  hasError?: boolean;
+}) {
+  const refs = useRef<Array<HTMLInputElement | null>>([]);
+  const digits = Array.from({ length }, (_, i) => value[i] ?? "");
+
+  useEffect(() => {
+    refs.current[0]?.focus();
+  }, []);
+
+  const commit = (next: string[]) => onChange(next.join("").slice(0, length));
+
+  const handleChange = (i: number, raw: string) => {
+    const digit = raw.replace(/\D/g, "").slice(-1);
+    const next = [...digits];
+    next[i] = digit;
+    commit(next);
+    if (digit && i < length - 1) refs.current[i + 1]?.focus();
+  };
+
+  const handleKey = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !digits[i] && i > 0) refs.current[i - 1]?.focus();
+    if (e.key === "ArrowLeft" && i > 0) refs.current[i - 1]?.focus();
+    if (e.key === "ArrowRight" && i < length - 1) refs.current[i + 1]?.focus();
+  };
+
+  const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
+    if (!pasted) return;
+    e.preventDefault();
+    onChange(pasted);
+    refs.current[Math.min(pasted.length, length - 1)]?.focus();
+  };
+
+  return (
+    <div className="op-otp">
+      {digits.map((d, i) => (
+        <input
+          key={i}
+          ref={(el) => { refs.current[i] = el; }}
+          inputMode="numeric"
+          autoComplete={i === 0 ? "one-time-code" : "off"}
+          value={d}
+          aria-label={`Verification code digit ${i + 1} of ${length}`}
+          className={hasError ? "is-error" : undefined}
+          onChange={(e) => handleChange(i, e.target.value)}
+          onKeyDown={(e) => handleKey(i, e)}
+          onPaste={handlePaste}
+        />
+      ))}
+    </div>
   );
 }
