@@ -50,7 +50,7 @@ function downloadScreenJsx(href: string) {
   URL.revokeObjectURL(url);
 }
 
-type Group = "account" | "plan" | "payment" | "finish" | "brand";
+type Group = "account" | "plan" | "payment" | "finish";
 type RouteIntent = "mobile" | "desktop";
 
 type Route = {
@@ -93,11 +93,6 @@ const ALL_ROUTES: Route[] = [
   { href: "/operator/payment?method=ach",      title: "Payment — ACH",          subtitle: "Step 5 · bank transfer variant",          group: "payment", intent: "desktop" },
   { href: "/operator/activating",              title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
   { href: "/operator/done?invites=3",          title: "You're all set",         subtitle: "Step 6 · account ready",                  group: "finish",  intent: "desktop" },
-  // Brand A/B — same screens re-skinned to the PRD/partner system (DM Sans,
-  // lavender, dark buttons) to tee up the roadmap-vs-PRD brand decision.
-  { href: "/operator/account?brand=prd",                 title: "Create account · PRD brand", subtitle: "DM Sans · lavender · vs roadmap",  group: "brand", intent: "desktop" },
-  { href: "/operator/plan?brand=prd",                    title: "Choose plan · PRD brand",    subtitle: "Compare against the roadmap plan", group: "brand", intent: "desktop" },
-  { href: "/operator/team?seats=3&invites=4&brand=prd",  title: "Invite team · PRD brand",    subtitle: "Dynamic license in PRD skin",      group: "brand", intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
@@ -107,7 +102,6 @@ const GROUP_LABEL: Record<Group, string> = {
   plan:    "Plan & team",
   payment: "Payment",
   finish:  "Finish",
-  brand:   "Brand A/B",
 };
 
 // Note: route is NOT persisted. Every refresh lands on ROUTES[0] (P1) with
@@ -669,7 +663,6 @@ const GROUP_PIP: Record<Group, string> = {
   plan:    "bg-royal-400",
   payment: "bg-[#7C5CFC]",
   finish:  "bg-[#1FA971]",
-  brand:   "bg-[#8145FF]",
 };
 
 function FilmCard({
