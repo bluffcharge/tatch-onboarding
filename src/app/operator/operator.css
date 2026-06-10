@@ -711,7 +711,8 @@
   font-size: 13.5px; font-weight: 700; color: var(--op-ink);
   padding: 16px 0 26px;
 }
-.op-add-another:hover { color: var(--op-accent); }
+.op-add-another:hover:not(:disabled) { color: var(--op-accent); }
+.op-add-another:disabled { color: var(--op-faint); cursor: not-allowed; }
 
 /* --------------------------------------------------------------------- */
 /* Payment                                                                */

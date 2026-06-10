@@ -200,6 +200,7 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Redesign 2026-06-09: moved AFTER payment so inviting never gates checkout.",
       "FR1: license badge = billed seats ('1 for you, 2 for teammates') + meter.",
       "FR2/FR3: per-row phone/email + Admin / Manager / BDM / Member; Add another / trash (min 1).",
+      "Add another stays disabled until every row is filled — blank rows can't stack.",
       "Inviting past the seat count auto-grows the plan — no blocking confirm (see auto-upgrade state).",
       "FR8: Skip is equal-weight — teammates can be set up later from settings.",
     ],

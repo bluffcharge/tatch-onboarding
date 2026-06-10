@@ -49,6 +49,10 @@ export function InviteTeamScreen() {
   const base = pricing({ ...wiz, invites: 0 });
   const upgraded = pricing({ ...wiz, invites: filled });
 
+  /* An empty row already IS the "another" — gate the add until every row is
+     filled, so stacking blanks can't desync the list from the seat pricing. */
+  const canAdd = rows.every((r) => r.value.trim().length > 0);
+
   const setRow = (id: number, patch: Partial<Invite>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   const addRow = () => setRows((rs) => [...rs, newRow()]);
@@ -133,7 +137,13 @@ export function InviteTeamScreen() {
         ))}
       </div>
 
-      <button className="op-add-another" type="button" onClick={addRow}>
+      <button
+        className="op-add-another"
+        type="button"
+        onClick={addRow}
+        disabled={!canAdd}
+        title={canAdd ? undefined : "Fill in the empty invite above first"}
+      >
         <Plus size={16} /> Add another
       </button>
 
