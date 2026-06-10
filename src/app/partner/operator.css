@@ -1,0 +1,966 @@
+/* ==========================================================================
+   Operator onboarding — "Tatch Creative Roadmap" brand
+   ------------------------------------------------------------------------
+   A self-contained skin for the operator signup flow, scoped under
+   `.operator-root` so it never touches the existing DIS onboarding brand
+   (P1–P7). Governed by ~/Desktop/SUX/design.md:
+
+     · Urbanist (400 / 600 / 800), heavy display headings, quiet body
+     · monochrome ink-on-white foundation, hairline borders, soft surfaces
+     · purple #7C5CFC is a *focused accent only* (links) — never a fill
+     · CTAs are black (--op-ink) per Rob's note ("keep them black")
+     · radii 20 / 12 / 6, soft ink-tinted shadows · Attio-calm
+
+   Dual-theme — light is the design target; a zinc-based dark set (bottom of
+   this file) follows the canvas theme toggle, which propagates [data-theme]
+   parent → iframe via the ThemeProvider's storage listener.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap');
+/* DM Sans — only used by the PRD/partner-system brand option (?brand=prd). */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
+
+.operator-root {
+  /* Foundation (neutral) */
+  --op-ink:       #0B0B0C; /* primary text + inverse-neutral fill (CTAs, active toggles) */
+  --op-ink-hover: #232326; /* primary-fill hover */
+  --op-on-ink:    #FFFFFF; /* foreground on filled-ink elements */
+  --op-bg:     #FFFFFF;
+  --op-page:   #F2F3F5; /* page behind the card — a step darker than soft so white reads as a card */
+  --op-soft:   #F5F6F7;
+  --op-soft2:  #FAFAFB;
+  --op-muted:  #6E6E74;
+  --op-faint:  #9A9AA0;
+  --op-line:   #ECECEF;
+  --op-dash:   #DCDCE1;
+
+  /* Brand accent (proposed) — links / focus only, never a fill */
+  --op-accent:      #7C5CFC;
+  --op-accent-deep: #4F32C4;
+  --op-accent-soft: #EFEBFE;
+  --op-glow:        rgba(124, 92, 252, 0.06); /* backdrop gradient bloom */
+
+  /* Functional */
+  --op-success: #1FA971;
+  --op-success-soft: #E7F6EF;
+  --op-error: #DA2B2C;
+  --op-error-soft: #FBECEC;
+
+  /* Radius */
+  --op-r-input: 8px;
+  --op-r-btn:   12px;
+  --op-r-card:  20px;
+  --op-r-pill:  999px;
+
+  /* Shadow */
+  --op-shadow:       0 1px 2px rgba(11,11,12,.04), 0 18px 40px rgba(11,11,12,.07);
+  --op-shadow-hover: 0 7px 20px rgba(11,11,12,.12);
+
+  --op-font: 'Urbanist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  font-family: var(--op-font);
+  color: var(--op-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Standing rule: never leave a single word alone on the last line.
+     `pretty` pulls an orphan down across all body copy; display/intro text
+     gets `balance` below for evenly-weighted 2–3-word lines. */
+  text-wrap: pretty;
+}
+.operator-root :is(.op-h1, .op-sub, .op-section-label, .op-banner-title,
+  .op-seat-title, .op-tile-head, .op-note-title, .op-order-plan, .op-summary-label) {
+  text-wrap: balance;
+}
+
+.operator-root *,
+.operator-root *::before,
+.operator-root *::after { box-sizing: border-box; }
+
+/* --------------------------------------------------------------------- */
+/* App + card shell                                                       */
+/* --------------------------------------------------------------------- */
+
+.op-app {
+  position: relative;
+  min-height: 100dvh;
+  background: var(--op-page);
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+}
+/* Soft gradient backdrop behind the rail + floating card. */
+.op-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 620px at 86% -10%, var(--op-glow), transparent 62%),
+    var(--op-page);
+}
+
+/* Brand lockup */
+.op-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--op-ink); }
+.op-brand svg { width: 19px; height: auto; }
+.op-brand-word { font-weight: 800; font-size: 20px; letter-spacing: -0.03em; }
+
+/* Top bar — wordmark (center screens) / wordmark + step (wizard mobile). */
+.op-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  position: relative; z-index: 2;
+}
+.op-mini-step {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 10px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--op-muted);
+  background: var(--op-bg); border: 1px solid var(--op-line); border-radius: 999px;
+}
+.op-mini-step::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--op-accent); }
+
+/* Left side (desktop only) — wordmark + rail + footer on the bare page. */
+.op-side { display: none; }
+.op-rail { width: 100%; }
+
+/* Footer note */
+.op-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.op-foot-meta { font-size: 12.5px; color: var(--op-faint); }
+.op-foot-links { display: inline-flex; gap: 14px; }
+.op-foot-links a { font-size: 12.5px; color: var(--op-accent); text-decoration: none; }
+.op-foot-links a:hover { text-decoration: underline; }
+
+/* Right stage — holds the floating card. On mobile the card goes full-bleed
+   (no side gutters) — the card illusion comes from the top + bottom gaps. */
+.op-stage {
+  position: relative; z-index: 1;
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 12px 0 20px;
+  gap: 16px;
+}
+
+/* The floating white card. */
+.op-card {
+  position: relative;
+  width: 100%;
+  max-width: 100%; /* full-bleed on mobile; re-capped at ≥820 */
+  max-height: calc(100dvh - 90px);
+  overflow-y: auto; overflow-x: hidden;
+  background: var(--op-bg);
+  border: 1px solid var(--op-line);
+  border-radius: 24px;
+  box-shadow: var(--op-shadow);
+  padding: 28px 22px 26px;
+}
+.op-card-body { position: relative; padding-bottom: 4px; }
+
+/* Card head — back chevron + step counter. On mobile it's just the back row;
+   ≥820 it runs a hairline across the full card width (the wide canvas gets
+   its structure from this line, not from stretched content). */
+.op-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.op-card-head .op-back { margin-bottom: 0; }
+.op-card-step { display: none; }
+
+/* Terminal screens (activating / done) — centered content inside the card. */
+.op-terminal {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 18px 6px;
+}
+.op-terminal .op-orb { margin-left: auto; margin-right: auto; }
+.op-terminal .op-btn { width: auto; min-width: 220px; margin-top: 24px; }
+.op-terminal .op-sub { max-width: 360px; }
+
+/* --------------------------------------------------------------------- */
+/* Desktop frame — rail on the page (left) + card centered (right)        */
+/* --------------------------------------------------------------------- */
+@media (min-width: 820px) {
+  /* Wizard screens: rail + stage in a row. Center screens stay a single
+     column with the wordmark floated top-left over a full-width stage. */
+  .op-app { flex-direction: row; }
+  .op-app.is-center { flex-direction: column; }
+  .op-topbar--wizard { display: none; } /* mobile-only wizard bar */
+  .op-app.is-center .op-topbar { position: absolute; top: 10px; left: 18px; }
+  .op-side {
+    flex: 0 0 320px;
+    display: flex; flex-direction: column;
+    padding: 44px 38px;
+    position: relative; z-index: 1;
+  }
+  .op-side .op-rail { margin: 38px 0; }
+  .op-side .op-foot { margin-top: auto; }
+  .op-stage { padding: 40px; min-height: 100dvh; }
+  /* The card is the canvas: it fills the stage beside the rail (~80% of the
+     viewport) and holds a comfortable height even when the form is short.
+     Content centers at a readable measure via .op-card-body below. */
+  .op-card {
+    max-width: 1280px;
+    min-height: min(680px, calc(100dvh - 80px));
+    max-height: calc(100dvh - 80px);
+    padding: 16px 36px 28px;
+    display: flex; flex-direction: column;
+  }
+  .op-card-head {
+    flex: 0 0 auto;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--op-line);
+    margin-bottom: 30px;
+  }
+  .op-card-step { display: inline-flex; }
+  /* Default form column = the 440px auth measure (same as sign-in).
+     is-wide (plan / payment grids, invite team's 4-role rows) gets 860. */
+  .op-card-body { width: 100%; max-width: 440px; margin: 0 auto; }
+  .op-card.is-wide .op-card-body { max-width: 860px; }
+  /* Center screens (sign-in / terminal): content floats mid-canvas at an
+     auth-form measure — single-column fields past ~440px read as ridiculous. */
+  .op-card--center .op-card-body { margin: auto; padding: 38px 0; max-width: 440px; }
+}
+
+@media (min-width: 1280px) {
+  .op-side { flex-basis: 360px; padding: 56px 44px; }
+  .op-card { padding: 18px 48px 36px; }
+  .op-h1 { font-size: 40px; }
+}
+
+@media (min-width: 1700px) {
+  .op-side { flex-basis: 420px; padding: 76px 56px; }
+  .op-card { max-width: 1360px; }
+  .op-card-body { max-width: 480px; }
+  .op-card.is-wide .op-card-body { max-width: 920px; }
+  .op-h1 { font-size: 46px; }
+}
+
+/* --------------------------------------------------------------------- */
+/* Wizard rail (GET SET UP)                                               */
+/* --------------------------------------------------------------------- */
+
+.op-rail-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--op-faint);
+  margin-bottom: 22px;
+}
+.op-steps { display: flex; flex-direction: column; }
+.op-step {
+  position: relative;
+  padding-bottom: 22px;
+}
+.op-step:last-child { padding-bottom: 0; }
+.op-step-hit {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 8px;
+}
+.op-step.is-link .op-step-hit { cursor: pointer; }
+.op-step.is-link .op-step-hit:hover .op-step-title {
+  color: var(--op-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.op-step.is-link .op-step-hit:hover .op-step-dot { border-color: var(--op-accent); }
+/* connector line */
+.op-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 13px; top: 30px; bottom: 4px;
+  width: 1.5px;
+  background: var(--op-line);
+}
+.op-step.is-done:not(:last-child)::before { background: var(--op-ink); }
+
+.op-step-dot {
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  font-size: 12.5px; font-weight: 700;
+  border: 1.5px solid var(--op-dash);
+  color: var(--op-faint);
+  background: var(--op-bg);
+}
+/* Active = "now" → violet ring + soft halo (field-brand "alive/now" rule). */
+.op-step.is-active .op-step-dot {
+  border-color: var(--op-accent);
+  color: var(--op-ink);
+  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.12);
+}
+.op-step.is-done .op-step-dot {
+  background: var(--op-ink);
+  border-color: var(--op-ink);
+  color: var(--op-on-ink);
+}
+.op-step-text { padding-top: 3px; }
+.op-step-title,
+.op-step-sub { display: block; }
+.op-step-title { font-size: 14px; font-weight: 700; color: var(--op-faint); line-height: 1.2; }
+.op-step.is-active .op-step-title,
+.op-step.is-done .op-step-title { color: var(--op-ink); }
+.op-step-sub { font-size: 12.5px; color: var(--op-faint); margin-top: 2px; line-height: 1.2; }
+
+/* --------------------------------------------------------------------- */
+/* Type                                                                   */
+/* --------------------------------------------------------------------- */
+
+.op-back {
+  display: inline-grid; place-items: center;
+  width: 30px; height: 30px;
+  border-radius: 999px;
+  color: var(--op-faint);
+  margin-bottom: 14px;
+  margin-left: -6px;
+}
+.op-back:hover { background: var(--op-soft); color: var(--op-ink); }
+
+.op-h1 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  color: var(--op-ink);
+}
+.op-sub {
+  font-size: 16px;
+  font-weight: 400; /* quiet body against 800 headings — the contrast IS the brand */
+  color: var(--op-muted);
+  line-height: 1.55;
+  margin-top: 10px;
+}
+.op-section-label {
+  font-size: 13px; font-weight: 700; color: var(--op-ink);
+  margin: 0 0 14px;
+}
+
+/* --------------------------------------------------------------------- */
+/* Fields                                                                 */
+/* --------------------------------------------------------------------- */
+
+.op-field { display: block; margin-bottom: 18px; }
+.op-field-label {
+  display: block;
+  font-size: 13px; font-weight: 600;
+  color: var(--op-ink);
+  margin-bottom: 7px;
+}
+.op-input,
+.op-select {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  font-family: var(--op-font);
+  font-size: 15px;
+  color: var(--op-ink);
+  background: var(--op-bg);
+  border: 1px solid var(--op-dash);
+  border-radius: var(--op-r-input);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.op-input::placeholder { color: var(--op-faint); }
+.op-input:focus,
+.op-select:focus {
+  outline: none;
+  border-color: var(--op-accent);
+  box-shadow: 0 0 0 3px var(--op-accent-soft);
+}
+.op-input-wrap { position: relative; }
+.op-input-wrap .op-input { padding-right: 44px; }
+.op-input-affix {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--op-faint); display: inline-grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+}
+.op-field-hint { font-size: 12.5px; color: var(--op-faint); margin-top: 7px; }
+/* Price tag on field labels (extra invite seats beyond the plan). */
+.op-label-extra { color: var(--op-accent); font-weight: 700; }
+.op-input.is-error { border-color: var(--op-error); }
+.op-input.is-error:focus { box-shadow: 0 0 0 3px var(--op-error-soft); }
+/* Read-only identity fields (login email on About you) — visibly inert. */
+.op-input.is-readonly { background: var(--op-soft2); color: var(--op-muted); cursor: default; }
+.op-input.is-readonly:focus { border-color: var(--op-dash); box-shadow: none; }
+.op-field-error { display: block; font-size: 12.5px; color: var(--op-error); margin-top: 7px; }
+.op-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Verification-code boxes (verify email) */
+.op-otp { display: flex; gap: 10px; }
+.op-otp input {
+  width: 52px; height: 56px;
+  padding: 0;
+  text-align: center;
+  font-family: var(--op-font);
+  font-size: 22px; font-weight: 700;
+  color: var(--op-ink);
+  background: var(--op-bg);
+  border: 1px solid var(--op-dash);
+  border-radius: var(--op-r-input);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.op-otp input:focus {
+  outline: none;
+  border-color: var(--op-accent);
+  box-shadow: 0 0 0 3px var(--op-accent-soft);
+}
+.op-otp input.is-error { border-color: var(--op-error); }
+.op-otp input.is-error:focus { box-shadow: 0 0 0 3px var(--op-error-soft); }
+
+/* Address autocomplete dropdown — anchored to the input, opens upward
+   (address is the last field, so a drop-down clips against the card edge). */
+.op-suggest {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); z-index: 20;
+  list-style: none; margin: 0; padding: 5px;
+  background: var(--op-bg);
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-input);
+  box-shadow: var(--op-shadow);
+}
+.op-suggest-row {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 9px 10px; border-radius: 7px;
+  background: none; border: 0; cursor: pointer; text-align: left;
+  font-size: 13.5px; color: var(--op-ink);
+}
+.op-suggest-row:hover { background: var(--op-soft); }
+.op-suggest-row svg { color: var(--op-faint); flex: 0 0 auto; }
+
+/* --------------------------------------------------------------------- */
+/* Buttons                                                                */
+/* --------------------------------------------------------------------- */
+
+.op-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 0 18px;
+  font-family: var(--op-font);
+  font-size: 15px; font-weight: 700;
+  border-radius: var(--op-r-btn);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+  white-space: nowrap;
+}
+.op-btn:active { transform: translateY(1px); }
+.op-btn--primary {
+  background: var(--op-ink);
+  color: var(--op-on-ink);
+  box-shadow: 0 1px 2px rgba(11,11,12,.18);
+}
+.op-btn--primary:hover { background: var(--op-ink-hover); }
+.op-btn--primary:disabled { background: var(--op-dash); color: var(--op-faint); cursor: not-allowed; box-shadow: none; }
+/* Ghost glass (field-brand §4.2 secondary) — translucent, blurred, ink hairline. */
+.op-btn--secondary {
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--op-ink);
+  border-color: rgba(11, 11, 12, 0.10);
+  backdrop-filter: blur(6px);
+}
+.op-btn--secondary:hover { background: #fff; }
+.op-btn--inline { width: auto; height: 44px; padding: 0 22px; }
+/* Hero CTA on wide columns — full-bleed buttons read absurd at 860px. */
+.op-btn--centered { display: flex; width: min(100%, 360px); margin-left: auto; margin-right: auto; }
+
+.op-or {
+  display: flex; align-items: center; gap: 14px;
+  color: var(--op-faint); font-size: 13px;
+  margin: 18px 0;
+}
+.op-or::before, .op-or::after {
+  content: ""; flex: 1; height: 1px; background: var(--op-line);
+}
+
+.op-link { color: var(--op-accent); font-weight: 700; text-decoration: none; }
+.op-link:hover { text-decoration: underline; }
+.op-tertiary {
+  display: block; width: 100%;
+  text-align: center;
+  background: none; border: 0; cursor: pointer;
+  font-size: 14px; font-weight: 600; color: var(--op-muted);
+  padding: 14px 0 0;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.op-tertiary:hover { color: var(--op-ink); }
+
+.op-meta-line {
+  font-size: 13.5px; color: var(--op-muted); text-align: center; margin-top: 18px;
+}
+.op-legal {
+  font-size: 12.5px; color: var(--op-faint); text-align: center;
+  line-height: 1.5; margin-top: 18px;
+}
+
+/* checkbox + remember row */
+.op-inline-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 4px 0 22px;
+}
+.op-check { display: inline-flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--op-muted); cursor: pointer; }
+.op-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.op-check-box {
+  width: 17px; height: 17px; border-radius: 5px;
+  border: 1.5px solid var(--op-dash); display: inline-grid; place-items: center;
+  color: var(--op-on-ink);
+}
+.op-check input:checked + .op-check-box { background: var(--op-ink); border-color: var(--op-ink); }
+
+/* --------------------------------------------------------------------- */
+/* Segmented toggle (Monthly/Annual, Card/ACH, Member/Admin, sign-in/up)  */
+/* --------------------------------------------------------------------- */
+
+.op-seg {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--op-soft);
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-btn);
+  gap: 2px;
+}
+.op-seg-opt {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px;
+  font-size: 13.5px; font-weight: 700;
+  color: var(--op-muted);
+  background: none; border: 0; border-radius: 9px; cursor: pointer;
+  white-space: nowrap;
+}
+.op-seg-opt.is-active { background: var(--op-ink); color: var(--op-on-ink); box-shadow: 0 1px 2px rgba(11,11,12,.2); }
+.op-seg-badge { font-size: 11.5px; font-weight: 700; color: var(--op-success); }
+.op-seg-opt.is-active .op-seg-badge { color: #8fe9c2; }
+
+/* --------------------------------------------------------------------- */
+/* Plan cards / steppers                                                  */
+/* --------------------------------------------------------------------- */
+
+.op-card-tile {
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-card);
+  background: var(--op-bg);
+  padding: 22px;
+}
+.op-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.op-tile-head { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 700; }
+.op-tile-head svg { color: var(--op-ink); }
+.op-price { margin: 12px 0 18px; }
+.op-price b { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; }
+.op-price span { font-size: 13.5px; color: var(--op-faint); }
+.op-stepper-label { font-size: 12.5px; color: var(--op-muted); margin-bottom: 8px; }
+.op-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.op-step-btn {
+  width: 34px; height: 34px; border-radius: 9px;
+  border: 1px solid var(--op-dash); background: var(--op-bg);
+  display: grid; place-items: center; cursor: pointer; color: var(--op-ink);
+}
+.op-step-btn:hover { background: var(--op-soft); }
+.op-step-val { width: 40px; text-align: center; font-size: 16px; font-weight: 700; }
+
+.op-note {
+  display: flex; gap: 12px;
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-card);
+  background: var(--op-soft2);
+  padding: 16px 18px;
+  margin-top: 16px;
+}
+.op-note-icon { color: var(--op-ink); flex: 0 0 auto; margin-top: 1px; }
+.op-note-title { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+.op-note-body { font-size: 13px; color: var(--op-muted); line-height: 1.5; }
+
+.op-features { margin-top: 28px; }
+.op-features-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px;
+  margin-top: 14px;
+}
+.op-feature { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--op-ink); }
+.op-feature-check {
+  width: 16px; height: 16px; border-radius: 999px;
+  background: var(--op-success-soft); color: var(--op-success);
+  display: grid; place-items: center; flex: 0 0 auto;
+}
+
+.op-summary-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-card);
+  background: var(--op-soft);
+  padding: 18px 22px;
+  margin-top: 26px;
+  /* Sticky pricing summary — stays visible while the feature list scrolls. */
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -12px 22px -14px rgba(11, 11, 12, 0.14);
+}
+.op-summary-label { font-size: 12.5px; color: var(--op-muted); }
+.op-summary-val b { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+.op-summary-val span { font-size: 13.5px; color: var(--op-faint); }
+.op-summary-note { font-size: 12px; color: var(--op-faint); margin-top: 2px; }
+
+/* --------------------------------------------------------------------- */
+/* Seat meter (invite team)                                               */
+/* --------------------------------------------------------------------- */
+
+.op-seat {
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-card);
+  background: var(--op-soft2);
+  padding: 18px 20px;
+  margin-bottom: 26px;
+}
+.op-seat-head { display: flex; align-items: center; gap: 11px; }
+.op-seat-icon { color: var(--op-ink); }
+.op-seat-title { font-size: 14px; font-weight: 700; }
+.op-seat-sub { font-size: 12.5px; color: var(--op-muted); }
+.op-seat-track { height: 6px; border-radius: 999px; background: var(--op-line); margin: 14px 0 8px; overflow: hidden; }
+.op-seat-fill { height: 100%; background: var(--op-success); border-radius: 999px; }
+.op-seat-meta { font-size: 12.5px; color: var(--op-muted); }
+.op-seat-chip {
+  display: inline-flex; align-items: center;
+  margin-left: 9px; padding: 2px 8px;
+  font-size: 11.5px; font-weight: 700;
+  color: var(--op-accent);
+  background: rgba(124, 92, 252, 0.10);
+  border-radius: var(--op-r-pill);
+  vertical-align: middle;
+}
+
+/* Pre-seeded invitee row (overage variant) */
+.op-invitee {
+  display: flex; align-items: center; gap: 11px;
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-btn);
+  background: var(--op-bg);
+  padding: 11px 13px;
+  margin-bottom: 16px;
+}
+.op-invitee-avatar {
+  width: 30px; height: 30px; border-radius: 999px;
+  display: grid; place-items: center; flex: 0 0 auto;
+  font-size: 12px; font-weight: 700; color: var(--op-on-ink);
+  background: var(--op-ink);
+}
+.op-invitee-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.op-invitee-name { font-size: 13.5px; font-weight: 600; color: var(--op-ink); }
+.op-invitee-meta { font-size: 12px; color: var(--op-faint); }
+.op-invitee-x {
+  background: none; border: 0; cursor: pointer; color: var(--op-faint);
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
+}
+.op-invitee-x:hover { background: var(--op-soft); color: var(--op-ink); }
+
+.op-invites { display: flex; flex-direction: column; gap: 14px; }
+.op-invite-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: "input role trash";
+  gap: 12px;
+  align-items: end;
+}
+.op-invite-row > label.op-field { grid-area: input; }
+.op-invite-row > div.op-field { grid-area: role; }
+.op-invite-row > .op-row-trash { grid-area: trash; }
+/* Four role tabs can't sit beside the input on small screens — the role
+   selector drops to its own line under the input. Stacked, the input+role
+   pair needs proximity grouping: tight inside the pair, generous between
+   pairs, or the role reads as ambiguous between neighbors. */
+@media (max-width: 819px) {
+  .op-invites { gap: 30px; }
+  .op-invite-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "input trash"
+      "role  role";
+    gap: 10px 12px;
+  }
+}
+.op-row-trash {
+  height: 46px; width: 40px;
+  display: grid; place-items: center;
+  background: none; border: 1px solid var(--op-dash); border-radius: var(--op-r-input);
+  color: var(--op-faint); cursor: pointer;
+}
+.op-row-trash:hover:not(:disabled) { background: var(--op-soft); color: var(--op-error, #DA2B2C); border-color: var(--op-dash); }
+.op-row-trash:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Warning state on the seat meter */
+.op-seat.is-warn { border-color: rgba(214, 158, 46, 0.4); background: rgba(246, 166, 35, 0.06); }
+.op-seat-fill.is-warn { background: #E8A33A; }
+
+/* Banners — warning (over-seat) + ok (confirmed upgrade) */
+.op-banner {
+  display: flex; gap: 12px;
+  border-radius: var(--op-r-card);
+  padding: 15px 17px;
+  margin-bottom: 18px;
+}
+.op-banner--warn  { background: rgba(246, 166, 35, 0.10); border: 1px solid rgba(214, 158, 46, 0.35); }
+.op-banner--ok    { background: var(--op-success-soft); border: 1px solid rgba(31, 169, 113, 0.35); }
+.op-banner--error { background: var(--op-error-soft); border: 1px solid rgba(218, 43, 44, 0.30); }
+.op-banner-icon { flex: 0 0 auto; margin-top: 1px; }
+.op-banner--warn .op-banner-icon  { color: #B9791A; }
+.op-banner--ok .op-banner-icon    { color: var(--op-success); }
+.op-banner--error .op-banner-icon { color: var(--op-error); }
+.op-banner-body { flex: 1; min-width: 0; }
+.op-banner-title { font-size: 13.5px; font-weight: 700; color: var(--op-ink); margin-bottom: 3px; }
+.op-banner-text { font-size: 12.5px; color: var(--op-muted); line-height: 1.5; }
+.op-banner-actions { display: flex; gap: 10px; margin-top: 12px; }
+.op-banner-actions .op-btn--inline { width: auto; height: 38px; padding: 0 16px; font-size: 13.5px; }
+
+.op-add-another {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: none; border: 0; cursor: pointer;
+  font-size: 13.5px; font-weight: 700; color: var(--op-ink);
+  padding: 16px 0 26px;
+}
+.op-add-another:hover:not(:disabled) { color: var(--op-accent); }
+.op-add-another:disabled { color: var(--op-faint); cursor: not-allowed; }
+
+/* --------------------------------------------------------------------- */
+/* Payment                                                                */
+/* --------------------------------------------------------------------- */
+
+.op-pay-grid { display: grid; grid-template-columns: 1fr 320px; gap: 36px; align-items: start; }
+.op-order {
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-card);
+  background: var(--op-soft2);
+  padding: 22px;
+}
+.op-order-h { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.op-order-plan {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 18px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px;
+}
+.op-order-cycle {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--op-muted); background: var(--op-soft); border: 1px solid var(--op-line);
+  padding: 3px 8px; border-radius: var(--op-r-pill);
+}
+.op-order-line { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--op-muted); padding: 7px 0; }
+.op-order-line b { color: var(--op-ink); font-weight: 600; }
+.op-order-discount b { color: var(--op-success); }
+.op-order-subnote { font-size: 11.5px; color: var(--op-accent); margin: -2px 0 2px; }
+.op-order-annual { font-size: 12px; color: var(--op-faint); text-align: right; margin-top: 4px; }
+.op-order-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--op-line); margin-top: 8px; padding-top: 16px; }
+.op-order-total .l { font-size: 14px; font-weight: 700; }
+.op-order-total .v b { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+.op-order-total .v span { font-size: 13px; color: var(--op-faint); }
+.op-secure { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--op-faint); margin: 16px 0 18px; line-height: 1.4; }
+
+/* --------------------------------------------------------------------- */
+/* Terminal states (activating / done)                                    */
+/* --------------------------------------------------------------------- */
+
+.op-orb {
+  width: 84px; height: 84px; border-radius: 999px;
+  display: grid; place-items: center; color: #fff;
+  background:
+    radial-gradient(at 30% 25%, #6FD0FF 0%, transparent 60%),
+    radial-gradient(at 75% 75%, #B98BFF 0%, transparent 60%),
+    linear-gradient(135deg, #6FB8FF 0%, #9B7BFF 100%);
+  box-shadow: 0 12px 34px rgba(123,92,252,.30);
+  margin-bottom: 26px;
+}
+.op-mail-badge {
+  width: 72px; height: 72px; border-radius: 999px;
+  display: grid; place-items: center;
+  background: var(--op-accent-soft); color: var(--op-accent);
+  margin-bottom: 22px;
+}
+.op-orb.is-spin { animation: op-pulse 1.6s ease-in-out infinite; }
+@keyframes op-pulse {
+  0%,100% { transform: scale(1); box-shadow: 0 12px 34px rgba(123,92,252,.30); }
+  50%     { transform: scale(1.06); box-shadow: 0 16px 44px rgba(123,92,252,.42); }
+}
+.op-terminal .op-h1 { font-size: 30px; }
+
+/* --------------------------------------------------------------------- */
+/* Step transitions — forward slides from the right, back from the left   */
+/* (PRD US1 FR3 / US6 FR3). Direction set at the navigation source.        */
+/* --------------------------------------------------------------------- */
+
+@keyframes op-in-fwd {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes op-in-back {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: none; }
+}
+.op-slide--fwd  { animation: op-in-fwd  0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+.op-slide--back { animation: op-in-back 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .op-slide--fwd, .op-slide--back { animation: none; }
+}
+
+/* ==========================================================================
+   PRD / partner-system brand option (?brand=prd)
+   --------------------------------------------------------------------------
+   A faithful re-skin to the design system the Operator PRD specs (matching
+   tatch-onboarding.vercel.app): DM Sans, lavender #F2F0F5 canvas, white card,
+   dark #1E1E1E buttons, 10px / 1.5px #E8E8EE inputs w/ #1E1E1E focus. Drops
+   the field-brand signature (eyebrow pill, violet now-accents, spine) since
+   that vocabulary belongs to the roadmap brand, not this one. Lives behind a
+   query param so it's a pure A/B for the brand decision — delete this block
+   to remove the option entirely.
+   ========================================================================== */
+.brand-prd {
+  --op-page:   #F2F0F5;
+  --op-bg:     #FFFFFF;
+  --op-ink:    #1E1E1E;
+  --op-muted:  #5A5A63;
+  --op-faint:  #8E8E97;
+  --op-line:   #E8E8EE;
+  --op-dash:   #E8E8EE;
+  --op-accent: #8145FF;
+  --op-accent-soft: #EFEAFE;
+  --op-r-input: 10px;
+  --op-font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-family: var(--op-font);
+}
+.brand-prd .op-input { border-width: 1.5px; }
+.brand-prd .op-input:focus { border-color: var(--op-ink); box-shadow: 0 0 0 3px rgba(30, 30, 30, 0.08); }
+.brand-prd .op-h1 { font-weight: 700; letter-spacing: -0.02em; }
+.brand-prd .op-brand-word { font-weight: 700; letter-spacing: -0.02em; }
+/* Neutralize the roadmap/field-brand signature in the PRD skin */
+.brand-prd .op-stepcount {
+  text-transform: none; letter-spacing: normal; font-size: 13px; font-weight: 600;
+  border-color: var(--op-line); background: #FFFFFF;
+}
+.brand-prd .op-stepcount::before { background: var(--op-ink); width: 6px; height: 6px; }
+.brand-prd .op-step.is-active .op-step-dot { border-color: var(--op-ink); box-shadow: none; }
+.brand-prd .op-step.is-link .op-step-hit:hover .op-step-dot { border-color: var(--op-ink); }
+.brand-prd .op-spine { display: none; }
+
+/* ==========================================================================
+   Dark mode — roadmap brand, dark surface set
+   --------------------------------------------------------------------------
+   The canvas theme toggle sets [data-theme="dark"] on <html> and propagates
+   parent → iframe via the ThemeProvider's storage listener, so the framed
+   operator screen flips with the gallery. Zinc-based calm dark; the
+   inverse-neutral fill rule still holds — CTAs/active toggles go near-white
+   with dark ink text (via --op-on-ink). Violet accent brightens for contrast.
+   ========================================================================== */
+[data-theme="dark"] .operator-root {
+  --op-ink:       #F4F4F5;
+  --op-ink-hover: #E4E4E7;
+  --op-on-ink:    #18181B;
+  --op-bg:        #18181B;
+  --op-page:      #09090B;
+  --op-soft:      #1F1F23;
+  --op-soft2:     #1C1C20;
+  --op-muted:     #A1A1AA;
+  --op-faint:     #71717A;
+  --op-line:      #27272A;
+  --op-dash:      #3F3F46;
+
+  --op-accent:      #9B7BFF;
+  --op-accent-deep: #7C5CFC;
+  --op-accent-soft: rgba(155, 123, 255, 0.18);
+  --op-glow:        rgba(124, 92, 252, 0.14);
+
+  --op-success: #34D399;
+  --op-success-soft: rgba(52, 211, 153, 0.13);
+  --op-error: #F87171;
+  --op-error-soft: rgba(248, 113, 113, 0.13);
+
+  --op-shadow:       0 1px 2px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.55);
+  --op-shadow-hover: 0 7px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass elements: their light translucency reads as bright-white on dark —
+   re-tune to a faint light film over the dark surface. */
+[data-theme="dark"] .operator-root .op-stepcount {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(155, 123, 255, 0.32);
+  box-shadow: none;
+}
+[data-theme="dark"] .operator-root .op-btn--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-theme="dark"] .operator-root .op-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+/* Brighten the warn icon so it doesn't sink into the dark banner. */
+[data-theme="dark"] .operator-root .op-banner--warn .op-banner-icon { color: #F0B23E; }
+
+/* ==========================================================================
+   Partner-flow additions
+   --------------------------------------------------------------------------
+   Pieces the partner signup needs that the operator flow doesn't have.
+   Appended after the verbatim operator skin so the file diffs cleanly
+   against the operator branch if the two ever live together.
+   ========================================================================== */
+
+/* Invite-context chip — "Joining Summit Builders · invited by Sara". */
+.op-invite-chip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  margin-bottom: 22px;
+  font-size: 13px; color: var(--op-muted);
+  background: var(--op-soft2);
+  border: 1px solid var(--op-line);
+  border-radius: var(--op-r-btn);
+}
+.op-invite-chip b { color: var(--op-ink); font-weight: 700; }
+.op-invite-avatar {
+  width: 26px; height: 26px; border-radius: 999px;
+  display: grid; place-items: center; flex: 0 0 auto;
+  font-size: 11px; font-weight: 700;
+  background: var(--op-ink); color: var(--op-on-ink);
+}
+
+/* Question blocks (partner discovery). The question reads as a field label
+   scaled up a step; the control always sits BELOW it. */
+.op-question { margin-bottom: 28px; }
+.op-q { display: block; font-size: 15px; font-weight: 700; color: var(--op-ink); }
+.op-q-hint { display: block; font-size: 12.5px; color: var(--op-faint); margin-top: 4px; }
+.op-question .op-stepper { margin-top: 12px; }
+.op-question .op-chips { margin-top: 12px; }
+.op-question .op-field { margin-top: 14px; margin-bottom: 0; }
+
+/* Typeable value between the stepper's − / + buttons. */
+.op-step-input {
+  width: 64px; height: 38px;
+  padding: 0; text-align: center;
+  font-family: var(--op-font);
+  font-size: 17px; font-weight: 700;
+  color: var(--op-ink);
+  background: var(--op-bg);
+  border: 1px solid var(--op-dash);
+  border-radius: 9px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.op-step-input:focus {
+  outline: none;
+  border-color: var(--op-accent);
+  box-shadow: 0 0 0 3px var(--op-accent-soft);
+}
+.op-stepper-hint { font-size: 12.5px; color: var(--op-faint); margin-left: 12px; }
+
+/* Service-trait chips — multi-select. Selected = inverse-neutral fill
+   (the brand's active-toggle rule), with a leading check for color-blind
+   redundancy. */
+.op-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.op-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 15px;
+  font-family: var(--op-font);
+  font-size: 13.5px; font-weight: 600;
+  color: var(--op-ink);
+  background: var(--op-bg);
+  border: 1px solid var(--op-dash);
+  border-radius: var(--op-r-pill);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.op-chip:hover { background: var(--op-soft); }
+.op-chip svg { color: var(--op-faint); }
+.op-chip.is-on { background: var(--op-ink); border-color: var(--op-ink); color: var(--op-on-ink); }
+.op-chip.is-on svg { color: var(--op-on-ink); }
