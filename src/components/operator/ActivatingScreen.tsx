@@ -3,12 +3,12 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { OperatorShell } from "./OperatorShell";
-import { buildQuery, readWizard } from "./wizardParams";
+import { buildQuery, useWizard } from "./wizardParams";
 
 export function ActivatingScreen() {
   const router = useRouter();
   const sp = useSearchParams();
-  const { invites } = readWizard(sp);
+  const { invites } = useWizard(sp);
 
   useEffect(() => {
     const t = setTimeout(() => router.push(`/operator/done${buildQuery({ invites })}`), 2200);

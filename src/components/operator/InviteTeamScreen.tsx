@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Users, Plus, Trash2, Info } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
-import { SEAT_FEE, buildQuery, money, pricing, readWizard } from "./wizardParams";
+import { SEAT_FEE, buildQuery, money, pricing, useWizard } from "./wizardParams";
 
 type Role = "admin" | "manager" | "bdm" | "member";
 type Invite = { id: number; value: string; role: Role };
@@ -26,7 +26,7 @@ const newRow = (value = "", role: Role = "member"): Invite => ({ id: _id++, valu
 export function InviteTeamScreen() {
   const router = useRouter();
   const sp = useSearchParams();
-  const seed = readWizard(sp);
+  const seed = useWizard(sp);
   const planSeats = seed.seats;
 
   // Seed pre-filled invite rows from ?invites=N (deep-link into the auto-upgrade state).

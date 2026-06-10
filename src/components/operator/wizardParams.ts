@@ -9,6 +9,7 @@
  * upgrade from the Invite Team step (US4).
  */
 
+import { useEffect, useSyncExternalStore } from "react";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 
 export type Billing = "monthly" | "annual";
@@ -32,12 +33,18 @@ function intParam(sp: ReadonlyURLSearchParams, key: string, dflt: number, min: n
    URL params; any hop that drops the query — a refresh, a bare link, a
    test-mode jump — used to silently reset the plan to 1 seat, making one
    invite read as an overage. The chosen plan shape now also lives in
-   sessionStorage as a FALLBACK: explicit params always win, the canvas
-   iframe is excluded (its demo tiles must stay pure functions of their
-   URLs), and invites are never persisted (they seed demo rows and would
-   resurrect after a skip). */
+   sessionStorage as a FALLBACK, read via useSyncExternalStore so the first
+   client render matches the server markup (the store's server snapshot is
+   empty; the fallback applies on the post-hydration render). Explicit
+   params always win, the canvas iframe is excluded (its demo tiles must
+   stay pure functions of their URLs), and invites are never persisted
+   (they seed demo rows and would resurrect after a skip). */
 const STORE_KEY = "tatch-op-wizard";
 type PlanShape = Pick<WizardState, "branches" | "seats" | "billing">;
+
+const EMPTY_SHAPE: Partial<PlanShape> = {};
+let cachedRaw: string | null | undefined;
+let cachedShape: Partial<PlanShape> = EMPTY_SHAPE;
 
 function outsideCanvas(): boolean {
   return typeof window !== "undefined" && window.self === window.top;
@@ -49,24 +56,41 @@ function saneInt(n: unknown, min: number): number | undefined {
     : undefined;
 }
 
-function storedShape(): Partial<PlanShape> {
-  if (!outsideCanvas()) return {};
-  try {
-    return JSON.parse(sessionStorage.getItem(STORE_KEY) ?? "{}") as Partial<PlanShape>;
-  } catch {
-    return {};
-  }
+function subscribeShape(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
 }
 
-function persistShape({ branches, seats, billing }: WizardState) {
-  if (!outsideCanvas()) return;
+/* Stable-reference snapshot: re-parse only when the raw string changes,
+   so useSyncExternalStore doesn't see a "new" value every render. */
+function getShapeSnapshot(): Partial<PlanShape> {
+  if (!outsideCanvas()) return EMPTY_SHAPE;
+  let raw: string | null = null;
   try {
-    sessionStorage.setItem(STORE_KEY, JSON.stringify({ branches, seats, billing }));
+    raw = sessionStorage.getItem(STORE_KEY);
   } catch {}
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    try {
+      cachedShape = raw ? (JSON.parse(raw) as Partial<PlanShape>) : EMPTY_SHAPE;
+    } catch {
+      cachedShape = EMPTY_SHAPE;
+    }
+  }
+  return cachedShape;
 }
 
-export function readWizard(sp: ReadonlyURLSearchParams): WizardState {
-  const stored = storedShape();
+function getShapeServerSnapshot(): Partial<PlanShape> {
+  return EMPTY_SHAPE;
+}
+
+export function useWizard(sp: ReadonlyURLSearchParams): WizardState {
+  const stored = useSyncExternalStore(subscribeShape, getShapeSnapshot, getShapeServerSnapshot);
+  /* During the hydration render `stored` is the (empty) server snapshot even
+     if sessionStorage has a shape — persisting from that commit would clobber
+     the real value with defaults before it ever applies. Only persist once
+     the rendered value comes from the live store. */
+  const storeReady = stored === getShapeSnapshot();
   // `cycle` kept as a legacy alias for older deep-links.
   const billingParam = sp.get("billing") ?? sp.get("cycle");
   const state: WizardState = {
@@ -77,7 +101,22 @@ export function readWizard(sp: ReadonlyURLSearchParams): WizardState {
       : (stored.billing === "annual" ? "annual" : "monthly"),
     invites: intParam(sp, "invites", 0, 0),
   };
-  persistShape(state);
+
+  // Persist after paint — render stays side-effect free. The cache is updated
+  // in place so the write itself never reads back as a store change.
+  const { branches, seats, billing } = state;
+  useEffect(() => {
+    if (!storeReady || !outsideCanvas()) return;
+    const shape: PlanShape = { branches, seats, billing };
+    const raw = JSON.stringify(shape);
+    if (raw === cachedRaw) return;
+    try {
+      sessionStorage.setItem(STORE_KEY, raw);
+      cachedRaw = raw;
+      cachedShape = shape;
+    } catch {}
+  }, [storeReady, branches, seats, billing]);
+
   return state;
 }
 

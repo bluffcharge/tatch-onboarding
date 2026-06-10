@@ -3,11 +3,11 @@
 import { useSearchParams } from "next/navigation";
 import { Check } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
-import { readWizard } from "./wizardParams";
+import { useWizard } from "./wizardParams";
 
 export function AllSetScreen() {
   const sp = useSearchParams();
-  const { invites } = readWizard(sp);
+  const { invites } = useWizard(sp);
 
   return (
     <OperatorShell variant="center">

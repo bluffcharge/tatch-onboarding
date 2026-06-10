@@ -4,12 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { CreditCard, Landmark, ShieldCheck } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
-import { pricing, buildQuery, money, readWizard } from "./wizardParams";
+import { pricing, buildQuery, money, useWizard } from "./wizardParams";
 
 export function PaymentScreen() {
   const router = useRouter();
   const sp = useSearchParams();
-  const state = readWizard(sp);
+  const state = useWizard(sp);
   const p = pricing(state);
   const [method, setMethod] = useState<"card" | "ach">(sp.get("method") === "ach" ? "ach" : "card");
 

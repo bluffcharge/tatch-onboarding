@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Users, Zap, Minus, Plus, ArrowRight, Check } from "lucide-react";
 import { OperatorShell } from "./OperatorShell";
-import { PLATFORM_FEE, SEAT_FEE, pricing, buildQuery, money, readWizard, type Billing } from "./wizardParams";
+import { PLATFORM_FEE, SEAT_FEE, pricing, buildQuery, money, useWizard, type Billing } from "./wizardParams";
 
 const FEATURES = [
   "Partner Portal",
@@ -28,10 +28,24 @@ const FEATURES = [
 export function ChoosePlanScreen() {
   const router = useRouter();
   const sp = useSearchParams();
-  const seed = readWizard(sp);
+  const seed = useWizard(sp);
   const [billing, setBilling] = useState<Billing>(seed.billing);
   const [branches, setBranches] = useState(seed.branches);
   const [seats, setSeats] = useState(seed.seats);
+
+  /* The session's stored plan shape lands one render after hydration (see
+     useWizard) — adopt it as long as the user hasn't touched the controls. */
+  const touched = useRef(false);
+  useEffect(() => {
+    if (touched.current) return;
+    setBilling(seed.billing);
+    setBranches(seed.branches);
+    setSeats(seed.seats);
+  }, [seed.billing, seed.branches, seed.seats]);
+  const touch = (fn: () => void) => () => {
+    touched.current = true;
+    fn();
+  };
 
   const state = { branches, seats, billing, invites: 0 };
   const p = pricing(state);
@@ -47,7 +61,7 @@ export function ChoosePlanScreen() {
       <div className="op-seg" role="tablist" aria-label="Billing cycle" style={{ marginBottom: 22 }}>
         <button
           className={`op-seg-opt${billing === "monthly" ? " is-active" : ""}`}
-          onClick={() => setBilling("monthly")}
+          onClick={touch(() => setBilling("monthly"))}
           role="tab"
           aria-selected={billing === "monthly"}
         >
@@ -55,7 +69,7 @@ export function ChoosePlanScreen() {
         </button>
         <button
           className={`op-seg-opt${billing === "annual" ? " is-active" : ""}`}
-          onClick={() => setBilling("annual")}
+          onClick={touch(() => setBilling("annual"))}
           role="tab"
           aria-selected={billing === "annual"}
         >
@@ -71,8 +85,8 @@ export function ChoosePlanScreen() {
           unit="/branch/mo"
           stepperLabel="Branches"
           value={branches}
-          onDec={() => setBranches((v) => Math.max(1, v - 1))}
-          onInc={() => setBranches((v) => v + 1)}
+          onDec={touch(() => setBranches((v) => Math.max(1, v - 1)))}
+          onInc={touch(() => setBranches((v) => v + 1))}
         />
         <Tile
           icon={<Users size={17} />}
@@ -81,8 +95,8 @@ export function ChoosePlanScreen() {
           unit="/user/mo"
           stepperLabel="Seats"
           value={seats}
-          onDec={() => setSeats((v) => Math.max(1, v - 1))}
-          onInc={() => setSeats((v) => v + 1)}
+          onDec={touch(() => setSeats((v) => Math.max(1, v - 1)))}
+          onInc={touch(() => setSeats((v) => v + 1))}
         />
       </div>
 
