@@ -378,6 +378,8 @@
   background: none; border: 0; cursor: pointer;
 }
 .op-field-hint { font-size: 12.5px; color: var(--op-faint); margin-top: 7px; }
+/* Price tag on field labels (extra invite seats beyond the plan). */
+.op-label-extra { color: var(--op-accent); font-weight: 700; }
 .op-input.is-error { border-color: var(--op-error); }
 .op-input.is-error:focus { box-shadow: 0 0 0 3px var(--op-error-soft); }
 /* Read-only identity fields (login email on About you) — visibly inert. */

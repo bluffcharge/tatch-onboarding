@@ -198,10 +198,11 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     storyRefs: ["US4 · Invite team"],
     reqs: [
       "Redesign 2026-06-09: moved AFTER payment so inviting never gates checkout.",
-      "FR1: license badge = billed seats ('1 for you, 2 for teammates') + meter.",
-      "FR2/FR3: per-row phone/email + Admin / Manager / BDM / Member; Add another / trash (min 1).",
-      "Add another stays disabled until every row is filled — blank rows can't stack.",
-      "Inviting past the seat count auto-grows the plan — no blocking confirm (see auto-upgrade state).",
+      "The plan's paid teammate slots are pre-listed as rows (Seat 2, Seat 3…; you are seat 1).",
+      "FR1: badge 'included' = the PLAN's seats, always; extras only ever show as the +N chip.",
+      "FR2/FR3: per-row phone/email + Admin / Manager / BDM / Member; rows can't trim below the paid slots.",
+      "Add another unlocks once every listed row is filled; extra rows are labeled '+$45/mo'.",
+      "Filling an extra row auto-grows the plan — no blocking confirm (see auto-upgrade state).",
       "FR8: Skip is equal-weight — teammates can be set up later from settings.",
     ],
     links: [

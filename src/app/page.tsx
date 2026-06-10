@@ -92,7 +92,7 @@ const ALL_ROUTES: Route[] = [
   { href: "/operator/plan?branches=3&seats=8", title: "Choose plan — scaled",   subtitle: "Step 4 · 3 branches · 8 seats",            group: "plan",    intent: "desktop" },
   { href: "/operator/payment?branches=2&seats=4&billing=annual", title: "Payment — card", subtitle: "Step 5 · dynamic order summary",   group: "payment", intent: "desktop" },
   { href: "/operator/payment?method=ach",      title: "Payment — ACH",          subtitle: "Step 5 · bank transfer variant",          group: "payment", intent: "desktop" },
-  { href: "/operator/team?seats=3",            title: "Invite team",            subtitle: "Step 6 · post-payment · skippable",       group: "payment", intent: "desktop" },
+  { href: "/operator/team?seats=3",            title: "Invite team",            subtitle: "Step 6 · paid seats pre-listed · skippable", group: "payment", intent: "desktop" },
   { href: "/operator/team?seats=3&invites=4",  title: "Invite team — auto-upgrade", subtitle: "Step 6 · plan grows with invites",      group: "payment", intent: "desktop" },
   { href: "/operator/activating",              title: "Activating",             subtitle: "Transition · setting up",                 group: "finish",  intent: "desktop" },
   { href: "/operator/done?invites=3",          title: "You're all set",         subtitle: "Step 7 · account ready",                  group: "finish",  intent: "desktop" },
