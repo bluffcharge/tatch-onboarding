@@ -22,6 +22,9 @@ export function DevPalette() {
   const pathname = usePathname();
   const testMode = useTestMode();
   const showFlask = pathname?.startsWith("/partner");
+  // The wizard is locked to the light design target (white cards), so the
+  // theme toggle would be a dead control there — hide it on /partner/*.
+  const showTheme = !pathname?.startsWith("/partner");
 
   useEffect(() => {
     const inIframe = typeof window !== "undefined" && window.self !== window.top;
@@ -63,15 +66,17 @@ export function DevPalette() {
             <FlaskConical size={13} strokeWidth={1.75} />
           </button>
         )}
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          className="inline-flex h-7 w-7 items-center justify-center rounded-pill text-ink-caption hover:bg-subtle hover:text-ink-body"
-        >
-          <ThemeIcon size={13} strokeWidth={1.75} />
-        </button>
+        {showTheme && (
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-pill text-ink-caption hover:bg-subtle hover:text-ink-body"
+          >
+            <ThemeIcon size={13} strokeWidth={1.75} />
+          </button>
+        )}
       </div>
     </div>
   );
