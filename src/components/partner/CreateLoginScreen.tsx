@@ -34,9 +34,20 @@ export function CreateLoginScreen() {
     password && (password.length < 8 || !SPECIAL_RE.test(password))
       ? "At least 8 characters, with one special character."
       : "";
-  const confirmErr = confirm && confirm !== password ? "Passwords don't match." : "";
+  const confirmErr =
+    confirm && confirm !== password
+      ? "Passwords don't match."
+      : submitted && password && !confirm
+        ? "Re-enter your password to confirm."
+        : "";
   const valid = !emailErr && !!email && !pwErr && !confirmErr && !!password && !!confirm;
   const showErr = (msg: string) => submitted && !!msg;
+
+  // Confirm-password stays hidden until they start typing a password — the
+  // shorter initial card keeps the CTA + legal line above the fold. It also
+  // stays visible while it still holds text, so clearing the password
+  // mid-edit doesn't vanish a field they're using.
+  const confirmRevealed = password.length > 0 || confirm.length > 0;
 
   const testMode = useTestMode();
 
@@ -112,18 +123,20 @@ export function CreateLoginScreen() {
         )}
       </label>
 
-      <label className="op-field">
-        <span className="op-field-label">Confirm password</span>
-        <input
-          className={`op-input${showErr(confirmErr) ? " is-error" : ""}`}
-          type="password"
-          placeholder="Re-enter password"
-          autoComplete="new-password"
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-        />
-        {showErr(confirmErr) && <span className="op-field-error">{confirmErr}</span>}
-      </label>
+      {confirmRevealed && (
+        <label className="op-field op-reveal">
+          <span className="op-field-label">Confirm password</span>
+          <input
+            className={`op-input${showErr(confirmErr) ? " is-error" : ""}`}
+            type="password"
+            placeholder="Re-enter password"
+            autoComplete="new-password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
+          {showErr(confirmErr) && <span className="op-field-error">{confirmErr}</span>}
+        </label>
+      )}
 
       <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} onClick={next}>
         Continue
