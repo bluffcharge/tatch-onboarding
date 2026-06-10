@@ -87,63 +87,83 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Provide an easy contact path back to the operator.",
     ],
   },
-  "/onboarding/auth?mode=create": {
-    oneLine: "Create account — primary path, email + password or Gmail OAuth.",
+  "/partner/account": {
+    oneLine: "Create login — step 1; Google first, or email + password.",
     ...SAME_AUTH,
     reqs: [
       "Support email + password registration and Gmail OAuth.",
       "Pre-fill the work email from the operator's invite when present.",
-      "Collect phone + address on the next step (downstream forms need them).",
-      "Operator-context breadcrumb keeps the inviting company in view.",
+      "Invite chip keeps the inviting company in view while committing credentials.",
+      "Email path verifies the address next; Google skips verification.",
     ],
   },
-  "/onboarding/auth?mode=signin": {
+  "/partner/account/verify": {
+    oneLine: "Verify email — 6-digit code, still part of step 1.",
+    ...SAME_AUTH,
+    reqs: [
+      "6-digit code sent to the address; resend with cooldown copy.",
+      "Google arrivals never see this screen (address already verified).",
+      "Mirrors the operator signup's verification exactly.",
+    ],
+  },
+  "/partner/signin": {
     oneLine: "Sign in — returning partner, minimal (email or Google only).",
     ...SAME_AUTH,
     reqs: [
       "Support email + password and Gmail OAuth sign-in.",
       "Keep it minimal — no profile fields, just the two methods.",
-      "Offer a clear path to create an account for new partners.",
+      "Offer a path back to the invite for new partners.",
     ],
   },
-  "/onboarding/business": {
-    oneLine: "Business profile — name, address, primary contact.",
+  "/partner/account/about": {
+    oneLine: "About you — name + mobile; the app-link phone ask lives here.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 3: enters business info" },
+      { flow: "Flow 2 — new partner via link", step: "Step 3: enters profile info" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "First/last name pre-filled from Google when available.",
+      "Login email shown read-only (verified).",
+      "Mobile number: we text the app-download link here.",
+    ],
+  },
+  "/partner/account/business": {
+    oneLine: "Your business — company name, phone, address.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Step 4: enters business info" },
       { flow: "Flow 4 — sign up with code",    step: "Step 5: completes onboarding if needed" },
     ],
     storyRefs: ["Story 2"],
     reqs: [
-      "Collects: business name, business address, primary contact info.",
-      "Address autocomplete preferred; manual fallback when API unreliable.",
-      "Pre-fill phone from the auth step ('change if you'd like').",
+      "Business name pre-filled from the invite (fallback: email domain).",
+      "Address autocomplete preferred; manual entry as fallback.",
+      "Linked-company invites (?co=) swap the form for a join confirmation.",
     ],
   },
-  "/onboarding/discovery": {
-    oneLine: "Discovery questions — technicians count + services provided.",
+  "/partner/questions": {
+    oneLine: "Partner questions — technicians count + services provided.",
     flowRefs: [
       { flow: "Flow 2 — new partner via link", step: "Step 5: answers one or more questions" },
     ],
     storyRefs: ["Story 2"],
     reqs: [
-      "Q1: 'How many technicians do you have?' (short text, numeric).",
-      "Q2: 'What services do you provide?' (multi-select). If 'Other' is selected, prompt to specify.",
-      "Designed as a typed array — additional questions are config, not screens.",
+      "Q1: 'How many technicians do you have?' — stepper directly below the question.",
+      "Q2: 'What services do you provide?' (multi-select chips). 'Other' prompts to specify.",
+      "Questions stay a typed array — additional questions are config, not screens.",
     ],
   },
-  "/onboarding/team": {
-    oneLine: "Team invites — optional, SMS-first, role assignment.",
+  "/partner/team": {
+    oneLine: "Team invites — optional, phone-or-email rows.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 4: invites additional team members" },
+      { flow: "Flow 2 — new partner via link", step: "Step 6: invites additional team members" },
     ],
     storyRefs: ["Story 2", "Story 5"],
     reqs: [
-      "Invite teammates by email and/or SMS during onboarding.",
-      "Role assignment optional (Admin / Member for V1).",
+      "Invite teammates by phone or email during onboarding.",
       "Skip is equal-weight to Send — never block activation on team invites.",
     ],
   },
-  "/onboarding/activating": {
+  "/partner/activating": {
     oneLine: "Transition — linkage and contact propagation happen here.",
     flowRefs: [
       { flow: "Flow 2 — new partner via link", step: "Step 6→7 (transition)" },
@@ -152,22 +172,21 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     reqs: [
       "Auto-link partner company to inviting operator.",
       "Add all operator contacts to all activated partner users.",
-      "Two-beat micro-copy makes the system feel substantial.",
     ],
   },
-  "/onboarding/done": {
+  "/partner/done": {
     oneLine: "Success — new partner is connected, contacts added.",
     flowRefs: [
-      { flow: "Flow 2 — new partner via link", step: "Step 6: completes onboarding" },
+      { flow: "Flow 2 — new partner via link", step: "Step 7: completes onboarding" },
     ],
     storyRefs: ["Story 2", "Story 3"],
     reqs: [
       "Partner company auto-linked to inviting operator.",
       "All operator contacts added to all activated partner user accounts.",
-      "Confirm the linkage in copy ('Sara and 4 teammates have been added').",
+      "Confirm the linkage in copy.",
     ],
   },
-  "/onboarding/done?existing=1": {
+  "/partner/done?existing=1": {
     oneLine: "Short-circuit success — existing partner, new operator linkage.",
     flowRefs: [
       { flow: "Flow 3 — existing partner", step: "Step 5: sees confirmation" },
@@ -177,7 +196,6 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Skip the company-setup flow for existing partners.",
       "Create the operator-partner linkage automatically.",
       "Add all operator contacts (not just the BDM) to existing partner users.",
-      "Show a confirmation summarizing the new connection ('Nothing else changed').",
     ],
   },
   "/partner-admin/invite": {

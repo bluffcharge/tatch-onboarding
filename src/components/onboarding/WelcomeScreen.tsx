@@ -1,18 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Check,
-  Inbox,
-  LineChart,
-  UsersRound,
-  Wallet,
-  type LucideIcon,
-} from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
-import { ValuePropCardStack } from "./ValuePropCardStack";
 import type { InviteContext } from "@/lib/mockInvite";
 
 type Props = { invite: InviteContext };
@@ -21,8 +13,12 @@ export function WelcomeScreen({ invite }: Props) {
   const { inviter, operator } = invite;
 
   return (
-    <OnboardingShell chrome={false} wide>
-      <div className="flex flex-1 flex-col">
+    // `center` (no journey) makes main fill the viewport height so the hero
+    // can truly center and the footer pins to the bottom — with the feature
+    // tiles cut there's no content mass to fake it. The screen owns its own
+    // width caps + padding (mirrors the shell's `wide` band).
+    <OnboardingShell chrome={false} center>
+      <div className="flex min-h-[100dvh] w-full max-w-[480px] flex-col px-4 md:min-h-full md:max-w-[720px] md:px-10 lg:max-w-[1120px] lg:px-14 xl:max-w-[1320px] 2xl:max-w-[1800px] 2xl:px-20">
         {/* Top brand row + step pill (step pill shows on lg+, where the
             centered layout has room for it on the right). On mobile the
             wordmark moves to the footer, so it's hidden here below md. */}
@@ -33,15 +29,11 @@ export function WelcomeScreen({ invite }: Props) {
           </div>
         </div>
 
-        {/* Centered hero column. Single column at all sizes — content
-            scales up at lg+ to fill the canvas the way the spec frames
-            it (big avatar, large headline, centered CTA stack, tiles in
-            a 4-across row below). At 2xl+ (Desktop + Wide) the column
-            caps at 840px so the hero + feature tiles read as one focal
-            lockup with intentional margin around it (cap-and-center per
-            01-hero-welcome), instead of stretching across the wide
-            shell. Below 2xl is untouched. */}
-        <div className="mx-auto flex w-full flex-1 flex-col items-center text-center 2xl:max-w-[840px]">
+        {/* Centered hero column. The marketing feature tiles / card stack
+            that used to sit below the CTA were cut (design call 2026-06-10):
+            the invite IS the pitch — accept it and go. The hero centers in
+            the freed canvas instead. */}
+        <div className="mx-auto flex w-full flex-1 flex-col items-center justify-center text-center 2xl:max-w-[840px]">
           <InviterAvatar initial={inviter.firstName[0]} />
 
           <p className="mt-5 text-[13.5px] text-ink-subtitle lg:text-[15px]">
@@ -58,16 +50,13 @@ export function WelcomeScreen({ invite }: Props) {
             Set up in about 90 seconds.
           </p>
 
-          {/* Single CTA into account creation — the auth screen presents the
-              actual methods (email or Google), so the welcome commits to one
-              button instead of presenting alternatives here. Mobile cap
-              (~230px) keeps the same CTA:card-stack width ratio as tablet
-              (280:440 ≈ 0.64 against the 360px mobile stack). */}
+          {/* Single CTA into the partner wizard — the create-login step
+              presents the actual methods (email or Google). */}
           <div className="mt-8 w-full max-w-[230px] md:max-w-[280px] lg:mt-10 lg:max-w-[320px]">
             <Button
               fullWidth
               size="lg"
-              onClick={() => goto("/onboarding/auth?mode=create")}
+              onClick={() => goto("/partner/account")}
             >
               Get started
             </Button>
@@ -79,32 +68,11 @@ export function WelcomeScreen({ invite }: Props) {
             <button
               type="button"
               className="font-medium text-ink-body hover:text-ink-title hover:underline"
-              onClick={() => goto("/onboarding/auth?mode=signin")}
+              onClick={() => goto("/partner/signin")}
             >
               Sign in
             </button>
           </p>
-
-          {/* Mobile + tablet (< lg): swipeable card stack of the marketing
-              value props. The vertical FeatureCard list read as tappable
-              rows even though it isn't — the deck removes that false
-              affordance and lets us show more than 3–4 props. Extra top
-              margin separates the deck from the CTA above it. */}
-          <div className="mt-14 w-full lg:hidden">
-            <ValuePropCardStack />
-          </div>
-
-          {/* Laptop+ (lg+): the existing 4-across feature grid, unchanged. */}
-          <section
-            aria-label="What you're signing up for"
-            className="mt-10 hidden w-full lg:mt-14 lg:block"
-          >
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4 lg:gap-5 2xl:gap-6">
-              {FEATURES.map((f) => (
-                <FeatureCard key={f.title} {...f} />
-              ))}
-            </div>
-          </section>
         </div>
 
         {/* Footer brand + legal links. On mobile the wordmark sits here,
@@ -166,53 +134,6 @@ function StepPill({
       <span>
         Step {current} of {total} · <span className="text-ink-caption">{label}</span>
       </span>
-    </div>
-  );
-}
-
-/* ----------------- Feature cards ------------------ */
-
-type Feature = {
-  title: string;
-  body: string;
-  Icon: LucideIcon;
-};
-
-const FEATURES: Feature[] = [
-  {
-    title: "Receive qualified leads",
-    body:  "Operators send referrals straight to your inbox.",
-    Icon:  Inbox,
-  },
-  {
-    title: "Track every job",
-    body:  "From new lead to closed deal in one place.",
-    Icon:  LineChart,
-  },
-  {
-    title: "Get paid on time",
-    body:  "Wallet + payout tracking built in.",
-    Icon:  Wallet,
-  },
-  {
-    title: "Bring your team",
-    body:  "Add admins and members in a couple of taps.",
-    Icon:  UsersRound,
-  },
-];
-
-/* Per-tone color dropped — the new tile spec is neutral across all four,
-   so the row reads as a single rhythm rather than four separate cues.   */
-function FeatureCard({ title, body, Icon }: Feature) {
-  return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left shadow-sm 2xl:gap-5 2xl:p-6">
-      <div className="grid h-9 w-9 place-items-center rounded-xl bg-subtle text-ink-body 2xl:h-11 2xl:w-11">
-        <Icon size={17} strokeWidth={1.75} className="2xl:h-5 2xl:w-5" />
-      </div>
-      <div>
-        <p className="text-[14px] font-semibold leading-tight text-ink-title 2xl:text-[16px]">{title}</p>
-        <p className="mt-1.5 text-[12.5px] leading-snug text-ink-subtitle 2xl:mt-2 2xl:text-[13.5px]">{body}</p>
-      </div>
     </div>
   );
 }

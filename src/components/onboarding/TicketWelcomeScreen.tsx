@@ -86,7 +86,7 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 fullWidth
                 size="lg"
                 leadingIcon={<Mail size={16} strokeWidth={1.75} />}
-                onClick={() => goto("/onboarding/auth?mode=create")}
+                onClick={() => goto("/partner/account")}
               >
                 Email
               </Button>
@@ -95,7 +95,7 @@ export function TicketWelcomeScreen({ invite }: Props) {
                 fullWidth
                 size="lg"
                 leadingIcon={<GoogleMark />}
-                onClick={() => goto("/onboarding/auth?mode=create")}
+                onClick={() => goto("/partner/account")}
               >
                 Google
               </Button>
@@ -346,7 +346,7 @@ function TicketFront({
         <div className="mb-3 border-t border-dashed border-white/8" />
         <TicketPrimaryCTA
           icon={<ArrowRight size={15} strokeWidth={1.85} />}
-          onClick={() => goto("/onboarding/auth?mode=create")}
+          onClick={() => goto("/partner/account")}
         >
           Get started
         </TicketPrimaryCTA>
