@@ -922,3 +922,14 @@
 .op-chip svg { color: var(--op-faint); }
 .op-chip.is-on { background: var(--op-ink); border-color: var(--op-ink); color: var(--op-on-ink); }
 .op-chip.is-on svg { color: var(--op-on-ink); }
+
+/* Progressive-reveal fields (e.g. Confirm password appears once the user
+   starts typing a password) — slide down into place, no layout jank. */
+.op-reveal { animation: op-reveal 0.22s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+@keyframes op-reveal {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .op-reveal { animation: none; }
+}
