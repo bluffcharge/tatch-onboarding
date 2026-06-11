@@ -175,9 +175,20 @@ export function PartnerShell({
         </header>
       )}
 
-      {/* Right stage — the floating card. */}
+      {/* Right stage — the floating card. The pointer-move handler feeds
+          --mx/--my to the dark theme's glass sheen (a cursor-tracked indigo
+          radial on .op-card::after); it writes style vars directly — no
+          React state, no re-renders, inert in light mode. */}
       <div className="op-stage">
-        <div className={`op-card${wide ? " is-wide" : ""}${isForm ? "" : " op-card--center"}`}>
+        <div
+          className={`op-card${wide ? " is-wide" : ""}${isForm ? "" : " op-card--center"}`}
+          onPointerMove={(e) => {
+            const el = e.currentTarget;
+            const r = el.getBoundingClientRect();
+            el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+            el.style.setProperty("--my", `${e.clientY - r.top}px`);
+          }}
+        >
           {isForm && (
             <div className="op-card-head">
               {back ?? <span />}

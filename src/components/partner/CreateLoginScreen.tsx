@@ -138,7 +138,14 @@ export function CreateLoginScreen() {
         </label>
       )}
 
-      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} onClick={next}>
+      {/* Rests quiet until the fields validate — Google above is the path
+          most people take, so Continue shouldn't out-shout it on load.
+          Still clickable while resting (a click surfaces the errors). */}
+      <button
+        className={`op-btn op-btn--primary${valid || testMode ? "" : " is-resting"}`}
+        style={{ marginTop: 6 }}
+        onClick={next}
+      >
         Continue
       </button>
 

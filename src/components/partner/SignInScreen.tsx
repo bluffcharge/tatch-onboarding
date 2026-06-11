@@ -95,7 +95,14 @@ export function SignInScreen() {
         </div>
       )}
 
-      <button className="op-btn op-btn--primary" onClick={signIn}>Sign in</button>
+      {/* Same resting-CTA rule as create-login: Google is the headline path,
+          so Sign in stays quiet until both fields hold something. */}
+      <button
+        className={`op-btn op-btn--primary${email && password ? "" : " is-resting"}`}
+        onClick={signIn}
+      >
+        Sign in
+      </button>
 
       <p className="op-meta-line">
         New to Tatch?{" "}
