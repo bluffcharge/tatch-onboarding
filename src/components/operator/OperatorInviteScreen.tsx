@@ -61,7 +61,7 @@ function Topbar() {
     <header className="border-b border-border-subtle bg-card">
       <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-5 py-3">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center">
+          <Link href="/gallery" className="flex items-center">
             <Wordmark className="h-[17px]" />
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">

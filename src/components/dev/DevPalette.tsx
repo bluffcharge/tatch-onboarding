@@ -32,7 +32,8 @@ export function DevPalette() {
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("embed") === "1";
     const isGallery =
-      typeof window !== "undefined" && window.location.pathname === "/";
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/gallery");
     setHidden(inIframe || embed || isGallery);
   }, []);
 
@@ -42,7 +43,7 @@ export function DevPalette() {
     <div className="safe-pt pointer-events-none fixed right-2 top-2 z-50">
       <div className="pointer-events-auto flex items-center gap-0.5 rounded-pill border border-border bg-card/90 p-0.5 shadow-sm backdrop-blur-[8px]">
         <Link
-          href="/"
+          href="/gallery"
           aria-label="Back to route gallery"
           title="Back to route gallery"
           className="inline-flex h-7 w-7 items-center justify-center rounded-pill text-ink-caption hover:bg-subtle hover:text-ink-body"
