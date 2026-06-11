@@ -62,7 +62,7 @@ export function WelcomeScreen({ invite }: Props) {
               size="lg"
               onClick={() => goto("/partner/account")}
             >
-              Get started
+              Accept Invite
             </Button>
           </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Brand ribbons — animated SVG sweep anchored to the bottom-left of the
@@ -17,16 +17,37 @@ import { useCallback, useRef, useState } from "react";
  * reveals left → right over ~2s rather than slapping on a decorative bar.
  *
  * Idle motion: each ribbon then breathes via a slow vertical shimmer
- * (≤0.6px amplitude, ~18s cycle). Each ribbon's shimmer is phase-offset
- * so they don't move in lockstep; the result is sub-conscious — closer
- * to a string sitting in a draft than to a "this thing is animated"
- * tell.
+ * (≤0.6px amplitude, ~18s cycle), phase-offset per ribbon.
+ *
+ * Strum: moving the pointer ACROSS a ribbon plucks it — each line is a
+ * damped spring that takes a velocity impulse when the cursor crosses its
+ * centerline, so dragging through the fan strums the four strings in
+ * sequence. Springs integrate in one rAF loop and write a translateY onto
+ * a dedicated wrapper <g>, composing cleanly with the draw-on/shimmer
+ * (path) and pluck (outer group) animations. Disabled under
+ * prefers-reduced-motion.
  *
  * Easter egg: clicking inside the bottom-left hit zone plucks all four
  * ribbons (one-shot wobble) and plays a quiet sine pluck via WebAudio.
- * Deliberately undecorated so the gesture is a discovery rather than a
- * marketed feature.
  */
+
+/* Spring tuning: ω≈9.5 rad/s (~1.5 Hz wobble), ζ≈0.2 → ~4 visible
+   oscillations decaying over ~1.2s. Impulse + clamp keep the peak around
+   10 viewBox units (~8–14 screen px) — felt, not flashy. */
+const SPRING_K = 90;
+const SPRING_C = 4;
+const IMPULSE = 110;
+const MAX_AMP = 16;
+
+type SpringState = {
+  pos: number;
+  vel: number;
+  /** which side of the ribbon the pointer was on last move (+1/-1/0) */
+  side: number;
+  /** sampled centerline (y at increasing x) for crossing detection */
+  samples: { x: number; y: number }[];
+};
+
 export function BrandRibbons() {
   // `pluck` toggles a CSS class that fires the one-shot wobble keyframes.
   // The token field flips so successive clicks re-trigger the animation
@@ -34,6 +55,121 @@ export function BrandRibbons() {
   // class when the key changes).
   const [pluck, setPluck] = useState<{ on: boolean; key: number }>({ on: false, key: 0 });
   const audioCtxRef = useRef<AudioContext | null>(null);
+
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const pathRefs = useRef<(SVGPathElement | null)[]>([]);
+  const strumRefs = useRef<(SVGGElement | null)[]>([]);
+  const springs = useRef<SpringState[]>(
+    RIBBONS.map(() => ({ pos: 0, vel: 0, side: 0, samples: [] })),
+  );
+  const rafRef = useRef<number | null>(null);
+  const lastTsRef = useRef(0);
+
+  /* Integrate all springs; park the loop once everything settles. */
+  const tick = useCallback((ts: number) => {
+    const dt = Math.min(32, ts - (lastTsRef.current || ts)) / 1000;
+    lastTsRef.current = ts;
+    let live = false;
+    springs.current.forEach((s, i) => {
+      if (s.pos === 0 && Math.abs(s.vel) < 0.01) return;
+      const acc = -SPRING_K * s.pos - SPRING_C * s.vel;
+      s.vel += acc * dt;
+      s.pos += s.vel * dt;
+      s.pos = Math.max(-MAX_AMP, Math.min(MAX_AMP, s.pos));
+      if (Math.abs(s.pos) < 0.04 && Math.abs(s.vel) < 0.6) {
+        s.pos = 0;
+        s.vel = 0;
+      } else {
+        live = true;
+      }
+      strumRefs.current[i]?.setAttribute("transform", `translate(0 ${s.pos.toFixed(2)})`);
+    });
+    if (live) {
+      rafRef.current = requestAnimationFrame(tick);
+    } else {
+      rafRef.current = null;
+      lastTsRef.current = 0;
+    }
+  }, []);
+
+  const wake = useCallback(() => {
+    if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
+  }, [tick]);
+
+  /* Sample each path's centerline on mount, then watch pointer crossings
+     on the window (the ornament layer is pointer-events-none, so it can't
+     observe events itself). */
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    pathRefs.current.forEach((p, i) => {
+      if (!p) return;
+      const len = p.getTotalLength();
+      const pts: { x: number; y: number }[] = [];
+      for (let t = 0; t <= 48; t++) {
+        const pt = p.getPointAtLength((len * t) / 48);
+        pts.push({ x: pt.x, y: pt.y });
+      }
+      springs.current[i].samples = pts;
+    });
+
+    const yAt = (s: SpringState, x: number): number | null => {
+      const pts = s.samples;
+      if (pts.length === 0 || x < pts[0].x || x > pts[pts.length - 1].x) return null;
+      let lo = 0;
+      let hi = pts.length - 1;
+      while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1;
+        if (pts[mid].x <= x) lo = mid;
+        else hi = mid;
+      }
+      const a = pts[lo];
+      const b = pts[hi];
+      const f = b.x === a.x ? 0 : (x - a.x) / (b.x - a.x);
+      return a.y + (b.y - a.y) * f;
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const root = rootRef.current;
+      if (!root) return;
+      const r = root.getBoundingClientRect();
+      if (
+        r.width === 0 ||
+        e.clientX < r.left || e.clientX > r.right ||
+        e.clientY < r.top || e.clientY > r.bottom
+      )
+        return;
+      // Client → viewBox (1600×900, preserveAspectRatio="xMinYMax slice"):
+      // uniform cover scale, x pinned left, y pinned bottom.
+      const s = Math.max(r.width / 1600, r.height / 900);
+      const vx = (e.clientX - r.left) / s;
+      const vy = (e.clientY - r.top - (r.height - 900 * s)) / s;
+
+      springs.current.forEach((sp) => {
+        const y = yAt(sp, vx);
+        if (y == null) {
+          sp.side = 0;
+          return;
+        }
+        const side = vy > y ? 1 : -1;
+        if (sp.side !== 0 && side !== sp.side) {
+          // Crossed the string — impulse in the direction of travel.
+          sp.vel += side * IMPULSE;
+          wake();
+        }
+        sp.side = side;
+      });
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTsRef.current = 0;
+    };
+    // Re-run after a pluck remounts the groups (refs repopulate).
+  }, [wake, pluck.key]);
 
   const handlePluck = useCallback(() => {
     setPluck((prev) => ({ on: true, key: prev.key + 1 }));
@@ -72,6 +208,7 @@ export function BrandRibbons() {
 
   return (
     <div
+      ref={rootRef}
       aria-hidden="true"
       className="brand-ribbons pointer-events-none absolute inset-0 hidden overflow-hidden lg:block"
     >
@@ -108,19 +245,30 @@ export function BrandRibbons() {
             className={`ribbon-group${pluck.on ? " plucked" : ""}`}
             style={{ animationDelay: `${i * 55}ms` }}
           >
-            <path
-              d={r.d}
-              stroke={`url(#${r.gradId})`}
-              strokeWidth={r.width}
-              strokeLinecap="round"
-              fill="none"
-              pathLength={1}
-              className="brand-ribbon"
-              // Two delays: draw on mount (small stagger) + shimmer
-              // phase offset (negative seconds = jump into the cycle so
-              // ribbons aren't synchronized).
-              style={{ animationDelay: `${r.delay}ms, ${r.shimmerOffset}s` }}
-            />
+            {/* Strum layer — carries the spring's translateY so the physics
+                composes with the group pluck + path shimmer animations. */}
+            <g
+              ref={(el) => {
+                strumRefs.current[i] = el;
+              }}
+            >
+              <path
+                ref={(el) => {
+                  pathRefs.current[i] = el;
+                }}
+                d={r.d}
+                stroke={`url(#${r.gradId})`}
+                strokeWidth={r.width}
+                strokeLinecap="round"
+                fill="none"
+                pathLength={1}
+                className="brand-ribbon"
+                // Two delays: draw on mount (small stagger) + shimmer
+                // phase offset (negative seconds = jump into the cycle so
+                // ribbons aren't synchronized).
+                style={{ animationDelay: `${r.delay}ms, ${r.shimmerOffset}s` }}
+              />
+            </g>
           </g>
         ))}
       </svg>
@@ -159,11 +307,13 @@ type Ribbon = {
 // content column at far right. Colors follow the signature Tatch gradient
 // (#00BBFF → #7533FF → #FF40F5) plus a deep-royal anchor at the top of
 // the fan so the bouquet reads brand-coherent at any width.
+// Opacities sit at 36% of their original values (−64%, design call
+// 2026-06-11) — the bouquet underpaints the canvas rather than performing.
 const RIBBONS: Ribbon[] = [
   {
     gradId: "ribbon-cyan",
     color: "#00BBFF",
-    maxOpacity: 0.7,
+    maxOpacity: 0.25,
     d: "M -60 860 C 500 870, 1100 770, 2000 620",
     width: 56,
     delay: 0,
@@ -172,7 +322,7 @@ const RIBBONS: Ribbon[] = [
   {
     gradId: "ribbon-royal",
     color: "#7533FF",
-    maxOpacity: 0.65,
+    maxOpacity: 0.23,
     d: "M -60 810 C 500 820, 1100 720, 2000 560",
     width: 48,
     delay: 130,
@@ -181,7 +331,7 @@ const RIBBONS: Ribbon[] = [
   {
     gradId: "ribbon-magenta",
     color: "#FF40F5",
-    maxOpacity: 0.55,
+    maxOpacity: 0.2,
     d: "M -60 760 C 500 770, 1100 670, 2000 500",
     width: 40,
     delay: 260,
@@ -190,7 +340,7 @@ const RIBBONS: Ribbon[] = [
   {
     gradId: "ribbon-deep",
     color: "#003ED8",
-    maxOpacity: 0.5,
+    maxOpacity: 0.18,
     d: "M -60 710 C 500 720, 1100 620, 2000 440",
     width: 32,
     delay: 390,
