@@ -6,6 +6,7 @@ import { Building2, Check, MapPin, Users } from "lucide-react";
 import { PartnerShell } from "./PartnerShell";
 import { PhoneField, AddressField } from "./inputs";
 import { useInvite } from "@/lib/useInvite";
+import { useTestMode } from "@/lib/testMode";
 
 const COMMON_DOMAINS = ["gmail", "outlook", "yahoo", "hotmail", "icloud", "proton", "me"];
 
@@ -30,6 +31,12 @@ export function YourBusinessScreen() {
   const [name, setName] = useState(invite.partnerCompany ?? bizFromEmail(email));
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+
+  // The default form REQUIRES the details — we may not know the business
+  // yet, and downstream matching/records need name + address. (The linked
+  // variant below skips this: the record already exists.) Phone optional.
+  const testMode = useTestMode();
+  const ready = testMode || (name.trim().length > 1 && address.trim().length > 3);
 
   const next = () => router.push("/partner/questions");
 
@@ -102,7 +109,7 @@ export function YourBusinessScreen() {
 
       <AddressField value={address} onChange={setAddress} label="Business address" helper="Your primary business location." />
 
-      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} onClick={next}>
+      <button className="op-btn op-btn--primary" style={{ marginTop: 6 }} disabled={!ready} onClick={next}>
         Continue
       </button>
     </PartnerShell>
