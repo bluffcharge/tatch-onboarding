@@ -633,7 +633,7 @@ function FilmCard({
         "transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
         isActive
           ? "film-active bg-card"
-          : "border-border bg-card shadow-sm hover:-translate-y-0.5 hover:border-strong hover:shadow-md",
+          : "border-border bg-card shadow-sm hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md",
       ].join(" ")}
     >
       <div className="flex w-full items-center gap-2">

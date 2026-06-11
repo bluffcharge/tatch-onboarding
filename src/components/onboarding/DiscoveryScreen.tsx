@@ -303,7 +303,7 @@ function TileGroup(props: TileSingle | TileMulti) {
               "group relative flex h-[88px] items-center gap-3 rounded-2xl border px-3.5 text-left transition-[background-color,border-color,box-shadow,transform] duration-fast ease-snap",
               selected
                 ? "border-[color:var(--text-title)] bg-card shadow-md"
-                : "border-border bg-card hover:-translate-y-0.5 hover:border-strong hover:shadow-sm",
+                : "border-border bg-card hover:-translate-y-0.5 hover:border-border-strong hover:shadow-sm",
             ].join(" ")}
           >
             {selected && (

@@ -55,7 +55,7 @@ export function ChipGroup(props: Props) {
               "transition-colors duration-fast ease-snap",
               selected
                 ? "border-royal-400 bg-royal-50 text-royal-700 dark:bg-royal-900 dark:text-white"
-                : "border-border bg-card text-ink-body hover:border-strong hover:bg-subtle",
+                : "border-border bg-card text-ink-body hover:border-border-strong hover:bg-subtle",
             ].join(" ")}
           >
             {selected && <Check size={13} strokeWidth={2.25} />}

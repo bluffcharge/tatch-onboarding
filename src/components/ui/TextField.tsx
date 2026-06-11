@@ -43,7 +43,7 @@ export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
           "flex h-11 w-full items-center gap-2 rounded-[12px] border bg-card px-4 transition-colors duration-fast ease-snap",
           hasError
             ? "border-error"
-            : "border-border hover:border-strong focus-within:border-[color:var(--focus-border)]",
+            : "border-border hover:border-border-strong focus-within:border-[color:var(--focus-border)]",
           "focus-within:shadow-[var(--focus-ring)]",
         ].join(" ")}
       >
