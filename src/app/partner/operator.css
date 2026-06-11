@@ -933,3 +933,9 @@
 @media (prefers-reduced-motion: reduce) {
   .op-reveal { animation: none; }
 }
+
+/* Per-row invite validation (PRD Flow 2 step 4) — the message sits UNDER
+   the row it belongs to, full row width, error or success tone. */
+.op-row-msg { font-size: 12.5px; line-height: 1.45; margin-top: 7px; }
+.op-row-msg.is-error { color: var(--op-error); }
+.op-row-msg.is-ok { color: var(--op-success); }
