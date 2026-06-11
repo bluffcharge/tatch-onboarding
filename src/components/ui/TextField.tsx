@@ -57,7 +57,10 @@ export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
           id={inputId}
           aria-invalid={hasError || undefined}
           aria-describedby={helper || error ? helperId : undefined}
-          className="h-full w-full bg-transparent text-[14px] text-ink-title outline-none placeholder:text-ink-disabled"
+          // 16px below md so iOS Safari doesn't zoom the focused input now
+          // that pinch-zoom is re-enabled (no maximumScale); desktop keeps
+          // the original 14px.
+          className="h-full w-full bg-transparent text-[16px] text-ink-title outline-none placeholder:text-ink-disabled md:text-[14px]"
           {...rest}
         />
         {trailingAdornment && (
