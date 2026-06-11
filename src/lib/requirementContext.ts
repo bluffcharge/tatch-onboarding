@@ -1,116 +1,124 @@
 /**
- * Per-screen mapping into the partner-side product spec. Powers the left
- * rail on the canvas — keeps reviewers anchored to "what is this screen
- * trying to satisfy?" while clicking through the operator platform.
+ * Per-screen mapping into the operator-platform product spec. Powers the
+ * left rail on the canvas — keeps reviewers anchored to "what is this
+ * screen trying to satisfy?" while clicking through the half-MVP.
  *
- * Sourced from the Leads Module and Records Module partner stories
- * (Notion: "Leads Module - Partner", "Records Module - Partner"). These
- * are reference links to the relevant stories, not build instructions —
- * the screens themselves live in the partner prototype.
+ * Sourced from the half-MVP design docs and the Wallet & Payments PRD
+ * (May 2026, PRD v3 — Opportunities eliminated). These are reference
+ * notes for review, not build instructions — the screens themselves live
+ * in the half-MVP prototype (bluffcharge/tatch-partner-portal).
  *
  * Keys MUST match the `href` values in `ALL_ROUTES` (page.tsx) exactly,
- * including the absolute origin, since `getContextFor` looks up by href.
+ * including the absolute origin and query string, since `getContextFor`
+ * looks up by href.
  */
 
-const PARTNER_BASE = "https://tatch-partner-prototype.vercel.app";
+const CONSOLE_BASE = "https://tatch-half-mvp.vercel.app";
 
 export type RequirementContext = {
   /** Short one-liner for the rail header. */
   oneLine: string;
   /** Which flows (and which steps) this screen sits in. */
   flowRefs: { flow: string; step?: string }[];
-  /** Which user stories this screen serves. */
+  /** Which user stories / PRD sections this screen serves. */
   storyRefs: string[];
   /** 2–5 bullet points lifted from the spec's key requirements. */
   reqs: string[];
 };
 
 export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
-  [`${PARTNER_BASE}/leads`]: {
+  [`${CONSOLE_BASE}/?page=Dash&theme=light`]: {
     oneLine:
-      "Every submitted lead in one table — filter by submitted-by and stage, sort by any column.",
+      "Operator home — welcome hero, revenue dial, and KPI strip in one glance.",
     flowRefs: [
-      { flow: "Track Leads (Overview)", step: "Lands on Leads, narrows with search + filters" },
-      { flow: "Bulk Assign", step: "Select rows → floating action bar → reassign" },
+      { flow: "Daily check-in", step: "Lands on Dash; reads revenue + KPI movement" },
     ],
-    storyRefs: ["Leads · Story 2", "Leads · Story 3"],
+    storyRefs: ["Half-MVP · Dash"],
     reqs: [
-      "Sentence-style header ({count} leads to All Partners from all Submitted by) with inline dropdown filters.",
-      "Filter bar: search, submitted-by dropdown, stage dropdown — no separate sort button.",
-      "Columns sort by clicking the header; bulk-select shows a floating 'Assign to' action bar.",
-      "Search matches contact name, operator, or address.",
+      "Hero card carries the welcome copy and revenue headline; pointer-tracked tilt + specular sheen on hover.",
+      "KPI strip is toggleable from the Tweaks panel (edit mode).",
+      "Theme auto-selects by local time of day — pinned light in this canvas so reviews look the same at any hour.",
+      "Top nav: Dash · Leads · Records · Wallet, with 44pt touch halos on tablet.",
     ],
   },
-  [`${PARTNER_BASE}/leads/marcus-rivera`]: {
+  [`${CONSOLE_BASE}/?page=Leads&theme=light`]: {
     oneLine:
-      "Full lifecycle of one lead — activities, files, dates, details, contacts, and financials.",
+      "Every lead in one pipeline table — stage filters, search, and a detail rail.",
     flowRefs: [
-      { flow: "View Lead Detail", step: "Opens a lead from the overview table" },
-      { flow: "Upload a File", step: "Drag onto Documents — immediately visible to the operator" },
+      { flow: "Track Leads", step: "Narrows the table with search + stage filters" },
+      { flow: "Lead Detail", step: "Opens a row into the detail rail" },
     ],
-    storyRefs: ["Leads · Story 4", "Leads · Story 5", "Leads · Story 6", "Leads · Story 7"],
+    storyRefs: ["Half-MVP · Leads"],
     reqs: [
-      "Two-column layout: activities + (files | dates) on the left, details / contacts / financials on the right.",
-      "Unified activity feed of curated lifecycle events only — no internal operator noise.",
-      "Timeline dates per stage (Received → Contacted → Working → Qualified → Lost); unreached stages read 'Not set'.",
-      "Drag-and-drop file upload, max 250 MB per file; partner and operator files are mutually visible.",
+      "Stage and sub-stage filters with per-bucket toggles; filters reset pagination.",
+      "Search spans contact, company, and address.",
+      "Pagination bar with page-size control sits under the table.",
     ],
   },
-  [`${PARTNER_BASE}/records?view=contacts`]: {
+  [`${CONSOLE_BASE}/?page=Records&theme=light`]: {
     oneLine:
-      "All contacts you refer leads for — searchable and filterable by company.",
+      "Contacts and companies behind the pipeline — switchable views with detail pages.",
     flowRefs: [
-      { flow: "Records Overview", step: "Contacts view active by default; toggle to Companies" },
+      { flow: "Records Overview", step: "Contacts view by default; header toggles to Companies" },
+      { flow: "Record Detail", step: "Opens contact / company / lead detail pages" },
     ],
-    storyRefs: ["Records · Story 1"],
+    storyRefs: ["Half-MVP · Records", "Records PRD v3"],
     reqs: [
-      "Columns: Contact, Title, Company, Phone, Email, BDM — all sortable. No checkboxes or bulk actions.",
-      "Search by name, company, or email; company filter is a multiselect with in-dropdown search + Clear all.",
-      "One BDM per company; all contacts inherit that company's BDM.",
-      "Permission scoping: Admin sees all, Manager sees own + team, Member sees own.",
+      "Same table engine as Leads (shared RecordsPage) scoped to contacts + companies.",
+      "Detail pages: KPI lockup, activity feed, files, and fee terms per record.",
+      "Body grid follows the Records content-tile recipe from the design system.",
     ],
   },
-  [`${PARTNER_BASE}/records?view=companies`]: {
+  [`${CONSOLE_BASE}/?page=Wallet&theme=light`]: {
     oneLine:
-      "All companies you refer leads to — with per-company lead counts.",
+      "The operator's money view — balances, payout approvals, and partner flows.",
     flowRefs: [
-      { flow: "Records Overview", step: "Toggle the header to the Companies view" },
+      { flow: "Approve Payouts", step: "Admin reviews and approves pending partner payouts" },
+      { flow: "KYB Setup", step: "Business verification before money can move" },
     ],
-    storyRefs: ["Records · Story 3"],
+    storyRefs: ["Wallet & Payments PRD · Operator"],
     reqs: [
-      "Columns: Company, Street, City, State, ZIP, Phone, Email, Industry, BDM, Leads — all sortable.",
-      "Search only (no filter button); matches name, industry, or city.",
-      "Leads column shows the count of leads submitted to that company.",
-      "No Total Revenue column; permission scoping applies (Admin / Manager / Member).",
+      "Operator admin approves payouts and reaches Operations settings.",
+      "BDM sub-role sees only assigned partners' transactions and cannot approve payouts.",
+      "Tables fit portrait tablet without horizontal scroll.",
     ],
   },
-  [`${PARTNER_BASE}/records/contacts/marisa-waters`]: {
+  [`${CONSOLE_BASE}/?page=Wallet&role=partner&theme=light`]: {
     oneLine:
-      "A contact's performance, history, files, referrals, and fee terms on one page.",
+      "The partner's money view — business and personal earnings with a claim flow.",
     flowRefs: [
-      { flow: "Contact Detail", step: "Opens a contact; company name links to the parent company" },
-      { flow: "Cross-Navigation", step: "Breadcrumbs + company link move between records" },
+      { flow: "Claim Earnings", step: "Partner claims earned balance to a linked account" },
+      { flow: "Commission Splits", step: "Business vs personal split per reward" },
     ],
-    storyRefs: ["Records · Story 2", "Records · Story 5", "Records · Story 6"],
+    storyRefs: ["Wallet & Payments PRD · Partner"],
     reqs: [
-      "Seven-KPI metrics card: Leads Sent, Sold, Lost, Conversion Rate, Rewards Earned, Last Lead Sent, Days Since.",
-      "KPIs scoped to leads where the contact is BDM (Admin sees all; Member sees only their own).",
-      "Activities + (Files | Referral Summary) on the left; Record Details + Fee Structure on the right.",
-      "Fee structure is inherited from the parent company and read-only for the partner.",
+      "Business and personal wallets render side by side with earned + pending balances.",
+      "Linked account (e.g. Chase Business ****3847) gates the claim flow.",
+      "Partner sub-roles (admin / manager / member) scope what is visible.",
     ],
   },
-  [`${PARTNER_BASE}/records/companies/acme-roofing`]: {
+  [`${CONSOLE_BASE}/?page=Settings&theme=light`]: {
     oneLine:
-      "A company's performance, history, files, referrals, and fee terms on one page.",
+      "Settings, reached from the avatar menu — sections vary by role and sub-role.",
     flowRefs: [
-      { flow: "Company Detail", step: "Opens a company from the Companies table" },
+      { flow: "Exit Settings", step: "Back button returns to the last non-Settings page" },
     ],
-    storyRefs: ["Records · Story 4", "Records · Story 5", "Records · Story 6"],
+    storyRefs: ["Half-MVP · Settings"],
     reqs: [
-      "Same seven KPIs as contact detail; Admin sees company-level totals, Member sees only their submissions.",
-      "Two-column layout: Activities + (Files | Referral Summary) left, Details + Fee Structure right.",
-      "Fee structure is flat or tiered, read-only, set by the operator during onboarding.",
-      "No Related Contacts tile on the company view.",
+      "Operator vs partner role (and sub-roles) decide which sections render.",
+      "Operations settings are admin-only on the operator side.",
+    ],
+  },
+  [`${CONSOLE_BASE}/?page=Dash&theme=dark`]: {
+    oneLine:
+      "Dark-theme parity pass on the home surface.",
+    flowRefs: [
+      { flow: "Evening use", step: "The app auto-selects dark 19:00–07:00 local" },
+    ],
+    storyRefs: ["Half-MVP · Theming"],
+    reqs: [
+      "Dark theme is a first-class surface, not an inversion — its own backdrop, tile shadows, and inset highlights.",
+      "Check hero, dial, tables, and nav indicator for contrast at every breakpoint.",
     ],
   },
 };

@@ -32,7 +32,7 @@ import {
 } from "@/components/gallery/SourceCodeMenu";
 import { getContextFor } from "@/lib/requirementContext";
 
-type Group = "platform" | "leads" | "records";
+type Group = "platform" | "leads" | "records" | "wallet";
 type RouteIntent = "mobile" | "desktop";
 
 type Route = {
@@ -53,28 +53,31 @@ type Route = {
   animations?: AnimationKey[];
 };
 
-// Screens are loaded cross-origin from the live partner-prototype deploy.
+// Screens are loaded cross-origin from the live half-MVP deploy.
 // The canvas chrome (viewport switcher, filmstrip, rails) is generic — it
 // just frames whatever URL each route points at — so repurposing it to a
 // different prototype is purely a matter of swapping this manifest + the
 // per-route context in `requirementContext.ts`. To pin a specific deploy,
-// change PARTNER_BASE to a deployment URL.
-const PARTNER_BASE = "https://tatch-partner-prototype.vercel.app";
+// change CONSOLE_BASE to a deployment URL.
+//
+// The half-MVP is a SPA: `?page=` seeds the module, `?theme=` pins the
+// theme (its default auto-selects dark after 19:00 local — pinned light
+// here so reviews look the same at any hour), `?role=` seeds the View-as
+// role (operator vs partner wallet).
+const CONSOLE_BASE = "https://tatch-half-mvp.vercel.app";
 
 // Source-of-truth list. `hidden` entries (if any) stay in the file but drop
 // out of the gallery filmstrip + nav; the URL still resolves directly.
-// Filmstrip order mirrors the partner top-nav: Dash, Leads, Records, Wallet.
-// Dash + Wallet are placeholder destinations in the partner prototype, kept
-// here so the platform's full nav surface is walkable at every breakpoint.
+// Filmstrip order mirrors the console top-nav: Dash, Leads, Records, Wallet —
+// then Settings (avatar menu) and a dark-theme pass on the home surface.
 const ALL_ROUTES: Route[] = [
-  { href: `${PARTNER_BASE}/dash`,                           title: "Dash",                subtitle: "Platform home · coming soon",               group: "platform", intent: "desktop" },
-  { href: `${PARTNER_BASE}/leads`,                          title: "Leads — overview",    subtitle: "Pipeline table · filters · bulk actions",   group: "leads",    intent: "desktop" },
-  { href: `${PARTNER_BASE}/leads/marcus-rivera`,            title: "Lead — detail",       subtitle: "Activities · files · dates · financials",   group: "leads",    intent: "desktop" },
-  { href: `${PARTNER_BASE}/records?view=contacts`,          title: "Records — contacts",  subtitle: "Searchable contacts · company filter",      group: "records",  intent: "desktop" },
-  { href: `${PARTNER_BASE}/records?view=companies`,         title: "Records — companies", subtitle: "Companies · per-company lead counts",        group: "records",  intent: "desktop" },
-  { href: `${PARTNER_BASE}/records/contacts/marisa-waters`, title: "Contact — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records",  intent: "desktop" },
-  { href: `${PARTNER_BASE}/records/companies/acme-roofing`, title: "Company — detail",    subtitle: "KPIs · activity · referrals · fee terms",   group: "records",  intent: "desktop" },
-  { href: `${PARTNER_BASE}/wallet`,                         title: "Wallet",              subtitle: "Payouts & balance · coming soon",           group: "platform", intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Dash&theme=light`,                title: "Dash",               subtitle: "Welcome hero · revenue dial · KPI strip",     group: "platform", intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Leads&theme=light`,               title: "Leads",              subtitle: "Pipeline table · stage filters · detail",     group: "leads",    intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Records&theme=light`,             title: "Records",            subtitle: "Contacts & companies · detail pages",         group: "records",  intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Wallet&theme=light`,              title: "Wallet — operator",  subtitle: "Balances · payout approvals · partner flows", group: "wallet",   intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Wallet&role=partner&theme=light`, title: "Wallet — partner",   subtitle: "Earnings · claim flow · commission splits",   group: "wallet",   intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Settings&theme=light`,            title: "Settings",           subtitle: "Role-aware sections · reached via avatar",    group: "platform", intent: "desktop" },
+  { href: `${CONSOLE_BASE}/?page=Dash&theme=dark`,                 title: "Dash — dark theme",  subtitle: "The same home surface in the dark theme",     group: "platform", intent: "desktop" },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
@@ -83,12 +86,13 @@ const GROUP_LABEL: Record<Group, string> = {
   platform: "Platform",
   leads:    "Leads",
   records:  "Records",
+  wallet:   "Wallet",
 };
 
-// Note: route is NOT persisted. Every refresh lands on ROUTES[0] (Leads
-// overview) with a fresh iframe so the walkthrough always starts at the
-// beginning. Viewport + rail-collapsed are UI prefs, not screen state, so
-// those still persist.
+// Note: route is NOT persisted. Every refresh lands on ROUTES[0] (Dash)
+// with a fresh iframe so the walkthrough always starts at the beginning.
+// Viewport + rail-collapsed are UI prefs, not screen state, so those
+// still persist.
 const VIEWPORT_STORAGE_KEY = "tatch-gallery-viewport";
 const LEFT_RAIL_KEY = "tatch-gallery-left-rail";
 
@@ -553,7 +557,7 @@ function Filmstrip({
           className="flex flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 py-1"
           style={{ scrollbarWidth: "none" }}
           role="tablist"
-          aria-label="Partner platform screens"
+          aria-label="Operator console screens"
         >
           {routes.map((r, i) => {
             const isActive = r.href === active.href;
@@ -605,6 +609,7 @@ const GROUP_PIP: Record<Group, string> = {
   platform: "bg-[#FF40F5]",
   leads:    "bg-royal-400",
   records:  "bg-[#00BBFF]",
+  wallet:   "bg-[#2BD475]",
 };
 
 function FilmCard({
