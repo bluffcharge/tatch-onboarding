@@ -21,8 +21,12 @@ export function WelcomeScreen({ invite }: Props) {
       <div className="flex min-h-[100dvh] w-full max-w-[480px] flex-col px-4 md:min-h-full md:max-w-[720px] md:px-10 lg:max-w-[1120px] lg:px-14 xl:max-w-[1320px] 2xl:max-w-[1800px] 2xl:px-20">
         {/* Top brand row + step pill (step pill shows on lg+, where the
             centered layout has room for it on the right). On mobile the
-            wordmark moves to the footer, so it's hidden here below md. */}
-        <div className="safe-pt flex items-center justify-between pb-8 pt-1 lg:pb-12">
+            wordmark moves to the footer, so it's hidden here below md.
+            lg padding-top is tuned so the step pill's center sits on the
+            same horizontal plane as the floating DevPalette controls
+            (fixed top-2 + 12px safe inset + 32px pill → center ≈ 36px) —
+            the chrome reads as part of the interface in presentations. */}
+        <div className="flex items-center justify-between pb-8 pt-[max(env(safe-area-inset-top),12px)] lg:pb-12 lg:pt-[21px]">
           <Wordmark className="hidden h-[18px] md:block" />
           <div className="hidden lg:block">
             <StepPill current={1} total={6} label="Welcome" />
