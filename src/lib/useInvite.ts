@@ -78,9 +78,17 @@ export function clearInviteSession() {
  *  `?existing=1`, `?fn`, `?ln`, `?email`, `?phone`) on the current
  *  route, persists them to sessionStorage so later screens pick them
  *  up, and falls back to the stored session + default invite when no
- *  URL params are present. */
+ *  URL params are present.
+ *
+ *  Gallery embeds (`?embed=1`) are deterministic demo entries: with no
+ *  invite params the stored session is RESET to the default instead of
+ *  read — so e.g. P3b always shows the enter-your-business form even if
+ *  the P3c linked-company card (`?co=`) was viewed just before. Real
+ *  mid-flow navigation (no embed param) keeps the sticky session, which
+ *  is what carries a linked invite from /j/<token> to step 3. */
 export function useInvite(): InviteContext {
   const sp = useSearchParams();
+  const isEmbed = sp.get("embed") === "1";
   // Synchronous URL read for the initial render — no flash on direct
   // gallery visits like `/onboarding/business?co=northwind`.
   const initial = useMemo(() => {
@@ -94,11 +102,15 @@ export function useInvite(): InviteContext {
       const s = sessionFromSearchParams(sp);
       writeSession(s);
       setInvite(resolveInvite(s));
+    } else if (isEmbed) {
+      // Fresh demo entry — clear any scenario a previous card stored.
+      writeSession({});
+      setInvite(resolveInvite({}));
     } else {
       const s = readSession();
       setInvite(resolveInvite(s));
     }
-  }, [sp]);
+  }, [sp, isEmbed]);
 
   return invite;
 }
