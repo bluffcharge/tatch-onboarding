@@ -146,6 +146,20 @@ export function CreateLoginScreen() {
         By signing up you agree to our <a className="op-link" href="#privacy">Privacy Policy</a> and{" "}
         <a className="op-link" href="#terms">Terms of Service</a>.
       </p>
+
+      {/* Alternative entry point (PRD Story 6): partners without a working
+          invite link can connect via a Company or BDM code. */}
+      <p className="op-meta-line">
+        No invite link?{" "}
+        <button
+          type="button"
+          className="op-link"
+          style={{ background: "none", border: 0, cursor: "pointer" }}
+          onClick={() => router.push("/join")}
+        >
+          Sign up with Code
+        </button>
+      </p>
     </PartnerShell>
   );
 }

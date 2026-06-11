@@ -160,6 +160,9 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     storyRefs: ["Story 2", "Story 5"],
     reqs: [
       "Invite teammates by phone or email during onboarding.",
+      "Optional role per invitee (Admin / Manager / Member).",
+      "Validate each row before redirecting; message under the offending row with PRD-exact copy (invalid email/phone + already-associated duplicates).",
+      "Success: 'Your team member will receive an invitation shortly'.",
       "Skip is equal-weight to Send — never block activation on team invites.",
     ],
   },
@@ -183,7 +186,8 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
     reqs: [
       "Partner company auto-linked to inviting operator.",
       "All operator contacts added to all activated partner user accounts.",
-      "Confirm the linkage in copy.",
+      "Copy confirms the contact propagation ('Sara and 4 teammates added to your contacts').",
+      "Resolved-record contract tile (TATCH-416) for cross-team reference.",
     ],
   },
   "/partner/done?existing=1": {
