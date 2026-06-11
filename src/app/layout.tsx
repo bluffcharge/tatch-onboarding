@@ -12,7 +12,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale — pinch-zoom stays available (WCAG 1.4.4). iOS
+  // focus-zoom is prevented the right way instead: inputs are ≥16px.
   // When the on-screen keyboard opens on a phone, resize the layout
   // viewport (so 100dvh shrinks to the area above the keyboard). Combined
   // with the dvh-based min-heights + vertical centering on the input

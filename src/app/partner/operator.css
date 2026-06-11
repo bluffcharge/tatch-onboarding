@@ -141,13 +141,15 @@
   gap: 16px;
 }
 
-/* The floating white card. */
+/* The floating white card. On mobile the card grows with its content and
+   the PAGE scrolls (one natural scroll surface, per HIG) — the viewport cap
+   + internal scrolling apply only on the ≥820 desktop frame, where the card
+   is a fixed floating canvas. */
 .op-card {
   position: relative;
   width: 100%;
   max-width: 100%; /* full-bleed on mobile; re-capped at ≥820 */
-  max-height: calc(100dvh - 90px);
-  overflow-y: auto; overflow-x: hidden;
+  overflow-x: hidden;
   background: var(--op-bg);
   border: 1px solid var(--op-line);
   border-radius: 24px;
@@ -201,6 +203,7 @@
     max-width: 1280px;
     min-height: min(680px, calc(100dvh - 80px));
     max-height: calc(100dvh - 80px);
+    overflow-y: auto; /* desktop keeps the capped card + internal scroll */
     padding: 16px 36px 28px;
     display: flex; flex-direction: column;
   }
@@ -939,3 +942,64 @@
 .op-row-msg { font-size: 12.5px; line-height: 1.45; margin-top: 7px; }
 .op-row-msg.is-error { color: var(--op-error); }
 .op-row-msg.is-ok { color: var(--op-success); }
+
+/* ==========================================================================
+   Mobile / HIG pass (2026-06-11 audit, items 5–8 + minors)
+   --------------------------------------------------------------------------
+   Overrides on top of the verbatim operator skin: 44pt touch targets,
+   16px inputs (kills iOS focus-zoom so pinch-zoom can stay enabled),
+   flexible OTP cells (the fixed 52px row clipped the 6th digit at 375px),
+   hint contrast, safe-area top padding, and reduced-motion for the orb.
+   ========================================================================== */
+
+/* iOS Safari zooms focused inputs under 16px — and 16px lets us drop the
+   maximumScale=1 viewport hack, restoring pinch-zoom (WCAG 1.4.4). */
+.operator-root .op-input,
+.operator-root .op-select { font-size: 16px; }
+
+/* Verification-code cells flex below their 52px cap so all six digits fit
+   any viewport (at 375px they render ~46px wide instead of clipping). */
+.op-otp input { flex: 1 1 0; min-width: 0; max-width: 52px; }
+@media (max-width: 480px) {
+  .op-otp { gap: 8px; }
+}
+
+/* 44pt minimum touch targets (Apple HIG). Visual weight stays similar —
+   icons keep their size; the hit areas grow. */
+.op-back { width: 44px; height: 44px; margin-left: -12px; }
+.op-input-affix {
+  right: 1px;
+  width: 44px;
+  height: 44px; /* input is 46px tall, so the 44px hit area stays inside it */
+}
+.op-step-btn { width: 44px; height: 44px; }
+.op-chip { height: 44px; }
+.op-row-trash { width: 44px; }
+.op-suggest-row { padding: 12px 10px; }
+.op-tertiary { padding: 14px 0 12px; }
+
+/* Hint / legal text was --op-faint (#9A9AA0 ≈ 2.8:1 on white) — lift to
+   --op-muted (≈ 5.4:1) for small-text legibility. */
+.op-field-hint,
+.op-q-hint,
+.op-stepper-hint,
+.op-legal { color: var(--op-muted); }
+
+/* Respect the notch / Dynamic Island in standalone or viewport-fit
+   contexts; no-op elsewhere. */
+.op-topbar { padding-top: max(env(safe-area-inset-top), 18px); }
+
+/* Mobile wizard top bar: keep the step pill clear of the floating
+   DevPalette chrome (top-right, standalone visits only). */
+@media (max-width: 819px) {
+  .op-topbar--wizard { padding-right: 96px; }
+  /* Segmented role options reach the 44pt touch minimum on touch screens;
+     desktop keeps the compact 34px chips. */
+  .op-seg-opt { min-height: 44px; }
+}
+
+/* The success-orb pulse joins the slide/reveal animations in respecting
+   reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .op-orb.is-spin { animation: none; }
+}
