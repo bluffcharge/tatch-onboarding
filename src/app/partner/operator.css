@@ -841,15 +841,60 @@
 .brand-prd .op-spine { display: none; }
 
 /* ==========================================================================
-   Dark mode — intentionally absent on the partner wizard
+   Dark mode — roadmap brand, dark surface set
    --------------------------------------------------------------------------
-   The operator branch carries a zinc dark set here that follows the site
-   theme toggle. The partner wizard locks to the brand's light design
-   target instead — the floating white card on the cool gray page IS the
-   look (Rob, 2026-06-10) — so a visitor whose stored site theme is dark
-   still gets white cards on every step. The DIS-branded P1 welcome and
-   edge screens keep their dual theme; only /partner/* is locked.
+   Restored 2026-06-11 so the theme selector works through the whole flow
+   (it briefly disappeared on /partner/* when the wizard was light-locked,
+   which read as the control getting lost between screens). Light remains
+   the design target — the floating white card on the cool gray page —
+   and dark is the operator branch's zinc set, reached only by an explicit
+   toggle. The canvas theme toggle sets [data-theme="dark"] on <html>;
+   CTAs/active toggles go near-white with dark ink text (inverse-neutral
+   fill rule); violet accent brightens for contrast.
    ========================================================================== */
+[data-theme="dark"] .operator-root {
+  --op-ink:       #F4F4F5;
+  --op-ink-hover: #E4E4E7;
+  --op-on-ink:    #18181B;
+  --op-bg:        #18181B;
+  --op-page:      #09090B;
+  --op-soft:      #1F1F23;
+  --op-soft2:     #1C1C20;
+  --op-muted:     #A1A1AA;
+  --op-faint:     #71717A;
+  --op-line:      #27272A;
+  --op-dash:      #3F3F46;
+
+  --op-accent:      #9B7BFF;
+  --op-accent-deep: #7C5CFC;
+  --op-accent-soft: rgba(155, 123, 255, 0.18);
+  --op-glow:        rgba(124, 92, 252, 0.14);
+
+  --op-success: #34D399;
+  --op-success-soft: rgba(52, 211, 153, 0.13);
+  --op-error: #F87171;
+  --op-error-soft: rgba(248, 113, 113, 0.13);
+
+  --op-shadow:       0 1px 2px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.55);
+  --op-shadow-hover: 0 7px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* Glass elements: their light translucency reads as bright-white on dark —
+   re-tune to a faint light film over the dark surface. */
+[data-theme="dark"] .operator-root .op-stepcount {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(155, 123, 255, 0.32);
+  box-shadow: none;
+}
+[data-theme="dark"] .operator-root .op-btn--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-theme="dark"] .operator-root .op-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+/* Brighten the warn icon so it doesn't sink into the dark banner. */
+[data-theme="dark"] .operator-root .op-banner--warn .op-banner-icon { color: #F0B23E; }
 
 /* ==========================================================================
    Partner-flow additions
