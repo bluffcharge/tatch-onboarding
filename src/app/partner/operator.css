@@ -841,49 +841,104 @@
 .brand-prd .op-spine { display: none; }
 
 /* ==========================================================================
-   Dark mode — roadmap brand, dark surface set
+   Dark mode — "Ethereal Minimal" glass set
    --------------------------------------------------------------------------
-   Restored 2026-06-11 so the theme selector works through the whole flow
-   (it briefly disappeared on /partner/* when the wizard was light-locked,
-   which read as the control getting lost between screens). Light remains
-   the design target — the floating white card on the cool gray page —
-   and dark is the operator branch's zinc set, reached only by an explicit
-   toggle. The canvas theme toggle sets [data-theme="dark"] on <html>;
-   CTAs/active toggles go near-white with dark ink text (inverse-neutral
-   fill rule); violet accent brightens for contrast.
+   Palette from MDs/Ethereal-Minimal-System-DESIGN.md (2026-06-12): zinc-800
+   #27272A foundation, indigo #4B4BA0 primary accent with purple #8F47AE as
+   the reserved tertiary, near-white CTAs (their button-primary = #F4F4F5 on
+   black matches our inverse-neutral fill rule). Surfaces read as GLASS —
+   translucent card over accent glow blooms, 20px blur, white hairline —
+   per the MD's "glass first" depth system. Typography stays Urbanist
+   (ours), not the MD's Inter. Light mode remains the design target and is
+   untouched. The canvas theme toggle sets [data-theme="dark"] on <html>.
    ========================================================================== */
 [data-theme="dark"] .operator-root {
-  --op-ink:       #F4F4F5;
+  --op-ink:       #F4F4F5; /* CTA fill + titles (MD button-primary surface) */
   --op-ink-hover: #E4E4E7;
   --op-on-ink:    #18181B;
-  --op-bg:        #18181B;
-  --op-page:      #09090B;
-  --op-soft:      #1F1F23;
-  --op-soft2:     #1C1C20;
+  --op-bg:        rgba(39, 39, 42, 0.55); /* glass card over the glow field */
+  --op-page:      #27272A;                /* MD background / neutral */
+  --op-soft:      rgba(255, 255, 255, 0.06);
+  --op-soft2:     rgba(255, 255, 255, 0.04);
   --op-muted:     #A1A1AA;
-  --op-faint:     #71717A;
-  --op-line:      #27272A;
-  --op-dash:      #3F3F46;
+  --op-faint:     #71717A; /* MD text-primary — utility gray */
+  --op-line:      rgba(255, 255, 255, 0.09);  /* white hairlines, glass-etched */
+  --op-dash:      rgba(255, 255, 255, 0.18);
 
-  --op-accent:      #9B7BFF;
-  --op-accent-deep: #7C5CFC;
-  --op-accent-soft: rgba(155, 123, 255, 0.18);
-  --op-glow:        rgba(124, 92, 252, 0.14);
+  --op-accent:      #8C8CE0; /* #4B4BA0 family, lifted for small-text legibility */
+  --op-accent-deep: #4B4BA0; /* MD primary */
+  --op-accent-soft: rgba(75, 75, 160, 0.30);
+  --op-glow:        rgba(75, 75, 160, 0.32); /* indigo bloom behind the card */
+  --op-glow-2:      rgba(143, 71, 174, 0.20); /* tertiary purple counter-bloom */
 
   --op-success: #34D399;
   --op-success-soft: rgba(52, 211, 153, 0.13);
   --op-error: #F87171;
   --op-error-soft: rgba(248, 113, 113, 0.13);
 
-  --op-shadow:       0 1px 2px rgba(0, 0, 0, 0.35), 0 18px 44px rgba(0, 0, 0, 0.55);
+  /* MD layered shadow stack (0.06 steps doubled per ring) over deep base. */
+  --op-shadow:
+    rgba(0, 0, 0, 0.20) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.18) 0px 1px 1px -0.5px,
+    rgba(0, 0, 0, 0.18) 0px 3px 3px -1.5px,
+    rgba(0, 0, 0, 0.18) 0px 6px 6px -3px,
+    rgba(0, 0, 0, 0.18) 0px 12px 12px -6px,
+    rgba(0, 0, 0, 0.28) 0px 24px 24px -12px;
   --op-shadow-hover: 0 7px 22px rgba(0, 0, 0, 0.5);
 }
 
-/* Glass elements: their light translucency reads as bright-white on dark —
-   re-tune to a faint light film over the dark surface. */
+/* Backdrop: twin accent blooms (indigo primary top-right, purple tertiary
+   lower-left) so the glass card has something to refract. */
+[data-theme="dark"] .operator-root .op-backdrop {
+  background:
+    radial-gradient(1100px 620px at 86% -10%, var(--op-glow), transparent 62%),
+    radial-gradient(900px 560px at 6% 110%, var(--op-glow-2), transparent 60%),
+    var(--op-page);
+}
+
+/* The card is the glass pane: translucent fill, 20px blur, white hairline.
+   A pointer-tracked indigo sheen (--mx/--my set by PartnerShell) drifts
+   under the cursor — MD hover language is color, kept to a whisper. */
+[data-theme="dark"] .operator-root .op-card {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(255, 255, 255, 0.12);
+  transition: border-color 0.7s ease;
+}
+[data-theme="dark"] .operator-root .op-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    480px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(75, 75, 160, 0.16),
+    rgba(143, 71, 174, 0.05) 45%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+[data-theme="dark"] .operator-root .op-card:hover { border-color: rgba(255, 255, 255, 0.2); }
+[data-theme="dark"] .operator-root .op-card:hover::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="dark"] .operator-root .op-card::after { transition: none; }
+}
+
+/* Inputs read as etched glass — faint light film instead of a solid well. */
+[data-theme="dark"] .operator-root .op-input,
+[data-theme="dark"] .operator-root .op-select,
+[data-theme="dark"] .operator-root .op-otp input,
+[data-theme="dark"] .operator-root .op-step-input {
+  background: rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .operator-root .op-input.is-readonly { background: rgba(255, 255, 255, 0.03); }
+
+/* Glass chrome: stepcount pill + secondary (Google) button. */
 [data-theme="dark"] .operator-root .op-stepcount {
   background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(155, 123, 255, 0.32);
+  border-color: rgba(140, 140, 224, 0.36);
   box-shadow: none;
 }
 [data-theme="dark"] .operator-root .op-btn--secondary {
@@ -893,8 +948,38 @@
 [data-theme="dark"] .operator-root .op-btn--secondary:hover {
   background: rgba(255, 255, 255, 0.10);
 }
+/* Solid panels that would otherwise inherit the translucent card fill. */
+[data-theme="dark"] .operator-root .op-suggest { background: #2C2C30; }
 /* Brighten the warn icon so it doesn't sink into the dark banner. */
 [data-theme="dark"] .operator-root .op-banner--warn .op-banner-icon { color: #F0B23E; }
+
+/* ==========================================================================
+   Resting CTA — Continue stays quiet until the form earns it
+   --------------------------------------------------------------------------
+   On screens where a one-click path sits above the fields (Google on
+   create-login / sign-in), the always-armed primary CTA was out-shouting
+   it. `is-resting` keeps Continue subdued — soft fill, muted label, no
+   shadow — until the fields validate, then it swells to the full
+   inverse-neutral fill. Still clickable while resting (a click surfaces
+   the validation errors). 150ms color moves per the MD's motion language.
+   ========================================================================== */
+.op-btn--primary.is-resting {
+  background: var(--op-soft);
+  color: var(--op-muted);
+  border-color: var(--op-line);
+  box-shadow: none;
+}
+.op-btn--primary.is-resting:hover {
+  background: var(--op-soft2);
+  color: var(--op-ink);
+}
+[data-theme="dark"] .operator-root .op-btn--primary.is-resting {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.10);
+}
+[data-theme="dark"] .operator-root .op-btn--primary.is-resting:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
 
 /* ==========================================================================
    Partner-flow additions
