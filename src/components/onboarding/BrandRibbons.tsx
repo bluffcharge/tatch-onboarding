@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useStringTones } from "@/lib/useStringTones";
 
 /**
  * Brand ribbons — animated SVG sweep anchored to the bottom-left of the
@@ -28,8 +29,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * prefers-reduced-motion.
  *
  * Easter egg: clicking inside the bottom-left hit zone plucks all four
- * ribbons (one-shot wobble) and plays a quiet sine pluck via WebAudio.
+ * ribbons (one-shot wobble) and strums all four tones in sequence.
+ *
+ * Sound: each ribbon is tuned to a sampled tone (useStringTones — warm
+ * plucks + lush convolution reverb). Crossing a ribbon plucks its note at
+ * the same instant the spring takes its impulse, so sweeping the fan plays
+ * an ascending glissando. Bottom ribbon = lowest pitch. Silent until the
+ * first user gesture (autoplay policy) and under prefers-reduced-motion.
  */
+
+/* 4 strings → the contiguous middle of the 9-sample D4–E5 ladder, ascending
+   with the fan (RIBBONS[0] is the bottom-most sweep = lowest note). */
+const TONE_URLS = [
+  "/sounds/tone-G4.mp3",
+  "/sounds/tone-A4.mp3",
+  "/sounds/tone-B4.mp3",
+  "/sounds/tone-C5.mp3",
+];
 
 /* Spring tuning: ω≈9.5 rad/s (~1.5 Hz wobble), ζ≈0.2 → ~4 visible
    oscillations decaying over ~1.2s. Impulse + clamp keep the peak around
@@ -54,7 +70,7 @@ export function BrandRibbons() {
   // even if the previous run hasn't finished (React only re-applies the
   // class when the key changes).
   const [pluck, setPluck] = useState<{ on: boolean; key: number }>({ on: false, key: 0 });
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const tones = useStringTones(TONE_URLS);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const pathRefs = useRef<(SVGPathElement | null)[]>([]);
@@ -145,7 +161,7 @@ export function BrandRibbons() {
       const vx = (e.clientX - r.left) / s;
       const vy = (e.clientY - r.top - (r.height - 900 * s)) / s;
 
-      springs.current.forEach((sp) => {
+      springs.current.forEach((sp, i) => {
         const y = yAt(sp, vx);
         if (y == null) {
           sp.side = 0;
@@ -153,9 +169,11 @@ export function BrandRibbons() {
         }
         const side = vy > y ? 1 : -1;
         if (sp.side !== 0 && side !== sp.side) {
-          // Crossed the string — impulse in the direction of travel.
+          // Crossed the string — impulse in the direction of travel,
+          // and the string's tone rings at the same instant.
           sp.vel += side * IMPULSE;
           wake();
+          tones.pluck(i);
         }
         sp.side = side;
       });
@@ -169,42 +187,19 @@ export function BrandRibbons() {
       lastTsRef.current = 0;
     };
     // Re-run after a pluck remounts the groups (refs repopulate).
-  }, [wake, pluck.key]);
+  }, [wake, pluck.key, tones]);
 
   const handlePluck = useCallback(() => {
     setPluck((prev) => ({ on: true, key: prev.key + 1 }));
     window.setTimeout(() => setPluck((prev) => ({ on: false, key: prev.key })), 1150);
 
-    // Soft pluck — sine that exponentially detunes from G3 → G2 over
-    // ~0.8s with a quick attack and long decay. Lowpass keeps it warm.
-    // Gain peaks at 0.025 — quieter than typical UI feedback by design.
-    try {
-      const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!Ctx) return;
-      if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
-      const ctx = audioCtxRef.current;
-      if (ctx.state === "suspended") void ctx.resume();
-      const osc = ctx.createOscillator();
-      const filter = ctx.createBiquadFilter();
-      const gain = ctx.createGain();
-      filter.type = "lowpass";
-      filter.frequency.value = 1100;
-      filter.Q.value = 0.7;
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(196, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(98, ctx.currentTime + 0.85);
-      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.025, ctx.currentTime + 0.012);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.9);
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.95);
-    } catch {
-      // Audio is best-effort; silent failure is fine.
-    }
-  }, []);
+    // Strum the four sampled tones low → high, staggered to match the
+    // ribbons' wobble cascade. The click doubles as the autoplay-unlock
+    // gesture (decode is ms-fast, so the tail of even the first strum
+    // rings). Replaces the old synthesized sine — one voice for every
+    // string sound.
+    tones.strumAll(70);
+  }, [tones]);
 
   return (
     <div
