@@ -26,11 +26,21 @@ import { useEffect, useMemo, useRef } from "react";
  * every failure degrades to today's silent strings.
  */
 
-const MASTER_GAIN = 0.6;
+const MASTER_GAIN = 0.34; // softer overall (was 0.6) — the space does the work now
 const THROTTLE_MS = 60;
-const REVERB_SECONDS = 2.6;
-const REVERB_SEND = 0.34;
-const REVERB_LOWPASS_HZ = 5200;
+
+// Reverb — deeper + a touch wetter for a lusher tail.
+const REVERB_SECONDS = 3.8;
+const REVERB_SEND = 0.42;
+const REVERB_LOWPASS_HZ = 4200;
+
+// Slow feedback delay — echoes repeat ~every 0.42s, each one darker (the
+// feedback path is low-passed) and fed back into the reverb so the repeats
+// dissolve into the tail rather than ticking.
+const DELAY_TIME = 0.42;
+const DELAY_FEEDBACK = 0.4;
+const DELAY_SEND = 0.3;
+const DELAY_LOWPASS_HZ = 2400;
 
 /* Optional flourish: strumming every string within this window plays the
    sparkle sample once. Off by default per the brief. */
@@ -42,7 +52,8 @@ const SPARKLE_URL = "/sounds/sparkle-intro.mp3";
 type Engine = {
   ctx: AudioContext;
   master: GainNode;
-  send: GainNode;
+  send: GainNode; // reverb send
+  delay: GainNode; // delay send
   buffers: (AudioBuffer | null)[];
   sparkle: AudioBuffer | null;
 };
@@ -103,7 +114,26 @@ export function useStringTones(urls: string[]) {
       lp.connect(verb);
       verb.connect(master);
 
-      eng = { ctx, master, send, buffers: urls.map(() => null), sparkle: null };
+      // Slow feedback delay bus: send → delay → master, with a low-passed
+      // feedback loop (each repeat darker) that ALSO taps the reverb send so
+      // the echoes melt into the tail instead of ticking.
+      const delay = ctx.createGain();
+      delay.gain.value = DELAY_SEND;
+      const delayNode = ctx.createDelay(1.5);
+      delayNode.delayTime.value = DELAY_TIME;
+      const fb = ctx.createGain();
+      fb.gain.value = DELAY_FEEDBACK;
+      const fbLp = ctx.createBiquadFilter();
+      fbLp.type = "lowpass";
+      fbLp.frequency.value = DELAY_LOWPASS_HZ;
+      delay.connect(delayNode);
+      delayNode.connect(fbLp);
+      fbLp.connect(fb);
+      fb.connect(delayNode); // feedback loop
+      delayNode.connect(master); // echoes out
+      delayNode.connect(send); // echoes get reverberated too
+
+      eng = { ctx, master, send, delay, buffers: urls.map(() => null), sparkle: null };
       engine.current = eng;
 
       // Fetch + decode every tone immediately — buffers are ready before
@@ -159,7 +189,8 @@ export function useStringTones(urls: string[]) {
       g.gain.value = gain;
       src.connect(g);
       g.connect(eng.master); // dry
-      g.connect(eng.send); // wet
+      g.connect(eng.send); // → reverb
+      g.connect(eng.delay); // → slow delay
       src.start();
     };
 
