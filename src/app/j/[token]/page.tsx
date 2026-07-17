@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { WelcomeScreen } from "@/components/onboarding/WelcomeScreen";
 import { AlreadyUsedScreen } from "@/components/onboarding/AlreadyUsedScreen";
+import { ConnectAccountScreen } from "@/components/onboarding/ConnectAccountScreen";
 import { InviteSessionWriter } from "@/lib/InviteSessionWriter";
 import { resolveInvite } from "@/lib/mockInvite";
 
@@ -10,6 +11,7 @@ import { resolveInvite } from "@/lib/mockInvite";
    resolution from URL query params so the operator side can demo the
    contract by appending them to the invite URL it generates:
      ?co=<companyId>   — link to an existing company (skip P3 create)
+     ?existing=1       — token resolves to an existing Tatch account
      ?fn=<firstName>   — pre-fill first name
      ?ln=<lastName>    — pre-fill last name
      ?email=<email>    — pre-fill email
@@ -24,6 +26,7 @@ export default function JoinByToken({
   params: { token: string };
   searchParams: {
     co?: string;
+    existing?: string;
     fn?: string;
     ln?: string;
     email?: string;
@@ -35,7 +38,15 @@ export default function JoinByToken({
     return <AlreadyUsedScreen />;
   }
   if (!params.token) return notFound();
+
+  // Mocked: "existing" token (or ?existing=1) => the token resolved to
+  // someone who already has a Tatch account. Per the notifications
+  // catalog's rec-company-invite row, that's a confirm/decline decision
+  // — no signup wizard — so we branch to the connect screen instead of
+  // the welcome hero.
+  const existing = params.token === "existing" || searchParams.existing === "1";
   const invite = resolveInvite({
+    existing,
     co: searchParams.co,
     prefill: {
       firstName: searchParams.fn,
@@ -51,7 +62,11 @@ export default function JoinByToken({
           and don't see the original `?co=` / `?fn=` / etc. query params —
           can read it via `useInvite()`. Renders nothing. */}
       <InviteSessionWriter invite={invite} />
-      <WelcomeScreen invite={invite} />
+      {existing ? (
+        <ConnectAccountScreen invite={invite} token={params.token} />
+      ) : (
+        <WelcomeScreen invite={invite} token={params.token} />
+      )}
     </>
   );
 }

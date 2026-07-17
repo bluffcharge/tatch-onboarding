@@ -59,6 +59,7 @@ type Route = {
 // re-enable them with a one-line flag flip.
 const ALL_ROUTES: Route[] = [
   { href: "/j/abc123",                   title: "P1 — Welcome",           subtitle: "SMS / email link entry",                  group: "entry",      intent: "mobile"  },
+  { href: "/j/existing",                 title: "P1b — Existing account", subtitle: "Confirm/decline operator connect",        group: "entry",      intent: "mobile"  },
   // Hang-tag ticket with the front→back flip-to-code-entry interaction.
   // Stashed for now; want to keep the flip recipe accessible — flip
   // `hidden` to false to bring it back into the gallery.
@@ -80,6 +81,7 @@ const ALL_ROUTES: Route[] = [
   { href: "/partner-admin/invite",       title: "O1 — Operator invite",   subtitle: "Settings panel · codes · recent",         group: "operator",   intent: "desktop" },
   { href: "/join?bad=1",                 title: "Edge — Invalid code",    subtitle: "Code entry error state",                  group: "edge",       intent: "mobile"  },
   { href: "/j/used",                     title: "Edge — Used invite",     subtitle: "Already-claimed error",                   group: "edge",       intent: "mobile"  },
+  { href: "/j/abc123/declined",          title: "Edge — Invite declined", subtitle: "Calm end state + way back",               group: "edge",       intent: "mobile"  },
 ];
 
 const ROUTES: Route[] = ALL_ROUTES.filter((r) => !r.hidden);
