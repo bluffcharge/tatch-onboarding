@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { OnboardingShell } from "./OnboardingShell";
+import { DeclineConfirm } from "./DeclineConfirm";
 import type { InviteContext } from "@/lib/mockInvite";
 
-type Props = { invite: InviteContext };
+type Props = { invite: InviteContext; token: string };
 
-export function WelcomeScreen({ invite }: Props) {
+export function WelcomeScreen({ invite, token }: Props) {
   const { inviter, operator } = invite;
+  const [declining, setDeclining] = useState(false);
 
   return (
     // `center` (no journey) makes main fill the viewport height so the hero
@@ -54,29 +57,59 @@ export function WelcomeScreen({ invite }: Props) {
             Set up in about 90 seconds.
           </p>
 
-          {/* Single CTA into the partner wizard — the create-login step
-              presents the actual methods (email or Google). */}
-          <div className="mt-8 w-full max-w-[230px] md:max-w-[280px] lg:mt-10 lg:max-w-[320px]">
-            <Button
-              fullWidth
-              size="lg"
-              onClick={() => goto("/partner/account")}
-            >
-              Accept Invite
-            </Button>
-          </div>
+          {/* CTA cluster. The quiet Decline affordance swaps the whole
+              cluster for an inline consequence-stating confirm — no modal,
+              and "Keep the invite" stays the visually primary action so
+              the accept path never loses dominance. */}
+          {declining ? (
+            <div className="mt-8 flex w-full justify-center lg:mt-10">
+              <DeclineConfirm
+                consequence={`${inviter.fullName} at ${operator.name} will be told you passed. Nothing gets set up, and you can still join later from a new invite.`}
+                onDecline={() => goto(`/j/${token}/declined`)}
+                onKeep={() => setDeclining(false)}
+              />
+            </div>
+          ) : (
+            <>
+              {/* Single CTA into the partner wizard — the create-login step
+                  presents the actual methods (email or Google). */}
+              <div className="mt-8 w-full max-w-[230px] md:max-w-[280px] lg:mt-10 lg:max-w-[320px]">
+                <Button
+                  fullWidth
+                  size="lg"
+                  onClick={() => goto("/partner/account")}
+                >
+                  Accept Invite
+                </Button>
+              </div>
 
-          {/* Quiet path for partners who already have an account. */}
-          <p className="mt-4 text-[13px] text-ink-subtitle">
-            Already have an account?{" "}
-            <button
-              type="button"
-              className="font-medium text-ink-body hover:text-ink-title hover:underline"
-              onClick={() => goto("/partner/signin")}
-            >
-              Sign in
-            </button>
-          </p>
+              {/* Quiet path for partners who already have an account. */}
+              <p className="mt-4 text-[13px] text-ink-subtitle">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-ink-body hover:text-ink-title hover:underline"
+                  onClick={() => goto("/partner/signin")}
+                >
+                  Sign in
+                </button>
+              </p>
+
+              {/* Quietest path — declining. Kept below Sign in on purpose:
+                  it's the least-wanted outcome, so it sits last and in
+                  caption ink, but still a real focusable button. */}
+              <p className="mt-2 text-[13px] text-ink-caption">
+                Not interested?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-ink-body underline-offset-2 hover:text-ink-title hover:underline"
+                  onClick={() => setDeclining(true)}
+                >
+                  Decline
+                </button>
+              </p>
+            </>
+          )}
         </div>
 
         {/* Footer brand + legal links. On mobile the wordmark sits here,
@@ -104,7 +137,7 @@ export function WelcomeScreen({ invite }: Props) {
    gradient checkmark badge in the bottom-right. Replaces the previous
    full-fill purple gradient — the user is phasing brand violet out of
    the chrome, but the badge keeps a small brand pop. */
-function InviterAvatar({ initial }: { initial: string }) {
+export function InviterAvatar({ initial }: { initial: string }) {
   return (
     <div className="relative h-16 w-16 lg:h-20 lg:w-20">
       <span className="absolute inset-0 rounded-pill ring-2 ring-royal-400/30" aria-hidden="true" />
