@@ -2,7 +2,13 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Check, ChevronRight } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BadgeCheck,
+  Banknote,
+  Check,
+  ChevronRight,
+} from "lucide-react";
 import { PartnerShell } from "./PartnerShell";
 import { useInvite } from "@/lib/useInvite";
 
@@ -63,12 +69,65 @@ export function AllSetScreen() {
           Open Tatch
         </a>
 
+        {/* Notification expectations — the partner's default set from the
+            notifications catalog (lead-stage, lead-qualified, wal-sent /
+            lead-payout-pending), in plain language. Sets the "what happens
+            next" contract before they ever open the app. */}
+        <NotificationExpectations />
+
         {/* Dev-facing contract preview (TATCH-416) — the payload the partner
             side emits back to the operator system on acceptance, restored
             from the previous P7. Collapsed by default; hidden in prod. */}
         <ResolvedRecordSummary invite={invite} />
       </div>
     </PartnerShell>
+  );
+}
+
+/* "What you'll hear about" — the notifications a partner account starts
+   with (per-notification defaults from the catalog). Three rows keep it
+   scannable; the footnote points at the settings surface where the full
+   catalog lives. Icons carry a shape signal alongside the labels so
+   color is never doing the work alone. */
+function NotificationExpectations() {
+  return (
+    <section className="op-hear" aria-labelledby="op-hear-title">
+      <h2 className="op-hear-title" id="op-hear-title">
+        What you&apos;ll hear about
+      </h2>
+      <ul className="op-hear-list">
+        <li className="op-hear-item">
+          <span className="op-hear-icon" aria-hidden="true">
+            <ArrowLeftRight size={14} strokeWidth={2} />
+          </span>
+          <span>
+            <strong>Lead status changes</strong> — when a referral you sent
+            moves to a new stage.
+          </span>
+        </li>
+        <li className="op-hear-item">
+          <span className="op-hear-icon" aria-hidden="true">
+            <BadgeCheck size={14} strokeWidth={2} />
+          </span>
+          <span>
+            <strong>Qualified referrals</strong> — when a referral qualifies
+            and a reward comes due to you.
+          </span>
+        </li>
+        <li className="op-hear-item">
+          <span className="op-hear-icon" aria-hidden="true">
+            <Banknote size={14} strokeWidth={2} />
+          </span>
+          <span>
+            <strong>Payouts</strong> — when money is on its way to
+            your bank.
+          </span>
+        </li>
+      </ul>
+      <p className="op-hear-foot">
+        Tune these anytime in Settings → Notifications.
+      </p>
+    </section>
   );
 }
 

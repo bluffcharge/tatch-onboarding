@@ -39,6 +39,32 @@ export const REQUIREMENT_CONTEXT: Record<string, RequirementContext> = {
       "Personalize the welcome with the inviting operator + BDM (trust signal).",
     ],
   },
+  "/j/existing": {
+    oneLine:
+      "Existing-account branch — the token resolved to someone already on Tatch, so it's one confirm/decline decision.",
+    flowRefs: [
+      { flow: "Flow 3 — existing partner", step: "Step 1: clicks invite link, account auto-detected" },
+    ],
+    storyRefs: ["Story 4"],
+    reqs: [
+      "Notifications catalog rec-company-invite: operator invite to an account that already exists lands on a confirm/decline screen, not the signup wizard.",
+      "Copy states the non-consequence: confirming won't affect existing operator relationships.",
+      "Single forward CTA (Confirm and connect); decline mirrors the P1 decline path.",
+    ],
+  },
+  "/j/abc123/declined": {
+    oneLine:
+      "Terminal state after declining an invite — calm, non-error, with a way back to accepting.",
+    flowRefs: [
+      { flow: "Flow 2 — new partner via link", step: "Exit: invitee passes on the invite" },
+    ],
+    storyRefs: ["Story 2"],
+    reqs: [
+      "Notifications catalog rec-operator-invite: the invite screen offers accept AND decline.",
+      "Inline consequence-stating confirm before declining (operator is told; door stays open).",
+      "End state offers 'Changed your mind? Accept the invite.' back to the live token.",
+    ],
+  },
   "/onboarding/ticket": {
     oneLine: "P1 — Ticket exploration: hang-tag take on the invite with an ink ticket + accent slip behind.",
     flowRefs: [
